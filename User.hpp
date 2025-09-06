@@ -8,7 +8,7 @@ private:
   int _fd;
   std::string _nickname;
   std::string _hostname;
-  std::string _incommingBuffer;
+  std::string _incomingBuffer;
   std::string _outgoingBuffer;
   std::string _username;
   std::string _realname;
@@ -24,9 +24,15 @@ private:
 public:
   User(int fd);
   ~User(void);
-  bool sendReady(void); 
-  void setIncomingBuffer(const std::string& from);
-  int fileno(void);
+  bool ReadyToSend(void); 
+  int Fileno(void);
+
+  void SetIncomingBuffer(const std::string& from);
+  const std::string& GetIncomingBuffer(void);
+  
+  void SetOutgoingBuffer(const std::string& from);
+  const std::string& GetOutgoingBuffer(void);
+
 };
 
 #endif

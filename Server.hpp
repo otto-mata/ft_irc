@@ -11,10 +11,6 @@
 #define BACKLOG 5
 #endif
 
-#ifndef MAX_CLIENTS
-#define MAX_CLIENTS 512
-#endif
-
 #ifndef POLL_INTERVAL
 #define POLL_INTERVAL 500
 #endif
@@ -40,7 +36,9 @@ private:
 public:
   Server(unsigned short p = 6667);
   ~Server(void);
-  void serve(void);
+
+  void Start(void);
+  void Broadcast(std::string message, User* except = 0);
 };
 
 #endif

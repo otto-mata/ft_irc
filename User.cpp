@@ -19,19 +19,37 @@ User::~User(void)
 }
 
 bool
-User::sendReady(void)
+User::ReadyToSend(void)
 {
   return _outgoingBuffer.size() > 0;
 }
 
 void
-User::setIncomingBuffer(const std::string& from)
+User::SetIncomingBuffer(const std::string& from)
 {
-  _incommingBuffer = from;
+  _incomingBuffer = from;
+}
+
+const std::string&
+User::GetIncomingBuffer(void)
+{
+  return _incomingBuffer;
 }
 
 int
-User::fileno(void)
+User::Fileno(void)
 {
   return _fd;
+}
+
+void
+User::SetOutgoingBuffer(const std::string& from)
+{
+  _outgoingBuffer = from;
+}
+
+const std::string&
+User::GetOutgoingBuffer(void)
+{
+  return _outgoingBuffer;
 }

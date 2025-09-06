@@ -2,6 +2,5 @@
 
 int main()
 {
-  Server s = Server();
-  s.serve();
+  Server().Start();
 }
