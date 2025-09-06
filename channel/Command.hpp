@@ -8,16 +8,29 @@
 class Command
 {
 	private:
+		std::string _raw;
 		std::string _user;
 		std::string _command;
-		std::string _channel_name;
+		std::string _target_name;
 		Channel* _channel;
+		Server* _server;
 		std::set<std::string> _params;
+		std::string _trailing;
+
+		void execMsg();
+		void execTopic();
+		void execKick();
+		void execInvite();
+		void execJoin();
+		void execpart();
+		//void execMode();
+		//void execNick();
 
 	public:
 		Command(std::string command_line, std::string command_user, Server* server);
 		~Command();
 	
+		void execute();
 };
 
 #endif

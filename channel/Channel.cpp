@@ -221,6 +221,11 @@ void Channel::kickUser(std::string command_user, std::string kicked_user)
 		std::cout << "kick command requires admin privileges" << std::endl;
 		return ;
 	}
+	if (!isUser(kicked_user))
+	{
+		std::cout << "User you want to kick is not on the channel" << std::endl;
+		return ;
+	}
 	removeUser(kicked_user);
 	std::cout << kicked_user << " has been kicked" << std::endl;
 }
@@ -230,6 +235,11 @@ void Channel::kickUser(std::string command_user, std::string kicked_user, std::s
 	if (!isAdmin(command_user))
 	{
 		std::cout << "kick command requires admin privileges" << std::endl;
+		return ;
+	}
+	if (!isUser(kicked_user))
+	{
+		std::cout << "User you want to kick is not on the channel" << std::endl;
 		return ;
 	}
 	removeUser(kicked_user);

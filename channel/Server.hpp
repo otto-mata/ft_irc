@@ -3,8 +3,7 @@
 
 # include <iostream>
 # include <map>
-
-class Channel;
+# include "Channel.hpp"
 
 class Server
 {
@@ -16,8 +15,14 @@ class Server
 		Server();
 		~Server();
 
-		isChannel(std::string _channel_name);
-	
+		void addChannel(std::string channel_name);
+		void addUser(std::string user_name);
+
+		bool isChannel(std::string channel_name);
+		bool isUser(std::string user_name);
+
+		Channel* getChannel(std::string channel_name);
+
 };
 
 #endif

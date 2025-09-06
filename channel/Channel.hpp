@@ -31,6 +31,7 @@ class Channel
 		bool _isPasswordProtected;
 
 	public:
+		Channel() : _name(DEFAULT_NAME) {}
 		Channel(std::string channel_name);
 		~Channel();
 
