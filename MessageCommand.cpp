@@ -1,4 +1,7 @@
 #include "CommandParser.hpp"
+#include "Exceptions.hpp"
+#include "ExecutableCommand.hpp"
+#include "Server.hpp"
 
 CommandParser::MessageCommand::MessageCommand(const std::string& arg)
 {
@@ -14,7 +17,8 @@ CommandParser::MessageCommand::MessageCommand(const std::string& arg)
       continue;
     if (i == 0 && it->getType() == COLON)
       source = new std::string((++it)->getLexeme());
-    else if ((i == 0 || i == 1) && it->getType() == STRING && cmd.length() == 0) {
+    else if ((i == 0 || i == 1) && it->getType() == STRING &&
+             cmd.length() == 0) {
       cmd = it->getLexeme();
     } else if (it->getType() == COLON) {
       trailing = new std::string();
@@ -25,7 +29,7 @@ CommandParser::MessageCommand::MessageCommand(const std::string& arg)
           trailing->append(" ");
         it++;
       }
-    } else if (it->getType() != EOL){
+    } else if (it->getType() != EOL) {
       if (!params)
         params = new std::vector<std::string>();
       if (it->getType() == STRING)
@@ -70,7 +74,7 @@ CommandParser::MessageCommand::Trailing(void)
 }
 
 std::string
-CommandParser::MessageCommand::toString(void)
+CommandParser::MessageCommand::ToString(void)
 {
   std::string s;
 
@@ -93,4 +97,13 @@ CommandParser::MessageCommand::toString(void)
     s += "TRAILING: " + *trailing + "\n";
   }
   return s;
+}
+
+
+_GLIBCXX_NORETURN ExecutableCommand*
+CommandParser::MessageCommand::ToExecutable(__attribute_maybe_unused__ Server* ctx)
+{
+  // TODO: Create the instance of the command subclass
+  // TODO: Those have to be defined.
+  throw Exceptions::NotImplementedException();
 }

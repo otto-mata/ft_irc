@@ -5,11 +5,11 @@
 Channel::Channel()
   : _name(DEFAULT_NAME)
   , _topic(DEFAULT_TOPIC)
+  , _password(DEFAULT_PASSWORD)
   , _userLimit(DEFAULT_USER_LIMIT_COUNT)
   , _isInviteOnly(DEFAULT_IS_INVITE_ONLY)
   , _isTopicModifiable(DEFAULT_IS_TOPIC_MODIFIABLE)
   , _isUserLimited(DEFAULT_IS_USER_LIMITED)
-  , _password(DEFAULT_PASSWORD)
   , _isPasswordProtected(DEFAULT_IS_PASSWORD_PROTECTED)
 {
 }
@@ -17,11 +17,11 @@ Channel::Channel()
 Channel::Channel(const std::string& channel_name)
   : _name(channel_name)
   , _topic(DEFAULT_TOPIC)
+  , _password(DEFAULT_PASSWORD)
   , _userLimit(DEFAULT_USER_LIMIT_COUNT)
   , _isInviteOnly(DEFAULT_IS_INVITE_ONLY)
   , _isTopicModifiable(DEFAULT_IS_TOPIC_MODIFIABLE)
   , _isUserLimited(DEFAULT_IS_USER_LIMITED)
-  , _password(DEFAULT_PASSWORD)
   , _isPasswordProtected(DEFAULT_IS_PASSWORD_PROTECTED)
 {
 }
@@ -38,11 +38,11 @@ uint8_t
 Channel::userMatch(const std::string& name)
 {
   bool user = Algo::Iter::Contains(
-    _users.begin(), _users.end(), UserPredicates::FindByNickName(name));
+    _users.begin(), _users.end(), UserPredicates::MatchNickname(name));
   bool admin = Algo::Iter::Contains(
-    _admins.begin(), _admins.end(), UserPredicates::FindByNickName(name));
+    _admins.begin(), _admins.end(), UserPredicates::MatchNickname(name));
   bool wl = Algo::Iter::Contains(
-    _whitelist.begin(), _whitelist.end(), UserPredicates::FindByNickName(name));
+    _whitelist.begin(), _whitelist.end(), UserPredicates::MatchNickname(name));
 
   return (user << 2) | (admin << 1) | wl;
 }

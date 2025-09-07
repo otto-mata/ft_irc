@@ -161,7 +161,6 @@ Server::Start(void)
   fd_set rfds;
   fd_set wfds;
   timeval tv;
-  int cfd;
 
   tv.tv_sec = 0;
   tv.tv_usec = (long)(POLL_INTERVAL * 100000);

@@ -18,22 +18,22 @@ Contains(Iterator begin, const Iterator end, UnaryPredicate pred)
   return false;
 }
 
-} // namespace Iter
-
-namespace String {
-
-std::string
-Sub(std::string::iterator begin, size_t size = ~0)
+template<class Iterator, class UnaryPredicate, class Object>
+Object*
+FindFirst(Iterator begin, const Iterator end, UnaryPredicate pred)
 {
-  std::string dup;
-  const std::string::iterator end = begin + size;
+  Object* o = 0;
   while (begin != end) {
-    dup += *begin;
+    o = pred(*begin);
+    if (o)
+      return o;
     ++begin;
   }
-  return dup;
+  return o;
 }
-} // namespace String
+
+} // namespace Iter
+
 
 } // namespace Algo
 

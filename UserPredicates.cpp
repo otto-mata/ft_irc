@@ -1,34 +1,48 @@
 #include "UserPredicates.hpp"
 
-UserPredicates::FindByNickName::FindByNickName(const std::string& name)
+
+UserPredicates::FindByNicknameInMap::FindByNicknameInMap(
+  const std::string& name): _name(name)
+{
+}
+
+User*
+UserPredicates::FindByNicknameInMap::operator()(std::pair<const int, User*>& pair)
+{
+  return _name == pair.second->GetNickname() ? pair.second : 0;
+}
+
+
+UserPredicates::MatchNickname::MatchNickname(const std::string& name)
   : _name(name)
 {
 }
 
+
 bool
-UserPredicates::FindByNickName::operator()(User* user)
+UserPredicates::MatchNickname::operator()(User* user)
 {
   return _name == user->GetNickname();
 }
 
-UserPredicates::FindByUsername::FindByUsername(const std::string& name)
+UserPredicates::MatchUsername::MatchUsername(const std::string& name)
   : _name(name)
 {
 }
 
 bool
-UserPredicates::FindByUsername::operator()(User* user)
+UserPredicates::MatchUsername::operator()(User* user)
 {
   return _name == user->GetUsername();
 }
 
-UserPredicates::FindByRealname::FindByRealname(const std::string& name)
+UserPredicates::MatchRealname::MatchRealname(const std::string& name)
   : _name(name)
 {
 }
 
 bool
-UserPredicates::FindByRealname::operator()(User* user)
+UserPredicates::MatchRealname::operator()(User* user)
 {
   return _name == user->GetRealName();
 }

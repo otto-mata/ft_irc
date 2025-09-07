@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+class ExecutableCommand;
+class Server;
 namespace CommandParser {
 
 typedef enum
@@ -63,7 +65,8 @@ public:
   const std::vector<std::string>& Arguments(void);
   const std::string& Argument(size_t);
   const std::string& Trailing(void);
-  std::string toString(void);
+  std::string ToString(void);
+  ExecutableCommand* ToExecutable(Server* ctx);
 };
 
 } // namespace CommandParser

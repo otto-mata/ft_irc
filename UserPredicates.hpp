@@ -5,33 +5,43 @@
 
 namespace UserPredicates {
 
-struct FindByNickName
+struct FindByNicknameInMap
 {
 private:
   std::string _name;
 
 public:
-  FindByNickName(const std::string& name);
+  FindByNicknameInMap(const std::string& name);
+  User* operator()(std::pair<const int, User *>& pair);
+};
+
+struct MatchNickname
+{
+private:
+  std::string _name;
+
+public:
+  MatchNickname(const std::string& name);
   bool operator()(User* user);
 };
 
-struct FindByRealname
+struct MatchRealname
 {
 private:
   std::string _name;
 
 public:
-  FindByRealname(const std::string& name);
+  MatchRealname(const std::string& name);
   bool operator()(User* user);
 };
 
-struct FindByUsername
+struct MatchUsername
 {
 private:
   std::string _name;
 
 public:
-  FindByUsername(const std::string& name);
+  MatchUsername(const std::string& name);
   bool operator()(User* user);
 };
 
