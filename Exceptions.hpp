@@ -1,4 +1,9 @@
+#ifndef EXCEPTIONS_HPP
+#define EXCEPTIONS_HPP
+
 #include <stdexcept>
+
+#define CompileWarning(msg) __attribute__((unavailable(msg)))
 
 namespace Exceptions {
 
@@ -12,3 +17,4 @@ public:
 };
 
 } // namespace Exceptions
+#endif

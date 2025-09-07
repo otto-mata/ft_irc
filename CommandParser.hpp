@@ -2,6 +2,7 @@
 #define MESSAGE_COMMAND_HPP
 #include <string>
 #include <vector>
+#include "Exceptions.hpp"
 
 class ExecutableCommand;
 class Server;
@@ -66,7 +67,7 @@ public:
   const std::string& Argument(size_t);
   const std::string& Trailing(void);
   std::string ToString(void);
-  ExecutableCommand* ToExecutable(Server* ctx);
+  ExecutableCommand* ToExecutable(Server* ctx) CompileWarning("Not implemented yet.");
 };
 
 } // namespace CommandParser

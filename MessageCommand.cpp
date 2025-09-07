@@ -99,9 +99,9 @@ CommandParser::MessageCommand::ToString(void)
   return s;
 }
 
-
 _GLIBCXX_NORETURN ExecutableCommand*
-CommandParser::MessageCommand::ToExecutable(__attribute_maybe_unused__ Server* ctx)
+CommandParser::MessageCommand::ToExecutable(
+  __attribute_maybe_unused__ Server* ctx)
 {
   // TODO: Create the instance of the command subclass
   // TODO: Those have to be defined.

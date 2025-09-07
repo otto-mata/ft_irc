@@ -1,6 +1,5 @@
 #ifndef CUSTOM_ALGO_HPP
 #define CUSTOM_ALGO_HPP
-#include <type_traits>
 
 namespace Algo {
 
