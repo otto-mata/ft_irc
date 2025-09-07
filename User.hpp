@@ -27,11 +27,26 @@ public:
   bool ReadyToSend(void); 
   int Fileno(void);
 
+  bool FullyRegistered(void);
+  
   void SetIncomingBuffer(const std::string& from);
   const std::string& GetIncomingBuffer(void);
   
+  void AppendToOutgoingBuffer(const std::string& from);
+  void AppendToOutgoingBuffer(const char* from);
   void SetOutgoingBuffer(const std::string& from);
+  void SetOutgoingBuffer(const char* from);
   const std::string& GetOutgoingBuffer(void);
+  void ClearOutgoingBuffer(void);
+
+  void SetNickname(const std::string& from);
+  const std::string& GetNickname(void);
+
+  void SetUsername(const std::string& from);
+  const std::string& GetUsername(void);
+  
+  void SetRealName(const std::string& from);
+  const std::string& GetRealName(void);
 
 };
 

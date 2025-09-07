@@ -1,6 +1,6 @@
 #include "Command.hpp"
 
-Command::Command(std::string command_line, std::string command_user, Server* server) : _raw(command_line), _user(command_user), _server(server)
+MessageCommand::MessageCommand(std::string command_line, std::string command_user, Server* server) : _raw(command_line), _user(command_user), _server(server)
 {
 	_command.clear();
 	_target_name.clear();
@@ -78,9 +78,9 @@ Command::Command(std::string command_line, std::string command_user, Server* ser
 	}*/
 }
 
-Command::~Command() {}
+MessageCommand::~MessageCommand() {}
 
-void Command::execute()
+void MessageCommand::execute()
 {
 	// private message
 	if (_target_name[0] != '#' && (_command == "MSG" || _command == "PRIVMSG"))
@@ -126,7 +126,7 @@ void Command::execute()
 		this->execNick();*/
 }
 
-void Command::execTopic()
+void MessageCommand::execTopic()
 {
 	if (_params.size() > 0)
 	{
@@ -143,7 +143,7 @@ void Command::execTopic()
 	}
 }
 
-void Command::execMsg()
+void MessageCommand::execMsg()
 {
 	if (_params.size() > 0)
 	{
@@ -165,7 +165,7 @@ void Command::execMsg()
 	}
 }
 
-void Command::execKick()
+void MessageCommand::execKick()
 {
 	if (_params.size() != 1)
 	{
@@ -183,7 +183,7 @@ void Command::execKick()
 	}
 }
 
-void Command::execInvite()
+void MessageCommand::execInvite()
 {
 	if (_params.size() != 1)
 	{
@@ -194,7 +194,7 @@ void Command::execInvite()
 	_channel->inviteUser(_user, *it);
 }
 
-void Command::execJoin()
+void MessageCommand::execJoin()
 {
 	if (_params.size() != 0)
 	{
@@ -204,7 +204,7 @@ void Command::execJoin()
 	_channel->joinUser(_user);
 }
 
-void Command::execpart()
+void MessageCommand::execpart()
 {
 	if (_params.size() != 0)
 	{

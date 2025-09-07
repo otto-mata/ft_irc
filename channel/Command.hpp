@@ -5,7 +5,7 @@
 # include "Channel.hpp"
 # include "Server.hpp"
 
-class Command
+class MessageCommand
 {
 	private:
 		std::string _raw;
@@ -27,8 +27,8 @@ class Command
 		//void execNick();
 
 	public:
-		Command(std::string command_line, std::string command_user, Server* server);
-		~Command();
+		MessageCommand(std::string command_line, std::string command_user, Server* server);
+		~MessageCommand();
 	
 		void execute();
 };

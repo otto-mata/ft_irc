@@ -36,12 +36,35 @@ User::GetIncomingBuffer(void)
   return _incomingBuffer;
 }
 
+void
+User::AppendToOutgoingBuffer(const std::string& from)
+{
+  _outgoingBuffer += from;
+}
+
+void
+User::AppendToOutgoingBuffer(const char* from)
+{
+  _outgoingBuffer += from;
+}
+
 int
 User::Fileno(void)
 {
   return _fd;
 }
 
+bool
+User::FullyRegistered(void)
+{
+  return _hasNick && _hasUser;
+}
+
+void
+User::SetOutgoingBuffer(const char* from)
+{
+  _outgoingBuffer = from;
+}
 void
 User::SetOutgoingBuffer(const std::string& from)
 {
@@ -52,4 +75,48 @@ const std::string&
 User::GetOutgoingBuffer(void)
 {
   return _outgoingBuffer;
+}
+
+void
+User::ClearOutgoingBuffer(void)
+{
+  _outgoingBuffer.clear();
+}
+
+void
+User::SetNickname(const std::string& from)
+{
+  _nickname = from;
+  _hasNick = true;
+}
+
+const std::string&
+User::GetNickname(void)
+{
+  return _nickname;
+}
+
+void
+User::SetUsername(const std::string& from)
+{
+  _username = from;
+  _hasUser = true;
+}
+
+const std::string&
+User::GetUsername(void)
+{
+  return _username;
+}
+
+void
+User::SetRealName(const std::string& from)
+{
+  _realname = from;
+}
+
+const std::string&
+User::GetRealName(void)
+{
+  return _realname;
 }
