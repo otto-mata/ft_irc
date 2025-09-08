@@ -25,6 +25,7 @@ private:
   Users _users;
   Users _whitelist;
   Users _admins;
+  User* _owner;
   std::string _topic;
   std::string _password;
   size_t _userLimit;
@@ -43,6 +44,9 @@ public:
   /* Basic class settings */
 
   const std::string& getName();
+
+  int SetOwner(User* Owner);
+  User* GetOwner(void);
 
   bool isUser(const std::string& user_tofind);
   bool isUser(User* user_tofind);
@@ -93,7 +97,9 @@ public:
                 const std::string& kick_reason);
   void activatePassword(const std::string& password_given);
   void modifyTopic(User* command_user, const std::string& new_topic);
-	void Broadcast(const std::string& m, User* except);
+	void Broadcast(const std::string& m, User* except = 0);
+
+  const Users& GetUsers(void);
 };
 
 #endif

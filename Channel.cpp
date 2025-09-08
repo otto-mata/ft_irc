@@ -34,6 +34,22 @@ Channel::getName()
   return _name;
 }
 
+int
+Channel::SetOwner(User* Owner)
+{
+  if (_owner != 0)
+    return 0;
+  _owner = Owner;
+  addAdmin(Owner);
+  return 1;
+}
+
+User*
+Channel::GetOwner(void)
+{
+  return _owner;
+}
+
 uint8_t
 Channel::userMatch(const std::string& name)
 {
@@ -62,6 +78,7 @@ Channel::isUser(User* user_tofind)
 void
 Channel::addUser(User* user_toadd)
 {
+  addUserWhitelist(user_toadd);
   if (!isUser(user_toadd)) {
     _users.insert(user_toadd);
   }
@@ -118,6 +135,7 @@ Channel::isAdmin(User* admin_tofind)
 void
 Channel::addAdmin(User* admin_toadd)
 {
+  addUser(admin_toadd);
   if (!isAdmin(admin_toadd)) {
     _admins.insert(admin_toadd);
   }
@@ -153,6 +171,7 @@ void
 Channel::setPassword(const std::string& NewPassword)
 {
   _password = NewPassword;
+  setIsPasswordProtected(true);
 }
 
 size_t
@@ -332,4 +351,10 @@ Channel::Broadcast(const std::string& message, User* except)
   for (Users::iterator it = _users.begin(); it != _users.end(); ++it)
     if (*it != except)
       (*it)->SetOutgoingBuffer(message);
+}
+
+const Users&
+Channel::GetUsers(void)
+{
+  return _users;
 }

@@ -1,4 +1,5 @@
 #include "CommandParser.hpp"
+#include "ExecutableCommand.hpp"
 #include "Server.hpp"
 #include "User.hpp"
 #include <cstdio>
@@ -24,26 +25,13 @@ split(std::string s, const std::string& delimiter)
 }
 
 void
-handleInput(User* user)
+handleInput(User* user, Server* ctx)
 {
   std::vector<std::string> cmds = split(user->GetIncomingBuffer(), "\r\n");
   for (std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end();
        ++it) {
     CommandParser::MessageCommand cmd(*it);
-    if (cmd.Name() == "CAP")
-      user->AppendToOutgoingBuffer("CAP * LS :\r\n");
-    else if (cmd.Name() == "NICK") {
-      user->SetNickname(cmd.Argument(0));
-      if (user->FullyRegistered())
-        user->AppendToOutgoingBuffer(":localhost 001 " + user->GetNickname() +
-                                     " :Welcome to the IRC Server\r\n");
-    } else if (cmd.Name() == "USER") {
-      user->SetUsername(cmd.Argument(0));
-      user->SetRealName(cmd.Trailing());
-      if (user->FullyRegistered())
-        user->AppendToOutgoingBuffer(":localhost 001 " + user->GetNickname() +
-                                     " :Welcome to the IRC Server\r\n");
-    }
+    cmd.ToExecutable(user, ctx);
   }
   user->ClearIncomingBuffer();
 }
@@ -61,7 +49,8 @@ manageUserDataReception(UserMap& users,
                         BufferMap& buffers,
                         std::list<User*>& disconnected,
                         fd_set* rfds,
-                        fd_set* wfds)
+                        fd_set* wfds,
+                        Server* ctx)
 {
   for (UserMap::iterator it = users.begin(); it != users.end(); ++it) {
     if (FD_ISSET(it->first, rfds)) {
@@ -82,7 +71,7 @@ manageUserDataReception(UserMap& users,
       }
     }
     std::cout << it->second->GetIncomingBuffer() << std::endl;
-    handleInput(it->second);
+    handleInput(it->second, ctx);
     if (FD_ISSET(it->first, wfds)) {
       const std::string& userSendBuffer = it->second->GetOutgoingBuffer();
       ssize_t wb =
@@ -179,7 +168,7 @@ Server::Start(void)
     if (select(fdmax + 1, &rfds, &wfds, 0, &tv) < 0)
       throw std::runtime_error("Fatal select() error");
     acceptNewClient(fd, users, &rfds);
-    manageUserDataReception(users, buffers, disconnected, &rfds, &wfds);
+    manageUserDataReception(users, buffers, disconnected, &rfds, &wfds, this);
     handleClientDisconnection(users, disconnected);
   }
 }

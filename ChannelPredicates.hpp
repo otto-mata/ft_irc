@@ -15,6 +15,15 @@ public:
   Channel* operator()(std::pair<const std::string, Channel*>& pair);
 };
 
+struct MatchNameInMap
+{
+private:
+  std::string _name;
+
+public:
+  MatchNameInMap(const std::string& name);
+  bool operator()(std::pair<const std::string, Channel*>& pair);
+};
 };
 
 #endif

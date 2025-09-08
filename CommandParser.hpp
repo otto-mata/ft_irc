@@ -67,7 +67,7 @@ public:
   const std::string& Argument(size_t);
   const std::string& Trailing(void);
   std::string ToString(void);
-  ExecutableCommand* ToExecutable(Server* ctx) CompileWarning("Not implemented yet.");
+  ExecutableCommand* ToExecutable(User* Emitter, Server* Context);//CompileWarning("Not implemented yet.");
 };
 
 } // namespace CommandParser

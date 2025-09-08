@@ -33,6 +33,29 @@ FindFirst(Iterator begin, const Iterator end, UnaryPredicate pred)
 
 } // namespace Iter
 
+namespace Array {
+template<typename T>
+class Find
+{
+private:
+  T obj;
+
+public:
+
+  Find(T o)
+    : obj(o)
+  {
+  }
+  bool In(T* arr, size_t n)
+  {
+    for (size_t i = 0; i < n; i++) {
+      if (arr[i] == o)
+        return true;
+    }
+    return false;
+  }
+};
+} // namespace Array
 
 } // namespace Algo
 

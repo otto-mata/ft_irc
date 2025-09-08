@@ -4,6 +4,7 @@
 User::User(int fd)
   : _fd(fd)
   , _isRegistered(false)
+  , _capabilitiesNegotiationFinished(true)
   , _hasNick(false)
   , _hasUser(false)
   , _hasPass(false)
@@ -39,13 +40,19 @@ User::GetIncomingBuffer(void)
 void
 User::AppendToOutgoingBuffer(const std::string& from)
 {
-  _outgoingBuffer += from;
+  std::string buf(from);
+  if (from.find("\r\n") == from.npos)
+    buf += "\r\n";
+  _outgoingBuffer += buf;
 }
 
 void
 User::AppendToOutgoingBuffer(const char* from)
 {
-  _outgoingBuffer += from;
+  std::string buf(from);
+  if (buf.find("\r\n") == buf.npos)
+    buf += "\r\n";
+  _outgoingBuffer += buf;
 }
 
 int
@@ -125,4 +132,22 @@ const std::string&
 User::GetRealName(void)
 {
   return _realname;
+}
+
+void
+User::FinishCapabilitiesNegotiation(void)
+{
+  _capabilitiesNegotiationFinished = true;
+}
+
+void
+User::PendingCapabilitiesNegotiation(void)
+{
+  _capabilitiesNegotiationFinished = false;
+}
+
+bool
+User::HasFinishedCapNeg(void)
+{
+  return _capabilitiesNegotiationFinished == true;
 }

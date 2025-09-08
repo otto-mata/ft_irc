@@ -20,6 +20,7 @@ private:
   bool _hasSentPassword;
   bool _isValidPassword;
   bool _disconnected;
+  bool _capabilitiesNegotiationFinished;
 
 public:
   User(int fd);
@@ -49,6 +50,10 @@ public:
   
   void SetRealName(const std::string& from);
   const std::string& GetRealName(void);
+
+  void FinishCapabilitiesNegotiation(void);
+  void PendingCapabilitiesNegotiation(void);
+  bool HasFinishedCapNeg(void);
 
 };
 

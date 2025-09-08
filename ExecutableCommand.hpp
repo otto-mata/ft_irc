@@ -1,33 +1,41 @@
 #ifndef EXECUTABLE_COMMAND_HPP
 #define EXECUTABLE_COMMAND_HPP
+#include "CommandParser.hpp"
 #include <string>
 
 class User;
 class Channel;
 class Server;
-class MessageCommand;
+
+namespace Commands {
+typedef enum
+{
+  VALID_ARGS = 0
+};
+} // namespace Commands
 
 class ExecutableCommand
 {
-private:
+protected:
   User* emitter;
   User* targetUser;
   Channel* targetChannel;
   Server* ctx;
-  MessageCommand* raw;
+  CommandParser::MessageCommand* raw;
 
 public:
-  ExecutableCommand(User* Emitter, Server* Context, MessageCommand* raw);
+  ExecutableCommand(User* Emitter,
+                    Server* Context,
+                    CommandParser::MessageCommand* raw);
   ~ExecutableCommand();
-  
+
   virtual int ValidateInput() = 0;
   virtual int Execute() = 0;
 
-  void SetTargetUser(User* Target);
-  void SetTargetUserFromContext(const std::string& TargetName);
-  void SetTargetChannel(Channel* Target);
-  void SetTargetChannelFromContext(const std::string& TargetName);
-
+  bool SetTargetUser(User* Target);
+  bool SetTargetUserFromContext(const std::string& TargetName);
+  bool SetTargetChannel(Channel* Target);
+  bool SetTargetChannelFromContext(const std::string& TargetName);
 };
 
 #endif

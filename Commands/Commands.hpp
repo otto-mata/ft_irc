@@ -1,0 +1,21 @@
+#ifndef COMMANDS_HPP
+#define COMMANDS_HPP
+#include "Cap.hpp"
+#include "Commands.hpp"
+#include "Invite.hpp"
+#include "Join.hpp"
+#include "Kick.hpp"
+#include "List.hpp"
+#include "Mode.hpp"
+#include "Nick.hpp"
+#include "Notice.hpp"
+#include "Part.hpp"
+#include "Pass.hpp"
+#include "Ping.hpp"
+#include "Pong.hpp"
+#include "Privmsg.hpp"
+#include "Quit.hpp"
+#include "Topic.hpp"
+#include "Whois.hpp"
+#include "Whowas.hpp"
+#endif

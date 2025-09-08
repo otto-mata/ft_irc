@@ -39,8 +39,16 @@ public:
 
   void Start(void);
   void Broadcast(std::string message, User* except = 0);
+
   User* FindUserByNickname(const std::string& Nickname);
   Channel* FindChannelByName(const std::string& Name);
+  
+  Channel* CreateChannel(const std::string& Name);
+  int RemoveChannel(Channel* Chan);
+
+  bool MatchUserByNickname(const std::string& Nickname);
+  bool MatchChannelByName(const std::string& Name);
+
 };
 
 #endif

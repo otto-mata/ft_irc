@@ -15,6 +15,17 @@ public:
   User* operator()(std::pair<const int, User *>& pair);
 };
 
+
+struct MatchNicknameInMap
+{
+private:
+  std::string _name;
+
+public:
+  MatchNicknameInMap(const std::string& name);
+  bool operator()(std::pair<const std::string, User*>& pair);
+};
+
 struct MatchNickname
 {
 private:
