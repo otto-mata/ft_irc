@@ -84,6 +84,12 @@ User::ClearOutgoingBuffer(void)
 }
 
 void
+User::ClearIncomingBuffer(void)
+{
+  _incomingBuffer.clear();
+}
+
+void
 User::SetNickname(const std::string& from)
 {
   _nickname = from;

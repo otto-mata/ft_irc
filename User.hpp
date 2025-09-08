@@ -37,7 +37,9 @@ public:
   void SetOutgoingBuffer(const std::string& from);
   void SetOutgoingBuffer(const char* from);
   const std::string& GetOutgoingBuffer(void);
+  
   void ClearOutgoingBuffer(void);
+  void ClearIncomingBuffer(void);
 
   void SetNickname(const std::string& from);
   const std::string& GetNickname(void);

@@ -45,6 +45,7 @@ handleInput(User* user)
                                      " :Welcome to the IRC Server\r\n");
     }
   }
+  user->ClearIncomingBuffer();
 }
 
 /**
