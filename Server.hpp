@@ -15,11 +15,11 @@
 #define POLL_INTERVAL 500
 #endif
 
+namespace Core {
 class User;
 class Channel;
-
-typedef std::map<int, User*> UserMap;
-typedef std::map<std::string, Channel*> ChannelMap;
+typedef std::map<int, Core::User*> UserMap;
+typedef std::map<std::string, Core::Channel*> ChannelMap;
 typedef std::map<int, std::string> BufferMap;
 
 class Server
@@ -29,26 +29,27 @@ private:
   int fd;
   bool mustStop;
   SockAddrIn in;
-  UserMap users;
-  ChannelMap channels;
-  BufferMap buffers;
+  Core::UserMap users;
+  Core::ChannelMap channels;
+  Core::BufferMap buffers;
+  std::string hostName;
 
 public:
   Server(unsigned short p = 6667);
   ~Server(void);
 
   void Start(void);
-  void Broadcast(std::string message, User* except = 0);
+  void Broadcast(std::string message, Core::User* except = 0);
 
-  User* FindUserByNickname(const std::string& Nickname);
-  Channel* FindChannelByName(const std::string& Name);
-  
-  Channel* CreateChannel(const std::string& Name);
-  int RemoveChannel(Channel* Chan);
+  Core::User* FindUserByNickname(const std::string& Nickname);
+  Core::Channel* FindChannelByName(const std::string& Name);
+
+  Core::Channel* CreateChannel(const std::string& Name);
+  int RemoveChannel(Core::Channel* Chan);
 
   bool MatchUserByNickname(const std::string& Nickname);
   bool MatchChannelByName(const std::string& Name);
-
 };
 
+}
 #endif

@@ -2,6 +2,8 @@
 #define USER_HPP
 #include "Common.hpp"
 
+namespace Core {
+
 class User
 {
 private:
@@ -25,20 +27,20 @@ private:
 public:
   User(int fd);
   ~User(void);
-  bool ReadyToSend(void); 
+  bool ReadyToSend(void);
   int Fileno(void);
 
   bool FullyRegistered(void);
-  
+
   void SetIncomingBuffer(const std::string& from);
   const std::string& GetIncomingBuffer(void);
-  
+
   void AppendToOutgoingBuffer(const std::string& from);
   void AppendToOutgoingBuffer(const char* from);
   void SetOutgoingBuffer(const std::string& from);
   void SetOutgoingBuffer(const char* from);
   const std::string& GetOutgoingBuffer(void);
-  
+
   void ClearOutgoingBuffer(void);
   void ClearIncomingBuffer(void);
 
@@ -47,14 +49,15 @@ public:
 
   void SetUsername(const std::string& from);
   const std::string& GetUsername(void);
-  
+
   void SetRealName(const std::string& from);
   const std::string& GetRealName(void);
 
   void FinishCapabilitiesNegotiation(void);
   void PendingCapabilitiesNegotiation(void);
   bool HasFinishedCapNeg(void);
-
 };
+
+} // namespace Core
 
 #endif

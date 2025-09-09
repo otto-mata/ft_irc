@@ -12,7 +12,7 @@ private:
 
 public:
   FindByNicknameInMap(const std::string& name);
-  User* operator()(std::pair<const int, User *>& pair);
+  Core::User* operator()(std::pair<const int, Core::User*>& pair);
 };
 
 
@@ -23,7 +23,7 @@ private:
 
 public:
   MatchNicknameInMap(const std::string& name);
-  bool operator()(std::pair<const std::string, User*>& pair);
+  bool operator()(std::pair<const int, Core::User*>& pair);
 };
 
 struct MatchNickname
@@ -33,7 +33,7 @@ private:
 
 public:
   MatchNickname(const std::string& name);
-  bool operator()(User* user);
+  bool operator()(Core::User* user);
 };
 
 struct MatchRealname
@@ -43,7 +43,7 @@ private:
 
 public:
   MatchRealname(const std::string& name);
-  bool operator()(User* user);
+  bool operator()(Core::User* user);
 };
 
 struct MatchUsername
@@ -53,7 +53,7 @@ private:
 
 public:
   MatchUsername(const std::string& name);
-  bool operator()(User* user);
+  bool operator()(Core::User* user);
 };
 
 };

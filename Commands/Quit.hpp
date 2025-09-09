@@ -7,7 +7,7 @@ namespace Commands {
 class Quit : public ExecutableCommand
 {
 public:
-  Quit(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Quit(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

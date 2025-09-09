@@ -1,10 +1,10 @@
 
 #include "Quit.hpp"
-#include "ExecutableCommand.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "../ExecutableCommand.hpp"
+#include "../Server.hpp"
+#include "../User.hpp"
 
-Commands::Quit::Quit(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw)
+Commands::Quit::Quit(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
 }

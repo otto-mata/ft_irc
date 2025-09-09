@@ -4,9 +4,10 @@
 #include "../ExecutableCommand.hpp"
 #include "../Server.hpp"
 #include "../User.hpp"
+#include "../Replies/Replies.hpp"
 
-Commands::Invite::Invite(User* Emitter,
-                         Server* Context,
+Commands::Invite::Invite(Core::User* Emitter,
+                         Core::Server* Context,
                          CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
@@ -15,8 +16,10 @@ Commands::Invite::Invite(User* Emitter,
 int
 Commands::Invite::ValidateInput(void)
 {
-  if (raw->Arguments().size() < 2)
-    return 1;
+  if (raw->Arguments().size() < 2) {
+    Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return 461; //! Invalid arguments count (not enough)
+  }
   if (!SetTargetUserFromContext(raw->Argument(0)))
     return 2; //! Target user does not exist
   if (!targetUser->FullyRegistered())

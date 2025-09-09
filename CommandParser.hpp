@@ -1,11 +1,15 @@
 #ifndef MESSAGE_COMMAND_HPP
 #define MESSAGE_COMMAND_HPP
+#include "Exceptions.hpp"
 #include <string>
 #include <vector>
-#include "Exceptions.hpp"
 
 class ExecutableCommand;
+namespace Core {
 class Server;
+class User;
+} // namespace Core
+
 namespace CommandParser {
 
 typedef enum
@@ -50,7 +54,6 @@ public:
   std::vector<Token> scanTokens(void);
 };
 
-
 class MessageCommand
 {
 private:
@@ -67,7 +70,9 @@ public:
   const std::string& Argument(size_t);
   const std::string& Trailing(void);
   std::string ToString(void);
-  ExecutableCommand* ToExecutable(User* Emitter, Server* Context);//CompileWarning("Not implemented yet.");
+  ExecutableCommand* ToExecutable(
+    Core::User* Emitter,
+    Core::Server* Context); // CompileWarning("Not implemented yet.");
 };
 
 } // namespace CommandParser

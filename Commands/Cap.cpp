@@ -2,10 +2,12 @@
 #include "Cap.hpp"
 #include "../CustomAlgo.hpp"
 #include "../ExecutableCommand.hpp"
+#include "../Replies/Replies.hpp"
 #include "../Server.hpp"
 #include "../User.hpp"
-Commands::Cap::Cap(User* Emitter,
-                   Server* Context,
+
+Commands::Cap::Cap(Core::User* Emitter,
+                   Core::Server* Context,
                    CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
@@ -14,8 +16,10 @@ Commands::Cap::Cap(User* Emitter,
 int
 Commands::Cap::ValidateInput(void)
 {
-  if (raw->Arguments().size() == 0)
-    return 1;
+  if (raw->Arguments().size() == 0) {
+    Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return 461; //! Invalid arguments count (not enough)
+  }
   const char* subs[] = {
     "LS", "LIST", "REQ", "ACK", "NAK", "END", "NEW", "DEL",
   };

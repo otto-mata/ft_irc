@@ -7,7 +7,7 @@ namespace Commands {
 class Join : public ExecutableCommand
 {
 public:
-  Join(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Join(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

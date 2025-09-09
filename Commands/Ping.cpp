@@ -1,10 +1,10 @@
 
 #include "Ping.hpp"
-#include "ExecutableCommand.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "../ExecutableCommand.hpp"
+#include "../Server.hpp"
+#include "../User.hpp"
 
-Commands::Ping::Ping(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw)
+Commands::Ping::Ping(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
 }

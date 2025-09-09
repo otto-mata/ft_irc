@@ -2,7 +2,7 @@
 #include "CustomAlgo.hpp"
 #include "UserPredicates.hpp"
 
-Channel::Channel()
+Core::Channel::Channel()
   : _name(DEFAULT_NAME)
   , _topic(DEFAULT_TOPIC)
   , _password(DEFAULT_PASSWORD)
@@ -14,7 +14,7 @@ Channel::Channel()
 {
 }
 
-Channel::Channel(const std::string& channel_name)
+Core::Channel::Channel(const std::string& channel_name)
   : _name(channel_name)
   , _topic(DEFAULT_TOPIC)
   , _password(DEFAULT_PASSWORD)
@@ -26,16 +26,16 @@ Channel::Channel(const std::string& channel_name)
 {
 }
 
-Channel::~Channel() {}
+Core::Channel::~Channel() {}
 
 const std::string&
-Channel::getName()
+Core::Channel::getName()
 {
   return _name;
 }
 
 int
-Channel::SetOwner(User* Owner)
+Core::Channel::SetOwner(Core::User* Owner)
 {
   if (_owner != 0)
     return 0;
@@ -44,14 +44,14 @@ Channel::SetOwner(User* Owner)
   return 1;
 }
 
-User*
-Channel::GetOwner(void)
+Core::User*
+Core::Channel::GetOwner(void)
 {
   return _owner;
 }
 
 uint8_t
-Channel::userMatch(const std::string& name)
+Core::Channel::userMatch(const std::string& name)
 {
   bool user = Algo::Iter::Contains(
     _users.begin(), _users.end(), UserPredicates::MatchNickname(name));
@@ -64,19 +64,19 @@ Channel::userMatch(const std::string& name)
 }
 
 bool
-Channel::isUser(const std::string& user_tofind)
+Core::Channel::isUser(const std::string& user_tofind)
 {
   return userMatch(user_tofind) & (1 << 2);
 }
 
 bool
-Channel::isUser(User* user_tofind)
+Core::Channel::isUser(Core::User* user_tofind)
 {
   return _users.count(user_tofind);
 }
 
 void
-Channel::addUser(User* user_toadd)
+Core::Channel::addUser(Core::User* user_toadd)
 {
   addUserWhitelist(user_toadd);
   if (!isUser(user_toadd)) {
@@ -85,7 +85,7 @@ Channel::addUser(User* user_toadd)
 }
 
 void
-Channel::removeUser(User* user_toremove)
+Core::Channel::removeUser(Core::User* user_toremove)
 {
   if (isUser(user_toremove)) {
     _users.erase(user_toremove);
@@ -93,19 +93,19 @@ Channel::removeUser(User* user_toremove)
 }
 
 bool
-Channel::isUserWhitelist(const std::string& user_tofind)
+Core::Channel::isUserWhitelist(const std::string& user_tofind)
 {
   return userMatch(user_tofind) & 1;
 }
 
 bool
-Channel::isUserWhitelist(User* user_tofind)
+Core::Channel::isUserWhitelist(Core::User* user_tofind)
 {
   return _whitelist.count(user_tofind);
 }
 
 void
-Channel::addUserWhitelist(User* user_toadd)
+Core::Channel::addUserWhitelist(Core::User* user_toadd)
 {
   if (!isUserWhitelist(user_toadd)) {
     _whitelist.insert(user_toadd);
@@ -113,7 +113,7 @@ Channel::addUserWhitelist(User* user_toadd)
 }
 
 void
-Channel::removeUserWhitelist(User* user_toremove)
+Core::Channel::removeUserWhitelist(Core::User* user_toremove)
 {
   if (isUserWhitelist(user_toremove)) {
     _whitelist.erase(user_toremove);
@@ -121,19 +121,19 @@ Channel::removeUserWhitelist(User* user_toremove)
 }
 
 bool
-Channel::isAdmin(const std::string& admin_tofind)
+Core::Channel::isAdmin(const std::string& admin_tofind)
 {
   return userMatch(admin_tofind) & (1 << 1);
 }
 
 bool
-Channel::isAdmin(User* admin_tofind)
+Core::Channel::isAdmin(Core::User* admin_tofind)
 {
   return _admins.count(admin_tofind);
 }
 
 void
-Channel::addAdmin(User* admin_toadd)
+Core::Channel::addAdmin(Core::User* admin_toadd)
 {
   addUser(admin_toadd);
   if (!isAdmin(admin_toadd)) {
@@ -142,7 +142,7 @@ Channel::addAdmin(User* admin_toadd)
 }
 
 void
-Channel::removeAdmin(User* admin_toadd)
+Core::Channel::removeAdmin(Core::User* admin_toadd)
 {
   if (isAdmin(admin_toadd)) {
     _admins.erase(admin_toadd);
@@ -150,92 +150,92 @@ Channel::removeAdmin(User* admin_toadd)
 }
 
 const std::string&
-Channel::getTopic()
+Core::Channel::getTopic()
 {
   return _topic;
 }
 
 void
-Channel::setTopic(const std::string& NewTopic)
+Core::Channel::setTopic(const std::string& NewTopic)
 {
   _topic = NewTopic;
 }
 
 bool
-Channel::tryPassword(const std::string& PasswordToTest)
+Core::Channel::tryPassword(const std::string& PasswordToTest)
 {
   return (_password == PasswordToTest);
 }
 
 void
-Channel::setPassword(const std::string& NewPassword)
+Core::Channel::setPassword(const std::string& NewPassword)
 {
   _password = NewPassword;
   setIsPasswordProtected(true);
 }
 
 size_t
-Channel::getUserLimit()
+Core::Channel::getUserLimit()
 {
   return _userLimit;
 }
 
 void
-Channel::setUserLimit(size_t NewUserLimit)
+Core::Channel::setUserLimit(size_t NewUserLimit)
 {
   _userLimit = NewUserLimit;
 }
 
 size_t
-Channel::getUserCount()
+Core::Channel::getUserCount()
 {
   return _users.size();
 }
 
 bool
-Channel::getIsInviteOnly()
+Core::Channel::getIsInviteOnly()
 {
   return _isInviteOnly;
 }
 
 void
-Channel::setIsInviteOnly(bool state)
+Core::Channel::setIsInviteOnly(bool state)
 {
   _isInviteOnly = state;
 }
 
 bool
-Channel::getIsTopicModifiable()
+Core::Channel::getIsTopicModifiable()
 {
   return _isTopicModifiable;
 }
 
 void
-Channel::setIsTopicModifiable(bool state)
+Core::Channel::setIsTopicModifiable(bool state)
 {
   _isTopicModifiable = state;
 }
 
 bool
-Channel::getIsUserLimited()
+Core::Channel::getIsUserLimited()
 {
   return _isUserLimited;
 }
 
 void
-Channel::setIsUserLimited(bool state)
+Core::Channel::setIsUserLimited(bool state)
 {
   _isInviteOnly = state;
 }
 
 bool
-Channel::getIsPasswordProtected()
+Core::Channel::getIsPasswordProtected()
 {
   return _isPasswordProtected;
 }
 
 void
-Channel::setIsPasswordProtected(bool state)
+Core::Channel::setIsPasswordProtected(bool state)
 {
   _isPasswordProtected = state;
 }
@@ -243,7 +243,7 @@ Channel::setIsPasswordProtected(bool state)
 /* Command calls */
 
 void
-Channel::joinUser(User* joining_user)
+Core::Channel::joinUser(Core::User* joining_user)
 {
   if (getIsPasswordProtected()) {
     std::cout << "Channel is password protected" << std::endl;
@@ -263,7 +263,7 @@ Channel::joinUser(User* joining_user)
 }
 
 void
-Channel::joinUser(User* joining_user, const std::string& entered_password)
+Core::Channel::joinUser(Core::User* joining_user, const std::string& entered_password)
 {
   if (getIsPasswordProtected() && !tryPassword(entered_password)) {
     std::cout << "Incorrect password" << std::endl;
@@ -283,13 +283,13 @@ Channel::joinUser(User* joining_user, const std::string& entered_password)
 }
 
 void
-Channel::partUser(User* parting_user)
+Core::Channel::partUser(Core::User* parting_user)
 {
   removeUser(parting_user);
 }
 
 void
-Channel::inviteUser(User* command_user, User* invited_user)
+Core::Channel::inviteUser(Core::User* command_user, Core::User* invited_user)
 {
   if (!isAdmin(command_user)) {
     std::cout << "invite command requires admin privileges" << std::endl;
@@ -303,7 +303,7 @@ Channel::inviteUser(User* command_user, User* invited_user)
 }
 
 void
-Channel::kickUser(User* command_user, User* kicked_user)
+Core::Channel::kickUser(Core::User* command_user, Core::User* kicked_user)
 {
   if (!isAdmin(command_user)) {
     std::cout << "kick command requires admin privileges" << std::endl;
@@ -318,8 +318,8 @@ Channel::kickUser(User* command_user, User* kicked_user)
 }
 
 void
-Channel::kickUser(User* command_user,
-                  User* kicked_user,
+Core::Channel::kickUser(Core::User* command_user,
+                  Core::User* kicked_user,
                   const std::string& kick_reason)
 {
   kickUser(command_user, kicked_user);
@@ -328,14 +328,14 @@ Channel::kickUser(User* command_user,
 }
 
 void
-Channel::activatePassword(const std::string& password_given)
+Core::Channel::activatePassword(const std::string& password_given)
 {
   setPassword(password_given);
   setIsPasswordProtected(true);
 }
 
 void
-Channel::modifyTopic(User* command_user, const std::string& new_topic)
+Core::Channel::modifyTopic(Core::User* command_user, const std::string& new_topic)
 {
   if (!getIsTopicModifiable() && isAdmin(command_user)) {
     std::cout << "topic is protected and requires admin privileges"
@@ -346,7 +346,7 @@ Channel::modifyTopic(User* command_user, const std::string& new_topic)
 }
 
 void
-Channel::Broadcast(const std::string& message, User* except)
+Core::Channel::Broadcast(const std::string& message, Core::User* except)
 {
   for (Users::iterator it = _users.begin(); it != _users.end(); ++it)
     if (*it != except)
@@ -354,7 +354,7 @@ Channel::Broadcast(const std::string& message, User* except)
 }
 
 const Users&
-Channel::GetUsers(void)
+Core::Channel::GetUsers(void)
 {
   return _users;
 }

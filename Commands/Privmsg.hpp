@@ -7,7 +7,7 @@ namespace Commands {
 class Privmsg : public ExecutableCommand
 {
 public:
-  Privmsg(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Privmsg(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

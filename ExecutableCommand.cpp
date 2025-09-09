@@ -4,8 +4,8 @@
 #include "Server.hpp"
 #include "User.hpp"
 
-ExecutableCommand::ExecutableCommand(User* Emitter,
-                                     Server* Context,
+ExecutableCommand::ExecutableCommand(Core::User* Emitter,
+                                     Core::Server* Context,
                                      CommandParser::MessageCommand* Raw)
   : emitter(Emitter)
   , ctx(Context)
@@ -15,10 +15,11 @@ ExecutableCommand::ExecutableCommand(User* Emitter,
   targetChannel = 0;
 }
 
-ExecutableCommand::~ExecutableCommand() {}
+ExecutableCommand::~ExecutableCommand() {
+}
 
 bool
-ExecutableCommand::SetTargetUser(User* Target)
+ExecutableCommand::SetTargetUser(Core::User* Target)
 {
   targetUser = Target;
   return targetUser != 0;
@@ -32,7 +33,7 @@ ExecutableCommand::SetTargetUserFromContext(const std::string& TargetName)
 }
 
 bool
-ExecutableCommand::SetTargetChannel(Channel* Target)
+ExecutableCommand::SetTargetChannel(Core::Channel* Target)
 {
   targetChannel = Target;
   return targetChannel != 0;

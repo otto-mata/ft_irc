@@ -49,7 +49,7 @@ public:
   bool In(T* arr, size_t n)
   {
     for (size_t i = 0; i < n; i++) {
-      if (arr[i] == o)
+      if (arr[i] == obj)
         return true;
     }
     return false;

@@ -1,10 +1,10 @@
 
 #include "Part.hpp"
-#include "ExecutableCommand.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "../ExecutableCommand.hpp"
+#include "../Server.hpp"
+#include "../User.hpp"
 
-Commands::Part::Part(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw)
+Commands::Part::Part(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
 }

@@ -16,7 +16,9 @@
 #define DEFAULT_IS_USER_LIMITED 0
 #define DEFAULT_IS_PASSWORD_PROTECTED 0
 
-typedef std::set<User*> Users;
+typedef std::set<Core::User*> Users;
+
+namespace Core {
 
 class Channel
 {
@@ -25,7 +27,7 @@ private:
   Users _users;
   Users _whitelist;
   Users _admins;
-  User* _owner;
+  Core::User* _owner;
   std::string _topic;
   std::string _password;
   size_t _userLimit;
@@ -45,23 +47,23 @@ public:
 
   const std::string& getName();
 
-  int SetOwner(User* Owner);
-  User* GetOwner(void);
+  int SetOwner(Core::User* Owner);
+  Core::User* GetOwner(void);
 
   bool isUser(const std::string& user_tofind);
-  bool isUser(User* user_tofind);
-  void addUser(User* user_toadd);
-  void removeUser(User* user_toremove);
+  bool isUser(Core::User* user_tofind);
+  void addUser(Core::User* user_toadd);
+  void removeUser(Core::User* user_toremove);
 
   bool isUserWhitelist(const std::string& user_tofind);
-  bool isUserWhitelist(User* user_tofind);
-  void addUserWhitelist(User* user_toadd);
-  void removeUserWhitelist(User* user_toremove);
+  bool isUserWhitelist(Core::User* user_tofind);
+  void addUserWhitelist(Core::User* user_toadd);
+  void removeUserWhitelist(Core::User* user_toremove);
 
   bool isAdmin(const std::string& admin_tofind);
-  bool isAdmin(User* admin_tofind);
-  void addAdmin(User* admin_toadd);
-  void removeAdmin(User* admin_toremove);
+  bool isAdmin(Core::User* admin_tofind);
+  void addAdmin(Core::User* admin_toadd);
+  void removeAdmin(Core::User* admin_toremove);
 
   const std::string& getTopic();
   void setTopic(const std::string& NewTopic);
@@ -87,19 +89,20 @@ public:
 
   /* Command calls */
 
-  void joinUser(User* joining_user);
-  void joinUser(User* joining_user, const std::string& entered_password);
-  void partUser(User* parting_user);
-  void inviteUser(User* command_user, User* invited_user);
-  void kickUser(User* command_user, User* kicked_user);
-  void kickUser(User* command_user,
-                User* kicked_user,
+  void joinUser(Core::User* joining_user);
+  void joinUser(Core::User* joining_user, const std::string& entered_password);
+  void partUser(Core::User* parting_user);
+  void inviteUser(Core::User* command_user, Core::User* invited_user);
+  void kickUser(Core::User* command_user, Core::User* kicked_user);
+  void kickUser(Core::User* command_user,
+                Core::User* kicked_user,
                 const std::string& kick_reason);
   void activatePassword(const std::string& password_given);
-  void modifyTopic(User* command_user, const std::string& new_topic);
-	void Broadcast(const std::string& m, User* except = 0);
+  void modifyTopic(Core::User* command_user, const std::string& new_topic);
+  void Broadcast(const std::string& m, Core::User* except = 0);
 
   const Users& GetUsers(void);
 };
 
+} // namespace Core
 #endif

@@ -7,7 +7,7 @@ namespace Commands {
 class Pass : public ExecutableCommand
 {
 public:
-  Pass(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Pass(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

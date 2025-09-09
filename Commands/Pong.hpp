@@ -7,7 +7,7 @@ namespace Commands {
 class Pong : public ExecutableCommand
 {
 public:
-  Pong(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Pong(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

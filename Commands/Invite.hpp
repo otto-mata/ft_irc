@@ -7,7 +7,7 @@ namespace Commands {
 class Invite : public ExecutableCommand
 {
 public:
-  Invite(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Invite(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

@@ -7,7 +7,7 @@ namespace Commands {
 class List : public ExecutableCommand
 {
 public:
-  List(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  List(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

@@ -1,7 +1,7 @@
 #include "User.hpp"
 #include <unistd.h>
 
-User::User(int fd)
+Core::User::User(int fd)
   : _fd(fd)
   , _isRegistered(false)
   , _capabilitiesNegotiationFinished(true)
@@ -14,31 +14,31 @@ User::User(int fd)
 {
 }
 
-User::~User(void)
+Core::User::~User(void)
 {
   close(_fd);
 }
 
 bool
-User::ReadyToSend(void)
+Core::User::ReadyToSend(void)
 {
   return _outgoingBuffer.size() > 0;
 }
 
 void
-User::SetIncomingBuffer(const std::string& from)
+Core::User::SetIncomingBuffer(const std::string& from)
 {
   _incomingBuffer = from;
 }
 
 const std::string&
-User::GetIncomingBuffer(void)
+Core::User::GetIncomingBuffer(void)
 {
   return _incomingBuffer;
 }
 
 void
-User::AppendToOutgoingBuffer(const std::string& from)
+Core::User::AppendToOutgoingBuffer(const std::string& from)
 {
   std::string buf(from);
   if (from.find("\r\n") == from.npos)
@@ -47,7 +47,7 @@ User::AppendToOutgoingBuffer(const std::string& from)
 }
 
 void
-User::AppendToOutgoingBuffer(const char* from)
+Core::User::AppendToOutgoingBuffer(const char* from)
 {
   std::string buf(from);
   if (buf.find("\r\n") == buf.npos)
@@ -56,98 +56,98 @@ User::AppendToOutgoingBuffer(const char* from)
 }
 
 int
-User::Fileno(void)
+Core::User::Fileno(void)
 {
   return _fd;
 }
 
 bool
-User::FullyRegistered(void)
+Core::User::FullyRegistered(void)
 {
   return _hasNick && _hasUser;
 }
 
 void
-User::SetOutgoingBuffer(const char* from)
+Core::User::SetOutgoingBuffer(const char* from)
 {
   _outgoingBuffer = from;
 }
 void
-User::SetOutgoingBuffer(const std::string& from)
+Core::User::SetOutgoingBuffer(const std::string& from)
 {
   _outgoingBuffer = from;
 }
 
 const std::string&
-User::GetOutgoingBuffer(void)
+Core::User::GetOutgoingBuffer(void)
 {
   return _outgoingBuffer;
 }
 
 void
-User::ClearOutgoingBuffer(void)
+Core::User::ClearOutgoingBuffer(void)
 {
   _outgoingBuffer.clear();
 }
 
 void
-User::ClearIncomingBuffer(void)
+Core::User::ClearIncomingBuffer(void)
 {
   _incomingBuffer.clear();
 }
 
 void
-User::SetNickname(const std::string& from)
+Core::User::SetNickname(const std::string& from)
 {
   _nickname = from;
   _hasNick = true;
 }
 
 const std::string&
-User::GetNickname(void)
+Core::User::GetNickname(void)
 {
   return _nickname;
 }
 
 void
-User::SetUsername(const std::string& from)
+Core::User::SetUsername(const std::string& from)
 {
   _username = from;
   _hasUser = true;
 }
 
 const std::string&
-User::GetUsername(void)
+Core::User::GetUsername(void)
 {
   return _username;
 }
 
 void
-User::SetRealName(const std::string& from)
+Core::User::SetRealName(const std::string& from)
 {
   _realname = from;
 }
 
 const std::string&
-User::GetRealName(void)
+Core::User::GetRealName(void)
 {
   return _realname;
 }
 
 void
-User::FinishCapabilitiesNegotiation(void)
+Core::User::FinishCapabilitiesNegotiation(void)
 {
   _capabilitiesNegotiationFinished = true;
 }
 
 void
-User::PendingCapabilitiesNegotiation(void)
+Core::User::PendingCapabilitiesNegotiation(void)
 {
   _capabilitiesNegotiationFinished = false;
 }
 
 bool
-User::HasFinishedCapNeg(void)
+Core::User::HasFinishedCapNeg(void)
 {
   return _capabilitiesNegotiationFinished == true;
 }

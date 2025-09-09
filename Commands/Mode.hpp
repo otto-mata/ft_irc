@@ -7,7 +7,7 @@ namespace Commands {
 class Mode : public ExecutableCommand
 {
 public:
-  Mode(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Mode(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

@@ -2,5 +2,5 @@
 
 int main()
 {
-  Server().Start();
+  Core::Server().Start();
 }

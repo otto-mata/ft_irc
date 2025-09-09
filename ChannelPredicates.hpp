@@ -12,7 +12,7 @@ private:
 
 public:
   FindByNameInMap(const std::string& name);
-  Channel* operator()(std::pair<const std::string, Channel*>& pair);
+  Core::Channel* operator()(std::pair<const std::string, Core::Channel*>& pair);
 };
 
 struct MatchNameInMap
@@ -22,7 +22,7 @@ private:
 
 public:
   MatchNameInMap(const std::string& name);
-  bool operator()(std::pair<const std::string, Channel*>& pair);
+  bool operator()(std::pair<const std::string, Core::Channel*>& pair);
 };
 };
 

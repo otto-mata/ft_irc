@@ -3,8 +3,8 @@
 #include "Server.hpp"
 #include "UserPredicates.hpp"
 
-User*
-Server::FindUserByNickname(const std::string& Nickname)
+Core::User*
+Core::Server::FindUserByNickname(const std::string& Nickname)
 {
   return Algo::Iter::FindFirst<UserMap::iterator,
                                UserPredicates::FindByNicknameInMap,
@@ -12,8 +12,8 @@ Server::FindUserByNickname(const std::string& Nickname)
     users.begin(), users.end(), UserPredicates::FindByNicknameInMap(Nickname));
 }
 
-Channel*
-Server::FindChannelByName(const std::string& Name)
+Core::Channel*
+Core::Server::FindChannelByName(const std::string& Name)
 {
   return Algo::Iter::FindFirst<ChannelMap::iterator,
                                ChannelPredicates::FindByNameInMap,
@@ -22,25 +22,25 @@ Server::FindChannelByName(const std::string& Name)
 }
 
 bool
-Server::MatchUserByNickname(const std::string& Nickname)
+Core::Server::MatchUserByNickname(const std::string& Nickname)
 {
   return Algo::Iter::Contains(
     users.begin(), users.end(), UserPredicates::MatchNicknameInMap(Nickname));
 }
 
 bool
-Server::MatchChannelByName(const std::string& Name)
+Core::Server::MatchChannelByName(const std::string& Name)
 {
   return Algo::Iter::Contains(
     channels.begin(), channels.end(), ChannelPredicates::MatchNameInMap(Name));
 }
 
-Channel*
-Server::CreateChannel(const std::string& Name)
+Core::Channel*
+Core::Server::CreateChannel(const std::string& Name)
 {
   if (MatchChannelByName(Name))
     return 0;
-  Channel* newChannel = new Channel(Name);
+  Core::Channel* newChannel = new Channel(Name);
   if (!newChannel)
     return 0;
   channels[Name] = newChannel;
@@ -48,7 +48,7 @@ Server::CreateChannel(const std::string& Name)
 }
 
 int
-Server::RemoveChannel(Channel* Chan)
+Core::Server::RemoveChannel(Core::Channel* Chan)
 {
   if (!Chan)
     return (1);

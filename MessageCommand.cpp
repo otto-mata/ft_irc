@@ -101,7 +101,7 @@ CommandParser::MessageCommand::ToString(void)
 }
 
 ExecutableCommand*
-CommandParser::MessageCommand::ToExecutable(User* Emitter, Server* Context)
+CommandParser::MessageCommand::ToExecutable(Core::User* Emitter, Core::Server* Context)
 {
   switch (Name()[0])
   {
@@ -166,4 +166,5 @@ CommandParser::MessageCommand::ToExecutable(User* Emitter, Server* Context)
     return 0;
     break;
   }
+  return 0;
 }

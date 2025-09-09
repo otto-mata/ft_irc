@@ -25,13 +25,18 @@ split(std::string s, const std::string& delimiter)
 }
 
 void
-handleInput(User* user, Server* ctx)
+handleInput(Core::User* user, Core::Server* ctx)
 {
   std::vector<std::string> cmds = split(user->GetIncomingBuffer(), "\r\n");
   for (std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end();
        ++it) {
-    CommandParser::MessageCommand cmd(*it);
-    cmd.ToExecutable(user, ctx);
+    CommandParser::MessageCommand msgCmd(*it);
+    ExecutableCommand* cmd = msgCmd.ToExecutable(user, ctx);
+    if (!cmd)
+      continue;
+    if (cmd->ValidateInput() == Commands::VALID_ARGS)
+      cmd->Execute();
+    delete cmd;
   }
   user->ClearIncomingBuffer();
 }
@@ -45,14 +50,14 @@ handleInput(User* user, Server* ctx)
  * @param wfds Write fd set
  */
 static void
-manageUserDataReception(UserMap& users,
-                        BufferMap& buffers,
-                        std::list<User*>& disconnected,
+manageUserDataReception(Core::UserMap& users,
+                        Core::BufferMap& buffers,
+                        std::list<Core::User*>& disconnected,
                         fd_set* rfds,
                         fd_set* wfds,
-                        Server* ctx)
+                        Core::Server* ctx)
 {
-  for (UserMap::iterator it = users.begin(); it != users.end(); ++it) {
+  for (Core::UserMap::iterator it = users.begin(); it != users.end(); ++it) {
     if (FD_ISSET(it->first, rfds)) {
       char buffer[PKT_SIZE + 1];
       ssize_t rb = recv(it->first, buffer, PKT_SIZE, 0);
@@ -90,7 +95,7 @@ manageUserDataReception(UserMap& users,
  * @param rfds Read fd set
  */
 static void
-acceptNewClient(int serverFd, UserMap& users, fd_set* rfds)
+acceptNewClient(int serverFd, Core::UserMap& users, fd_set* rfds)
 {
 
   SockAddrIn client;
@@ -101,7 +106,7 @@ acceptNewClient(int serverFd, UserMap& users, fd_set* rfds)
     if (cfd < 0) {
       throw std::runtime_error("Could not accept connection to server");
     }
-    users[cfd] = new User(cfd);
+    users[cfd] = new Core::User(cfd);
   }
 }
 
@@ -114,12 +119,12 @@ acceptNewClient(int serverFd, UserMap& users, fd_set* rfds)
  * @param wfds Write fd set
  */
 static void
-prepareClientFdsForSelect(UserMap& users,
+prepareClientFdsForSelect(Core::UserMap& users,
                           int& maxfd,
                           fd_set* rfds,
                           fd_set* wfds)
 {
-  for (UserMap::iterator it = users.begin(); it != users.end(); ++it) {
+  for (Core::UserMap::iterator it = users.begin(); it != users.end(); ++it) {
     FD_SET(it->first, rfds);
     if (it->second->ReadyToSend())
       FD_SET(it->first, wfds);
@@ -135,9 +140,9 @@ prepareClientFdsForSelect(UserMap& users,
  */
 
 static void
-handleClientDisconnection(UserMap& users, std::list<User*>& disconnected)
+handleClientDisconnection(Core::UserMap& users, std::list<Core::User*>& disconnected)
 {
-  for (std::list<User*>::iterator it = disconnected.begin();
+  for (std::list<Core::User*>::iterator it = disconnected.begin();
        it != disconnected.end();
        it++) {
     users.erase((*it)->Fileno());
@@ -146,7 +151,7 @@ handleClientDisconnection(UserMap& users, std::list<User*>& disconnected)
 }
 
 void
-Server::Start(void)
+Core::Server::Start(void)
 {
   fd_set rfds;
   fd_set wfds;
@@ -155,7 +160,7 @@ Server::Start(void)
   tv.tv_sec = 0;
   tv.tv_usec = (long)(POLL_INTERVAL * 100000);
   int fdmax;
-  std::list<User*> disconnected;
+  std::list<Core::User*> disconnected;
 
   while (!mustStop) {
     FD_ZERO(&rfds);

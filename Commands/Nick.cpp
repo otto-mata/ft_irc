@@ -1,11 +1,11 @@
 
 #include "Nick.hpp"
-#include "ExecutableCommand.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "../ExecutableCommand.hpp"
+#include "../Server.hpp"
+#include "../User.hpp"
 
-Commands::Nick::Nick(User* Emitter,
-                     Server* Context,
+Commands::Nick::Nick(Core::User* Emitter,
+                     Core::Server* Context,
                      CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
@@ -28,6 +28,7 @@ Commands::Nick::ValidateInput(void)
 int
 Commands::Nick::Execute(void)
 {
+  
   const std::string& name = raw->Argument(0);
   emitter->SetNickname(name);
   if (emitter->FullyRegistered())

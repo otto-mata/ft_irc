@@ -6,9 +6,9 @@ UserPredicates::FindByNicknameInMap::FindByNicknameInMap(
 {
 }
 
-User*
+Core::User*
 UserPredicates::FindByNicknameInMap::operator()(
-  std::pair<const int, User*>& pair)
+  std::pair<const int, Core::User*>& pair)
 {
   return _name == pair.second->GetNickname() ? pair.second : 0;
 }
@@ -19,7 +19,7 @@ UserPredicates::MatchNickname::MatchNickname(const std::string& name)
 }
 
 bool
-UserPredicates::MatchNickname::operator()(User* user)
+UserPredicates::MatchNickname::operator()(Core::User* user)
 {
   return _name == user->GetNickname();
 }
@@ -30,7 +30,7 @@ UserPredicates::MatchUsername::MatchUsername(const std::string& name)
 }
 
 bool
-UserPredicates::MatchUsername::operator()(User* user)
+UserPredicates::MatchUsername::operator()(Core::User* user)
 {
   return _name == user->GetUsername();
 }
@@ -41,7 +41,7 @@ UserPredicates::MatchRealname::MatchRealname(const std::string& name)
 }
 
 bool
-UserPredicates::MatchRealname::operator()(User* user)
+UserPredicates::MatchRealname::operator()(Core::User* user)
 {
   return _name == user->GetRealName();
 }
@@ -53,7 +53,7 @@ UserPredicates::MatchNicknameInMap::MatchNicknameInMap(const std::string& name)
 
 bool
 UserPredicates::MatchNicknameInMap::operator()(
-  std::pair<const std::string, User*>& pair)
+  std::pair<const int, Core::User*>& pair)
 {
   return _name == pair.second->GetNickname();
 }

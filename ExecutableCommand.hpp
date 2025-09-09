@@ -3,38 +3,42 @@
 #include "CommandParser.hpp"
 #include <string>
 
+namespace Core {
+
 class User;
 class Channel;
 class Server;
+
+} // namespace Core
 
 namespace Commands {
 typedef enum
 {
   VALID_ARGS = 0
-};
+} ReturnCodes;
 } // namespace Commands
 
 class ExecutableCommand
 {
 protected:
-  User* emitter;
-  User* targetUser;
-  Channel* targetChannel;
-  Server* ctx;
+  Core::User* emitter;
+  Core::User* targetUser;
+  Core::Channel* targetChannel;
+  Core::Server* ctx;
   CommandParser::MessageCommand* raw;
 
 public:
-  ExecutableCommand(User* Emitter,
-                    Server* Context,
+  ExecutableCommand(Core::User* Emitter,
+                    Core::Server* Context,
                     CommandParser::MessageCommand* raw);
-  ~ExecutableCommand();
+  virtual ~ExecutableCommand();
 
   virtual int ValidateInput() = 0;
   virtual int Execute() = 0;
 
-  bool SetTargetUser(User* Target);
+  bool SetTargetUser(Core::User* Target);
   bool SetTargetUserFromContext(const std::string& TargetName);
-  bool SetTargetChannel(Channel* Target);
+  bool SetTargetChannel(Core::Channel* Target);
   bool SetTargetChannelFromContext(const std::string& TargetName);
 };
 

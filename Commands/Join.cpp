@@ -4,9 +4,10 @@
 #include "../ExecutableCommand.hpp"
 #include "../Server.hpp"
 #include "../User.hpp"
+#include "../Replies/Replies.hpp"
 
-Commands::Join::Join(User* Emitter,
-                     Server* Context,
+Commands::Join::Join(Core::User* Emitter,
+                     Core::Server* Context,
                      CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
@@ -15,8 +16,10 @@ Commands::Join::Join(User* Emitter,
 int
 Commands::Join::ValidateInput(void)
 {
-  if (raw->Arguments().size() == 0)
-    return 1; //! Invalid arguments count (no args)
+  if (raw->Arguments().size() == 0) {
+    Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return 461; //! Invalid arguments count (not enough)
+  }
   if (raw->Argument(0).find(',') == std::string::npos) {
     if (!SetTargetChannelFromContext(raw->Argument(0))) {
       SetTargetChannel(0);
@@ -31,7 +34,7 @@ int
 Commands::Join::Execute(void)
 {
   if (targetChannel == 0) {
-    Channel* tChan = ctx->CreateChannel(raw->Argument(0));
+    Core::Channel* tChan = ctx->CreateChannel(raw->Argument(0));
     if (tChan == 0)
       return 1; //! Error during creation
     tChan->SetOwner(emitter);
@@ -65,4 +68,5 @@ Commands::Join::Execute(void)
   }
   welcomeBuffer += "\r\n";
   targetChannel->Broadcast(welcomeBuffer);
+  return 0;
 }

@@ -7,7 +7,7 @@ namespace Commands {
 class Whois : public ExecutableCommand
 {
 public:
-  Whois(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Whois(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

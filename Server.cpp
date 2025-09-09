@@ -5,7 +5,7 @@
 #include <list>
 #include <unistd.h>
 
-Server::Server(unsigned short p)
+Core::Server::Server(unsigned short p)
 {
   port = htons(p);
   fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
@@ -34,5 +34,5 @@ Server::Server(unsigned short p)
   std::cout << "Server started on port " << p << "." << std::endl;
 }
 
-Server::~Server() {}
+Core::Server::~Server() {}
 

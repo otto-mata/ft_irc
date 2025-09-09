@@ -7,7 +7,7 @@ namespace Commands {
 class Notice : public ExecutableCommand
 {
 public:
-  Notice(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Notice(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

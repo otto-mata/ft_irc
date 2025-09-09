@@ -1,10 +1,10 @@
 
 #include "Topic.hpp"
-#include "ExecutableCommand.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "../ExecutableCommand.hpp"
+#include "../Server.hpp"
+#include "../User.hpp"
 
-Commands::Topic::Topic(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw)
+Commands::Topic::Topic(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
 }

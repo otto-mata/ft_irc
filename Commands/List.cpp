@@ -1,10 +1,10 @@
 
 #include "List.hpp"
-#include "ExecutableCommand.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "../ExecutableCommand.hpp"
+#include "../Server.hpp"
+#include "../User.hpp"
 
-Commands::List::List(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw)
+Commands::List::List(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
 }

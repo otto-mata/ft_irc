@@ -1,10 +1,10 @@
 
 #include "Mode.hpp"
-#include "ExecutableCommand.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "../ExecutableCommand.hpp"
+#include "../Server.hpp"
+#include "../User.hpp"
 
-Commands::Mode::Mode(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw)
+Commands::Mode::Mode(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
 }

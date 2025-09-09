@@ -1,10 +1,10 @@
 
 #include "Notice.hpp"
-#include "ExecutableCommand.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "../ExecutableCommand.hpp"
+#include "../Server.hpp"
+#include "../User.hpp"
 
-Commands::Notice::Notice(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw)
+Commands::Notice::Notice(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
 }

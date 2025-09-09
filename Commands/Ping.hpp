@@ -7,7 +7,7 @@ namespace Commands {
 class Ping : public ExecutableCommand
 {
 public:
-  Ping(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Ping(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };

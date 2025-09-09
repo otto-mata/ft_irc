@@ -4,9 +4,10 @@
 #include "../ExecutableCommand.hpp"
 #include "../Server.hpp"
 #include "../User.hpp"
+#include "../Replies/Replies.hpp"
 
-Commands::Kick::Kick(User* Emitter,
-                     Server* Context,
+Commands::Kick::Kick(Core::User* Emitter,
+                     Core::Server* Context,
                      CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
@@ -15,8 +16,10 @@ Commands::Kick::Kick(User* Emitter,
 int
 Commands::Kick::ValidateInput(void)
 {
-  if (raw->Arguments().size() < 2)
-    return 1; //! Invalid arguments count (not enough)
+  if (raw->Arguments().size() < 2) {
+    Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return 461; //! Invalid arguments count (not enough)
+  }
   if (!SetTargetUserFromContext(raw->Argument(0)))
     return 2; //! Target user does not exist
   if (!targetUser->FullyRegistered())

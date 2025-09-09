@@ -7,7 +7,7 @@ namespace Commands {
 class Kick : public ExecutableCommand
 {
 public:
-  Kick(User* Emitter, Server* Context, CommandParser::MessageCommand* Raw);
+  Kick(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw);
   int ValidateInput(void);
   int Execute(void);
 };
