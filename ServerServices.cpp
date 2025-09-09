@@ -35,6 +35,18 @@ Core::Server::MatchChannelByName(const std::string& Name)
     channels.begin(), channels.end(), ChannelPredicates::MatchNameInMap(Name));
 }
 
+bool
+Core::Server::TryPassword(const std::string& attempt)
+{
+  return attempt == password;
+}
+
+const std::string&
+Core::Server::Hostname(void)
+{
+  return hostName;
+}
+
 Core::Channel*
 Core::Server::CreateChannel(const std::string& Name)
 {

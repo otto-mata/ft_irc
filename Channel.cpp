@@ -24,6 +24,7 @@ Core::Channel::Channel(const std::string& channel_name)
   , _isUserLimited(DEFAULT_IS_USER_LIMITED)
   , _isPasswordProtected(DEFAULT_IS_PASSWORD_PROTECTED)
 {
+  _owner = 0;
 }
 
 Core::Channel::~Channel() {}
@@ -350,7 +351,7 @@ Core::Channel::Broadcast(const std::string& message, Core::User* except)
 {
   for (Users::iterator it = _users.begin(); it != _users.end(); ++it)
     if (*it != except)
-      (*it)->SetOutgoingBuffer(message);
+      (*it)->AppendToOutgoingBuffer(message);
 }
 
 const Users&

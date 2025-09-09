@@ -16,6 +16,7 @@
 #include "Privmsg.hpp"
 #include "Quit.hpp"
 #include "Topic.hpp"
+#include "User.hpp"
 #include "Whois.hpp"
 #include "Whowas.hpp"
 #endif

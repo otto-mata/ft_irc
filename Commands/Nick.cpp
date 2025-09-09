@@ -28,11 +28,8 @@ Commands::Nick::ValidateInput(void)
 int
 Commands::Nick::Execute(void)
 {
-  
   const std::string& name = raw->Argument(0);
   emitter->SetNickname(name);
-  if (emitter->FullyRegistered())
-    emitter->AppendToOutgoingBuffer(":localhost 001 " + emitter->GetNickname() +
-                                    " :Welcome to the IRC Server\r\n");
+  emitter->CompletedRegistrationRoutine(ctx->Hostname());
   return 0;
 }

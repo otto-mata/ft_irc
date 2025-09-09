@@ -34,7 +34,9 @@ public:
 
   void SetIncomingBuffer(const std::string& from);
   const std::string& GetIncomingBuffer(void);
-
+  
+  std::string FullIdentityString(void);
+  
   void AppendToOutgoingBuffer(const std::string& from);
   void AppendToOutgoingBuffer(const char* from);
   void SetOutgoingBuffer(const std::string& from);
@@ -56,6 +58,15 @@ public:
   void FinishCapabilitiesNegotiation(void);
   void PendingCapabilitiesNegotiation(void);
   bool HasFinishedCapNeg(void);
+
+  void CompletedRegistrationRoutine(const std::string& from);
+  
+  void SetPasswordReceived(bool);
+  void SetPasswordValid(bool);
+  bool HasSentValidPassword(void);
+  
+  void ResolveHostname(void);
+  const std::string& GetHostname(void);
 };
 
 } // namespace Core

@@ -6,6 +6,8 @@
 #include <unistd.h>
 
 Core::Server::Server(unsigned short p)
+  : password("password")
+  , hostName("localhost")
 {
   port = htons(p);
   fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
@@ -35,4 +37,3 @@ Core::Server::Server(unsigned short p)
 }
 
 Core::Server::~Server() {}
-

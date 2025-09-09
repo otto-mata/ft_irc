@@ -4,7 +4,9 @@
 #include <string>
 
 namespace Replies {
-void SendReply461ToUserForCommand(Core::User* user, const std::string& cmdName);
+int SendReply461ToUserForCommand(Core::User* user, const std::string& cmdName);
+int SendReply462ToUser(Core::User* user);
+int SendReply401ToUserForNickname(Core::User* user, const std::string& nick);
 } // namespace Replies
 
 #endif

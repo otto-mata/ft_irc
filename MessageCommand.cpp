@@ -100,6 +100,12 @@ CommandParser::MessageCommand::ToString(void)
   return s;
 }
 
+bool
+CommandParser::MessageCommand::HasArguments(void)
+{
+  return params != 0;
+}
+
 ExecutableCommand*
 CommandParser::MessageCommand::ToExecutable(Core::User* Emitter, Core::Server* Context)
 {
@@ -154,6 +160,10 @@ CommandParser::MessageCommand::ToExecutable(Core::User* Emitter, Core::Server* C
   case 'T':
     if (Name() == "TOPIC")
       return new Commands::Topic(Emitter, Context, this);
+    break;
+  case 'U':
+    if (Name() == "USER")
+      return new Commands::User(Emitter, Context, this);
     break;
   case 'W':
     if (Name() == "WHOIS")

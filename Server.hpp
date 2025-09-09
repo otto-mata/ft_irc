@@ -28,6 +28,7 @@ private:
   unsigned short port;
   int fd;
   bool mustStop;
+  std::string password;
   SockAddrIn in;
   Core::UserMap users;
   Core::ChannelMap channels;
@@ -49,6 +50,10 @@ public:
 
   bool MatchUserByNickname(const std::string& Nickname);
   bool MatchChannelByName(const std::string& Name);
+  
+  bool TryPassword(const std::string& attempt);
+
+  const std::string& Hostname(void);
 };
 
 }

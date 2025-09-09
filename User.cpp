@@ -1,4 +1,9 @@
 #include "User.hpp"
+#include <arpa/inet.h>
+#include <iostream>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 Core::User::User(int fd)
@@ -37,6 +42,12 @@ Core::User::GetIncomingBuffer(void)
   return _incomingBuffer;
 }
 
+std::string
+Core::User::FullIdentityString(void)
+{
+  return std::string(GetNickname() + "!" + GetUsername() + "@" + GetHostname());
+}
+
 void
 Core::User::AppendToOutgoingBuffer(const std::string& from)
 {
@@ -64,7 +75,7 @@ Core::User::Fileno(void)
 bool
 Core::User::FullyRegistered(void)
 {
-  return _hasNick && _hasUser;
+  return _hasNick && _hasUser && HasFinishedCapNeg() && HasSentValidPassword();
 }
 
 void
@@ -150,4 +161,61 @@ bool
 Core::User::HasFinishedCapNeg(void)
 {
   return _capabilitiesNegotiationFinished == true;
+}
+
+void
+Core::User::CompletedRegistrationRoutine(const std::string& from)
+{
+  if (!FullyRegistered())
+    return;
+  std::cout << "OK REG" << std::endl;
+  AppendToOutgoingBuffer(":" + from + " 001 " + GetNickname() +
+                         " :Hello! Welcome to IRC");
+  AppendToOutgoingBuffer(":" + from + " 002 " + GetNickname() +
+                         " :The current server is " + from);
+  AppendToOutgoingBuffer(":" + from + " 003 " + GetNickname() +
+                         " :This server was created at some point");
+  AppendToOutgoingBuffer(":" + from + " 004 " + GetNickname() + " " + from +
+                         " ft_irc v0.0.1a");
+}
+
+void
+Core::User::SetPasswordReceived(bool state)
+{
+  _hasSentPassword = state;
+}
+
+void
+Core::User::SetPasswordValid(bool state)
+{
+  _isValidPassword = state;
+}
+
+bool
+Core::User::HasSentValidPassword(void)
+{
+  return _hasSentPassword && _isValidPassword;
+}
+
+void
+Core::User::ResolveHostname(void)
+{
+  struct sockaddr_in addr;
+  socklen_t len = sizeof(addr);
+
+  if (getpeername(_fd, (struct sockaddr*)&addr, &len) == -1)
+    return;
+  _ipAdress = std::string(inet_ntoa(addr.sin_addr));
+  struct hostent* host =
+    gethostbyaddr((const void*)&addr.sin_addr, sizeof(addr.sin_addr), AF_INET);
+  if (host)
+    _hostname = std::string(host->h_name);
+  else
+    _hostname = _ipAdress;
+}
+
+const std::string&
+Core::User::GetHostname(void)
+{
+  return _hostname;
 }

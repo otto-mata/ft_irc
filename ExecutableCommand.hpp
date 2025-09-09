@@ -2,7 +2,8 @@
 #define EXECUTABLE_COMMAND_HPP
 #include "CommandParser.hpp"
 #include <string>
-
+#include <iostream>
+#define TRACE_CALL  std::cout << __PRETTY_FUNCTION__ <<" called." << std::endl;
 namespace Core {
 
 class User;

@@ -31,6 +31,7 @@ handleInput(Core::User* user, Core::Server* ctx)
   for (std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end();
        ++it) {
     CommandParser::MessageCommand msgCmd(*it);
+    std::cout << msgCmd.ToString() << std::endl;
     ExecutableCommand* cmd = msgCmd.ToExecutable(user, ctx);
     if (!cmd)
       continue;
@@ -75,12 +76,14 @@ manageUserDataReception(Core::UserMap& users,
         buffers[it->first].clear();
       }
     }
-    std::cout << it->second->GetIncomingBuffer() << std::endl;
     handleInput(it->second, ctx);
+    if (it->second->ReadyToSend())
+      FD_SET(it->first, wfds);
     if (FD_ISSET(it->first, wfds)) {
       const std::string& userSendBuffer = it->second->GetOutgoingBuffer();
       ssize_t wb =
         send(it->first, userSendBuffer.c_str(), userSendBuffer.size(), 0);
+        std::cout << ">> " + it->second->GetOutgoingBuffer() << std::endl;
       it->second->ClearOutgoingBuffer();
       if (wb < 0)
         throw std::runtime_error("Error while receiving data from client.");

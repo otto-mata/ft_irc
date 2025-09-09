@@ -70,6 +70,7 @@ public:
   const std::string& Argument(size_t);
   const std::string& Trailing(void);
   std::string ToString(void);
+  bool HasArguments(void);
   ExecutableCommand* ToExecutable(
     Core::User* Emitter,
     Core::Server* Context); // CompileWarning("Not implemented yet.");
