@@ -15,7 +15,7 @@ Commands::User::User(Core::User* Emitter,
 int
 Commands::User::ValidateInput(void)
 {
-  if (raw->Arguments().size() != 3 || raw->Trailing().empty())
+  if (raw->Arguments().size() != 3 || !raw->HasTrailing())
     return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
   return 0;
 }
