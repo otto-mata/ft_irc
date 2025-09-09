@@ -41,21 +41,42 @@ Core::Server::TryPassword(const std::string& attempt)
   return attempt == password;
 }
 
+void
+Core::Server::RemoveUserFromServer(Core::User* user)
+{
+  for (Core::ChannelMap::iterator it = channels.begin(); it != channels.end();
+       ++it) {
+    if (it->second->isUser(user))
+      it->second->removeUser(user);
+  }
+  user->MarkForDeletion();
+}
+
 const std::string&
 Core::Server::Hostname(void)
 {
   return hostName;
 }
 
+void
+Core::Server::StopServer(void)
+{
+  mustStop = true;
+}
+
 Core::Channel*
 Core::Server::CreateChannel(const std::string& Name)
 {
-  if (MatchChannelByName(Name))
+  size_t pos = 0;
+  if (Name.find('#') == 0)
+    pos++;
+  std::string noHashtagName = Name.substr(pos);
+  if (MatchChannelByName(noHashtagName))
     return 0;
-  Core::Channel* newChannel = new Channel(Name);
+  Core::Channel* newChannel = new Channel(noHashtagName);
   if (!newChannel)
     return 0;
-  channels[Name] = newChannel;
+  channels[noHashtagName] = newChannel;
   return newChannel;
 }
 

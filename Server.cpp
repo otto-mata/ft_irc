@@ -5,6 +5,8 @@
 #include <list>
 #include <unistd.h>
 
+bool Core::Server::mustStop = false;
+
 Core::Server::Server(unsigned short p)
   : password("password")
   , hostName("localhost")

@@ -15,6 +15,7 @@ private:
   std::string _username;
   std::string _realname;
   std::string _ipAdress;
+  std::string _quitMessage;
   bool _isRegistered;
   bool _hasNick;
   bool _hasUser;
@@ -23,6 +24,7 @@ private:
   bool _isValidPassword;
   bool _disconnected;
   bool _capabilitiesNegotiationFinished;
+  bool _toDelete;
 
 public:
   User(int fd);
@@ -67,6 +69,11 @@ public:
   
   void ResolveHostname(void);
   const std::string& GetHostname(void);
+
+  void SetQuitMessage(const std::string& msg);
+  const std::string& GetQuitMessage(void);
+  void MarkForDeletion(void);
+  bool MustBeDeleted(void);
 };
 
 } // namespace Core

@@ -106,6 +106,12 @@ CommandParser::MessageCommand::HasArguments(void)
   return params != 0;
 }
 
+bool
+CommandParser::MessageCommand::HasTrailing(void)
+{
+  return trailing != 0;
+}
+
 ExecutableCommand*
 CommandParser::MessageCommand::ToExecutable(Core::User* Emitter, Core::Server* Context)
 {

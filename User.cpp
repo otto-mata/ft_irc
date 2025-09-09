@@ -8,6 +8,7 @@
 
 Core::User::User(int fd)
   : _fd(fd)
+  , _quitMessage("Left the chat")
   , _isRegistered(false)
   , _capabilitiesNegotiationFinished(true)
   , _hasNick(false)
@@ -16,6 +17,7 @@ Core::User::User(int fd)
   , _hasSentPassword(false)
   , _isValidPassword(false)
   , _disconnected(true)
+  , _toDelete(false)
 {
 }
 
@@ -177,6 +179,7 @@ Core::User::CompletedRegistrationRoutine(const std::string& from)
                          " :This server was created at some point");
   AppendToOutgoingBuffer(":" + from + " 004 " + GetNickname() + " " + from +
                          " ft_irc v0.0.1a");
+  _disconnected = false;
 }
 
 void
@@ -218,4 +221,28 @@ const std::string&
 Core::User::GetHostname(void)
 {
   return _hostname;
+}
+
+void
+Core::User::SetQuitMessage(const std::string& msg)
+{
+  _quitMessage = msg;
+}
+
+const std::string&
+Core::User::GetQuitMessage(void)
+{
+  return _quitMessage;
+}
+
+void
+Core::User::MarkForDeletion(void)
+{
+  _toDelete = true;
+}
+
+bool
+Core::User::MustBeDeleted(void)
+{
+  return _toDelete;
 }

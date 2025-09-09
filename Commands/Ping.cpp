@@ -21,7 +21,8 @@ Commands::Ping::ValidateInput(void)
 int
 Commands::Ping::Execute(void)
 {
-  if (!raw->HasArguments() || raw->Arguments().empty()) {
+  if (!raw->HasArguments() || raw->Arguments().empty() ||
+      (!raw->Arguments().empty() && raw->Argument(0) == ctx->Hostname())) {
     emitter->AppendToOutgoingBuffer(":" + ctx->Hostname() + " PONG " +
                                     emitter->GetNickname());
     return (0);

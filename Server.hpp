@@ -27,15 +27,15 @@ class Server
 private:
   unsigned short port;
   int fd;
-  bool mustStop;
   std::string password;
   SockAddrIn in;
   Core::UserMap users;
   Core::ChannelMap channels;
   Core::BufferMap buffers;
   std::string hostName;
-
+  
 public:
+  static bool mustStop;
   Server(unsigned short p = 6667);
   ~Server(void);
 
@@ -52,8 +52,10 @@ public:
   bool MatchChannelByName(const std::string& Name);
   
   bool TryPassword(const std::string& attempt);
+  void RemoveUserFromServer(Core::User* user);
 
   const std::string& Hostname(void);
+  static void StopServer(void);
 };
 
 }

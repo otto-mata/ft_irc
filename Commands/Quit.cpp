@@ -18,5 +18,6 @@ Commands::Quit::ValidateInput(void)
 int
 Commands::Quit::Execute(void)
 {
+  ctx->RemoveUserFromServer(emitter);
   return 0;
 }

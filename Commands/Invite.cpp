@@ -24,7 +24,7 @@ Commands::Invite::ValidateInput(void)
     return 2; //! Target user does not exist
   if (!targetUser->FullyRegistered())
     return 3; //! Target user is not registered to the server
-  if (raw->Argument(1).find('#') != 0)
+  if (raw->Argument(1).at(0) != '#')
     return 4; //! Invalid target channel name (must start with '#')
   if (!SetTargetChannelFromContext(raw->Argument(1)))
     return 5; //! Target channel does not exist

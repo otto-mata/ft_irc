@@ -44,7 +44,7 @@ Commands::Kick::Execute(void)
   std::string broadcast = ":" + emitter->GetNickname() + " KICK #" +
                           targetChannel->getName() + " " +
                           targetUser->GetNickname();
-  if (raw->Trailing().size() > 0)
+  if (raw->HasTrailing())
     broadcast += " :" + raw->Trailing();
   targetChannel->Broadcast(broadcast);
   targetChannel->removeUser(targetUser);

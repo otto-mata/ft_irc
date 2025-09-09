@@ -2,6 +2,7 @@
 #include "ExecutableCommand.hpp"
 #include "Server.hpp"
 #include "User.hpp"
+#include "Channel.hpp"
 #include <cstdio>
 #include <iostream>
 #include <list>
@@ -76,17 +77,22 @@ manageUserDataReception(Core::UserMap& users,
         buffers[it->first].clear();
       }
     }
-    handleInput(it->second, ctx);
+    if (!it->second->GetIncomingBuffer().empty())
+      handleInput(it->second, ctx);
     if (it->second->ReadyToSend())
       FD_SET(it->first, wfds);
     if (FD_ISSET(it->first, wfds)) {
       const std::string& userSendBuffer = it->second->GetOutgoingBuffer();
       ssize_t wb =
         send(it->first, userSendBuffer.c_str(), userSendBuffer.size(), 0);
-        std::cout << ">> " + it->second->GetOutgoingBuffer() << std::endl;
+      std::cout << ">> " + it->second->GetOutgoingBuffer() << std::endl;
       it->second->ClearOutgoingBuffer();
       if (wb < 0)
         throw std::runtime_error("Error while receiving data from client.");
+    }
+    if (it->second->MustBeDeleted()) {
+      disconnected.push_back(it->second);
+      buffers[it->first].clear();
     }
   }
 }
@@ -143,11 +149,15 @@ prepareClientFdsForSelect(Core::UserMap& users,
  */
 
 static void
-handleClientDisconnection(Core::UserMap& users, std::list<Core::User*>& disconnected)
+handleClientDisconnection(Core::UserMap& users,
+                          std::list<Core::User*>& disconnected,
+                          Core::Server* ctx)
 {
   for (std::list<Core::User*>::iterator it = disconnected.begin();
        it != disconnected.end();
        it++) {
+    ctx->Broadcast(
+      ":" + (*it)->GetNickname() + " QUIT :" + (*it)->GetQuitMessage(), (*it));
     users.erase((*it)->Fileno());
     delete *it;
   }
@@ -177,6 +187,6 @@ Core::Server::Start(void)
       throw std::runtime_error("Fatal select() error");
     acceptNewClient(fd, users, &rfds);
     manageUserDataReception(users, buffers, disconnected, &rfds, &wfds, this);
-    handleClientDisconnection(users, disconnected);
+    handleClientDisconnection(users, disconnected, this);
   }
 }

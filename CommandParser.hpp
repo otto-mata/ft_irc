@@ -71,6 +71,7 @@ public:
   const std::string& Trailing(void);
   std::string ToString(void);
   bool HasArguments(void);
+  bool HasTrailing(void);
   ExecutableCommand* ToExecutable(
     Core::User* Emitter,
     Core::Server* Context); // CompileWarning("Not implemented yet.");
