@@ -1,6 +1,7 @@
 #ifndef CUSTOM_ALGO_HPP
 #define CUSTOM_ALGO_HPP
-
+#include <string>
+#include <vector>
 namespace Algo {
 
 namespace Iter {
@@ -41,7 +42,6 @@ private:
   T obj;
 
 public:
-
   Find(T o)
     : obj(o)
   {
@@ -56,6 +56,12 @@ public:
   }
 };
 } // namespace Array
+
+namespace String {
+
+std::vector<std::string>
+Split(std::string s, const std::string& delimiter);
+} // namespace String
 
 } // namespace Algo
 

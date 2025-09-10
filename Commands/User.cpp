@@ -15,7 +15,7 @@ Commands::User::User(Core::User* Emitter,
 int
 Commands::User::ValidateInput(void)
 {
-  if (raw->Arguments().size() != 3 || !raw->HasTrailing())
+  if (!raw->HasArguments() || raw->Arguments().size() != 3 || !raw->HasTrailing())
     return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
   return 0;
 }
@@ -23,7 +23,7 @@ Commands::User::ValidateInput(void)
 int
 Commands::User::Execute(void)
 {
-  TRACE_CALL
+  
   emitter->SetUsername(raw->Argument(0));
   emitter->SetRealName(raw->Trailing());
   emitter->CompletedRegistrationRoutine(ctx->Hostname());

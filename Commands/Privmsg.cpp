@@ -16,7 +16,7 @@ Commands::Privmsg::Privmsg(Core::User* Emitter,
 int
 Commands::Privmsg::ValidateInput(void)
 {
-  if (raw->Arguments().size() < 1 || raw->HasTrailing())
+  if (raw->Arguments().size() < 1 || !raw->HasTrailing())
     return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
   return 0;
 }

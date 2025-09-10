@@ -19,6 +19,7 @@ Core::User::User(int fd)
   , _disconnected(true)
   , _toDelete(false)
 {
+  ResolveHostname();
 }
 
 Core::User::~User(void)

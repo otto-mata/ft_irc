@@ -16,7 +16,7 @@ Commands::Cap::Cap(Core::User* Emitter,
 int
 Commands::Cap::ValidateInput(void)
 {
-  if (raw->Arguments().size() == 0) {
+  if (!raw->HasArguments() || raw->Arguments().size() == 0) {
     Replies::SendReply461ToUserForCommand(emitter, raw->Name());
     return 461; //! Invalid arguments count (not enough)
   }
@@ -38,10 +38,11 @@ Commands::Cap::Execute(void)
     emitter->FinishCapabilitiesNegotiation();
   if (raw->Argument(0) == "LS") {
     if (emitter->GetNickname().size() == 0)
-      emitter->AppendToOutgoingBuffer("CAP * LS :\r\n");
+      emitter->AppendToOutgoingBuffer(": " + ctx->Hostname() +
+                                      "CAP * LS :\r\n");
     else
-      emitter->AppendToOutgoingBuffer("CAP " + emitter->GetNickname() +
-                                      " LS :\r\n");
+      emitter->AppendToOutgoingBuffer(": " + ctx->Hostname() + "CAP " +
+                                      emitter->GetNickname() + " LS :\r\n");
   }
   return 0;
 }

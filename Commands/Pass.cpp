@@ -15,7 +15,7 @@ Commands::Pass::Pass(Core::User* Emitter,
 int
 Commands::Pass::ValidateInput(void)
 {
-  if (raw->Arguments().empty())
+  if (!raw->HasArguments())
     return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
   if (emitter->HasSentValidPassword())
     return Replies::SendReply462ToUser(emitter);

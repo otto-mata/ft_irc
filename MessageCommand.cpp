@@ -145,7 +145,7 @@ CommandParser::MessageCommand::ToExecutable(Core::User* Emitter, Core::Server* C
     if (Name() == "NICK")
       return new Commands::Nick(Emitter, Context, this);
     else if (Name() == "NOTICE")
-      return new Commands::Notice(Emitter, Context, this);
+      return new Commands::Privmsg(Emitter, Context, this);
     break;
   case 'P':
     if (Name() == "PART")

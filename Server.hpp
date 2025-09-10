@@ -6,6 +6,7 @@
 #include <map>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 #ifndef BACKLOG
 #define BACKLOG 5
@@ -42,6 +43,8 @@ public:
   void Start(void);
   void Broadcast(std::string message, Core::User* except = 0);
 
+  Core::Channel* GetChannel(const std::string& name);
+
   Core::User* FindUserByNickname(const std::string& Nickname);
   Core::Channel* FindChannelByName(const std::string& Name);
 
@@ -56,6 +59,8 @@ public:
 
   const std::string& Hostname(void);
   static void StopServer(void);
+
+  std::vector<std::string> GetAllChannelNames(void);
 };
 
 }

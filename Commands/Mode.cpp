@@ -1,10 +1,14 @@
 
 #include "Mode.hpp"
+#include "../CustomAlgo.hpp"
 #include "../ExecutableCommand.hpp"
+#include "../Replies/Replies.hpp"
 #include "../Server.hpp"
 #include "../User.hpp"
 
-Commands::Mode::Mode(Core::User* Emitter, Core::Server* Context, CommandParser::MessageCommand* Raw)
+Commands::Mode::Mode(Core::User* Emitter,
+                     Core::Server* Context,
+                     CommandParser::MessageCommand* Raw)
   : ExecutableCommand(Emitter, Context, Raw)
 {
 }
@@ -12,11 +16,119 @@ Commands::Mode::Mode(Core::User* Emitter, Core::Server* Context, CommandParser::
 int
 Commands::Mode::ValidateInput(void)
 {
+  if (!raw->HasArguments()) {
+    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+  }
   return 0;
+}
+
+int
+Commands::Mode::handleOpMode(char mode)
+{
+  if (raw->Arguments().size() != 3)
+    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+  if (!SetTargetUserFromContext(raw->Argument(2)))
+    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(2));
+  if (!targetChannel->isUser(targetUser))
+    return Replies::SendReply401ToUserForNickname(emitter, targetUser->GetNickname());
+    if (mode == '-')
+  {
+    if (!targetChannel->isAdmin(targetUser))
+      return 1;
+    targetChannel->removeAdmin(targetUser);
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE -o " + targetUser->GetNickname());
+  }
+  if (mode == '+')
+  {
+    if (targetChannel->isAdmin(targetUser))
+      return 2;
+    targetChannel->addAdmin(targetUser);
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE +o " + targetUser->GetNickname());
+  }
+  return (0);
+}
+
+int
+Commands::Mode::handleKeyMode(char mode)
+{
+  if (mode == '+' && raw->Arguments().size() < 3)
+    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+  if (mode == '+'){
+    targetChannel->setPassword(raw->Argument(2));
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE +k " + raw->Argument(2));
+  } else if (mode == '-'){
+    targetChannel->setPassword("");
+    targetChannel->setIsPasswordProtected(false);
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE -k ");
+  }
+  return (0);
+}
+
+int
+Commands::Mode::handleLimMode(char mode)
+{
+  if (mode == '+' && raw->Arguments().size() < 3)
+    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+  if (mode == '+'){
+      // ! SET LIM
+  } else if (mode == '-'){
+      // ! REMOVE LIM
+  }
+  return (0);
 }
 
 int
 Commands::Mode::Execute(void)
 {
+  if (!SetTargetChannelFromContext(raw->Argument(0))) {
+    if (raw->Argument(0) == emitter->GetNickname()) {
+      if (raw->Arguments().size() == 1)
+        return Replies::SendReply221ToUser(emitter);
+      else
+        return Replies::SendReply501ToUserForFlag(emitter, raw->Argument(1));
+    }
+    return Replies::SendReply403ToUserForChannelName(emitter, raw->Argument(0));
+  }
+  if (raw->Arguments().size() < 2)
+    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+  if (!targetChannel->isUser(emitter))
+    return Replies::SendReply442ToUserForChannelName(emitter, raw->Argument(0));
+  if (!targetChannel->isAdmin(emitter))
+    return Replies::SendReply482ToUserForChannelName(emitter, raw->Argument(0));
+
+  std::string flag = raw->Argument(1);
+  char mode = flag.at(0);
+  if (mode != '+' && mode != '-')
+    return Replies::SendReply501ToUserForFlag(emitter, raw->Argument(1));
+  flag = flag.substr(1);
+  if (flag.empty())
+    return Replies::SendReply501ToUserForFlag(emitter, raw->Argument(1));
+  if (flag.size() == 1 || flag.size() == 2) {
+    for (std::string::iterator it = flag.begin(); it < flag.end(); it++) {
+
+      switch (*it) {
+        case 'i':
+          targetChannel->setIsInviteOnly( mode == '+' ? true : false);
+          break;
+        case 't':
+          targetChannel->setIsTopicModifiable( mode == '+' ? false : true);
+          break;
+        default:
+          return Replies::SendReply501ToUserForFlag(emitter, flag);
+      }
+    }
+  } else if (raw->Arguments().size() >= 2) {
+    switch (flag.at(0)) {
+      case 'k':
+        return handleKeyMode(mode);
+      case 'o':
+        return handleOpMode(mode);
+      case 'l':
+        return handleLimMode(mode);
+      default:
+        return Replies::SendReply501ToUserForFlag(emitter, flag);
+    }
+  }
+
   return 0;
 }

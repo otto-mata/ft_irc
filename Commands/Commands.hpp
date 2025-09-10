@@ -8,7 +8,6 @@
 #include "List.hpp"
 #include "Mode.hpp"
 #include "Nick.hpp"
-#include "Notice.hpp"
 #include "Part.hpp"
 #include "Pass.hpp"
 #include "Ping.hpp"

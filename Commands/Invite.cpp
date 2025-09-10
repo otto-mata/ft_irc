@@ -16,18 +16,16 @@ Commands::Invite::Invite(Core::User* Emitter,
 int
 Commands::Invite::ValidateInput(void)
 {
-  if (raw->Arguments().size() < 2) {
-    Replies::SendReply461ToUserForCommand(emitter, raw->Name());
-    return 461; //! Invalid arguments count (not enough)
-  }
+  if (!raw->HasArguments() || raw->Arguments().size() < 2) 
+    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
   if (!SetTargetUserFromContext(raw->Argument(0)))
-    return 2; //! Target user does not exist
+    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(0));
   if (!targetUser->FullyRegistered())
     return 3; //! Target user is not registered to the server
   if (raw->Argument(1).at(0) != '#')
     return 4; //! Invalid target channel name (must start with '#')
   if (!SetTargetChannelFromContext(raw->Argument(1)))
-    return 5; //! Target channel does not exist
+    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(1));
   if (!targetChannel->isAdmin(emitter))
     return 6; //! Emitter is not an operator of the channel
   if (targetChannel->isUser(targetUser))

@@ -18,6 +18,10 @@ Commands::Quit::ValidateInput(void)
 int
 Commands::Quit::Execute(void)
 {
+  std::string trail = "Left the chat";
+  if (raw->HasTrailing())
+    trail = raw->Trailing();
+  ctx->Broadcast(":"+ emitter->FullIdentityString() + " QUIT :" + trail);
   ctx->RemoveUserFromServer(emitter);
   return 0;
 }

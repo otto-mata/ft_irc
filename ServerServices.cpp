@@ -64,6 +64,17 @@ Core::Server::StopServer(void)
   mustStop = true;
 }
 
+std::vector<std::string>
+Core::Server::GetAllChannelNames(void)
+{
+  std::vector<std::string> v;
+  for (Core::ChannelMap::iterator it = channels.begin(); it != channels.end();
+       ++it) {
+    v.push_back(it->first);
+  }
+  return (v);
+}
+
 Core::Channel*
 Core::Server::CreateChannel(const std::string& Name)
 {

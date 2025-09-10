@@ -1,4 +1,5 @@
 #include "CommandParser.hpp"
+#include "CustomAlgo.hpp"
 #include "ExecutableCommand.hpp"
 #include "Server.hpp"
 #include "User.hpp"
@@ -9,26 +10,11 @@
 #include <sstream>
 #include <unistd.h>
 
-std::vector<std::string>
-split(std::string s, const std::string& delimiter)
-{
-  std::vector<std::string> tokens;
-  size_t pos = 0;
-  std::string token;
-  while ((pos = s.find(delimiter)) != std::string::npos) {
-    token = s.substr(0, pos);
-    tokens.push_back(token);
-    s.erase(0, pos + delimiter.length());
-  }
-  tokens.push_back(s);
-
-  return tokens;
-}
 
 void
 handleInput(Core::User* user, Core::Server* ctx)
 {
-  std::vector<std::string> cmds = split(user->GetIncomingBuffer(), "\r\n");
+  std::vector<std::string> cmds = Algo::String::Split(user->GetIncomingBuffer(), "\r\n");
   for (std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end();
        ++it) {
     CommandParser::MessageCommand msgCmd(*it);

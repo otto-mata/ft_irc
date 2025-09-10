@@ -1,6 +1,7 @@
 
 #include "Nick.hpp"
 #include "../ExecutableCommand.hpp"
+#include "../Replies/Replies.hpp"
 #include "../Server.hpp"
 #include "../User.hpp"
 
@@ -13,9 +14,8 @@ Commands::Nick::Nick(Core::User* Emitter,
 int
 Commands::Nick::ValidateInput(void)
 {
-  if (raw->Arguments().size() == 0) {
-    // TODO: No parameters check
-    return 1;
+  if (!raw->HasArguments()) {
+    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
   }
   const std::string& name = raw->Argument(0);
   if (ctx->MatchUserByNickname(name)) {
