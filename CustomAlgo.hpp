@@ -61,6 +61,8 @@ namespace String {
 
 std::vector<std::string>
 Split(std::string s, const std::string& delimiter);
+
+bool SaferStoul(std::string s, unsigned long *res);
 } // namespace String
 
 } // namespace Algo

@@ -1,9 +1,9 @@
-
 #include "Ping.hpp"
 #include "../ExecutableCommand.hpp"
 #include "../Replies/Replies.hpp"
 #include "../Server.hpp"
 #include "../User.hpp"
+#include "../Replies/Replies.hpp"
 
 Commands::Ping::Ping(Core::User* Emitter,
                      Core::Server* Context,
@@ -28,7 +28,7 @@ Commands::Ping::Execute(void)
     return (0);
   }
   if (!SetTargetUserFromContext(raw->Argument(0)))
-    return 1; //! No user
+    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
   targetUser->AppendToOutgoingBuffer(":" + emitter->GetNickname() + " PING " +
                                      targetUser->GetNickname());
   return 0;

@@ -14,13 +14,14 @@ Commands::Nick::Nick(Core::User* Emitter,
 int
 Commands::Nick::ValidateInput(void)
 {
+  if (ctx->IsPasswordProtected() && !emitter->HasSentValidPassword())
+    return 1;
   if (!raw->HasArguments()) {
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   }
   const std::string& name = raw->Argument(0);
   if (ctx->MatchUserByNickname(name)) {
-    // TODO: Unavailable check
-    return 2;
+    return Replies::ERR_NICKNAMEINUSE(emitter, name);
   }
   return 0;
 }

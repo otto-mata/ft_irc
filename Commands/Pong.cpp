@@ -14,7 +14,7 @@ int
 Commands::Pong::ValidateInput(void)
 {
   if (raw->Arguments().empty())
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   return 0;
 }
 
@@ -22,7 +22,7 @@ int
 Commands::Pong::Execute(void)
 {
   if (!SetTargetUserFromContext(raw->Argument(0)))
-    return 1; //! No user
+    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
   targetUser->AppendToOutgoingBuffer(":" + emitter->GetNickname() + " PONG " +
                                      targetUser->GetNickname());
   return (0);

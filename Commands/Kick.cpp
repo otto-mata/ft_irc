@@ -17,20 +17,18 @@ int
 Commands::Kick::ValidateInput(void)
 {
   if (!raw->HasArguments() || raw->Arguments().size() < 2) {
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   }
   if (!SetTargetUserFromContext(raw->Argument(0)))
-    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(0));
+    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
   if (!targetUser->FullyRegistered())
     return 3; //! Target user is not registered to the server
-  if (raw->Argument(1).find('#') != 0)
-    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(1));
-  if (!SetTargetChannelFromContext(raw->Argument(1)))
-    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(1));
+  if (raw->Argument(1).find('#') != 0 || !SetTargetChannelFromContext(raw->Argument(1)))
+    return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(1));
   if (!targetChannel->isAdmin(emitter))
-    return 6; //! emitter not operator in channel
+    return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(1));
   if (!targetChannel->isUser(targetUser))
-    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(0));
+    return Replies::ERR_USERONCHANNEL(emitter, targetUser->GetNickname(), targetChannel->getName());
   return 0;
 }
 

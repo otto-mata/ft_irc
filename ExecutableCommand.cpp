@@ -26,9 +26,12 @@ ExecutableCommand::SetTargetUser(Core::User* Target)
 }
 
 bool
-ExecutableCommand::SetTargetUserFromContext(const std::string& TargetName)
+ExecutableCommand::SetTargetUserFromContext(const std::string& TargetName, int mode)
 {
-  targetUser = ctx->FindUserByNickname(TargetName);
+  if (mode == 0)
+    targetUser = ctx->FindUserByNickname(TargetName);
+  if (mode == 1)
+    targetUser = ctx->FindUserByUsername(TargetName);
   return targetUser != 0;
 }
 

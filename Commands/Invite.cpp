@@ -17,19 +17,17 @@ int
 Commands::Invite::ValidateInput(void)
 {
   if (!raw->HasArguments() || raw->Arguments().size() < 2) 
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (!SetTargetUserFromContext(raw->Argument(0)))
-    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(0));
+    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
   if (!targetUser->FullyRegistered())
     return 3; //! Target user is not registered to the server
-  if (raw->Argument(1).at(0) != '#')
-    return 4; //! Invalid target channel name (must start with '#')
-  if (!SetTargetChannelFromContext(raw->Argument(1)))
-    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(1));
+  if (raw->Argument(1).at(0) != '#' || !SetTargetChannelFromContext(raw->Argument(1)))
+    return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(1));
   if (!targetChannel->isAdmin(emitter))
-    return 6; //! Emitter is not an operator of the channel
+    return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(1));
   if (targetChannel->isUser(targetUser))
-    return 7; //! Target user is already in the channel
+    return Replies::ERR_USERONCHANNEL(emitter, targetUser->GetNickname(), raw->Argument(1));
   return 0;
 }
 

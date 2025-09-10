@@ -6,25 +6,46 @@
 
 namespace Replies {
 int
-SendReply461ToUserForCommand(Core::User* user, const std::string& cmdName);
+ERR_NEEDMOREPARAMS(Core::User* user, const std::string& cmdName);
 int
-SendReply462ToUser(Core::User* user);
+ERR_ALREADYREGISTRED(Core::User* user);
 int
-SendReply221ToUser(Core::User* user);
+ERR_UMODEUNKNOWNFLAG(Core::User* user, const std::string& channel);
 int
-SendReply501ToUserForFlag(Core::User* user, const std::string& channel);
+ERR_NOSUCHNICK(Core::User* user, const std::string& nick);
 int
-SendReply401ToUserForNickname(Core::User* user, const std::string& nick);
+ERR_NICKNAMEINUSE(Core::User* user, const std::string& nick);
 int
-SendReply403ToUserForChannelName(Core::User* user, const std::string& name);
+ERR_NOSUCHCHANNEL(Core::User* user, const std::string& name);
 int
-SendReply442ToUserForChannelName(Core::User* user, const std::string& channel);
+ERR_NOTONCHANNEL(Core::User* user, const std::string& channel);
 int
-SendReply482ToUserForChannelName(Core::User* user, const std::string& channel);
+ERR_CHANOPRIVSNEEDED(Core::User* user, const std::string& channel);
 int
-SendReply331ToUserForChannelName(Core::User* user, const std::string& channel);
+ERR_UNKNOWNCOMMAND(Core::User* user, const std::string& cmd);
 int
-SendReply332ToUserForChannel(Core::User* user, Core::Channel* channel);
+ERR_USERONCHANNEL(Core::User* user,
+                  const std::string& nickname,
+                  const std::string& channel);
+int
+ERR_INVITEONLYCHAN(Core::User* user, const std::string& channelName);
+int
+ERR_BADCHANNELKEY(Core::User* user, const std::string& channelName);
+int
+ERR_CHANNELISFULL(Core::User* user, const std::string& channelName);
+int
+ERR_KEYSET(Core::User* user, const std::string& channelName);
+int
+ERR_PASSWDMISMATCH(Core::User* user);
+int
+ERR_USERSDONTMATCH(Core::User* user);
+
+int
+RPL_NOTOPIC(Core::User* user, const std::string& channel);
+int
+RPL_TOPIC(Core::User* user, Core::Channel* channel);
+int
+RPL_UMODEIS(Core::User* user);
 
 } // namespace Replies
 

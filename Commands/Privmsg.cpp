@@ -17,7 +17,7 @@ int
 Commands::Privmsg::ValidateInput(void)
 {
   if (raw->Arguments().size() < 1 || !raw->HasTrailing())
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   return 0;
 }
 
@@ -26,14 +26,14 @@ Commands::Privmsg::Execute(void)
 {
   if (raw->Argument(0).at(0) == '#') {
     if (!SetTargetChannelFromContext(raw->Argument(0)))
-      return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(0));
+      return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
     targetChannel->Broadcast(":" + emitter->FullIdentityString() +
                              " PRIVMSG #" + targetChannel->getName() + " :" +
-                             raw->Trailing());
+                             raw->Trailing(), emitter);
     return 0;
   }
   if (!SetTargetUserFromContext(raw->Argument(0)))
-    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(0));
+    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
   targetUser->AppendToOutgoingBuffer(":" + emitter->FullIdentityString() +
                                      " PRIVMSG " + targetUser->GetNickname() +
                                      " :" + raw->Trailing());

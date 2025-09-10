@@ -189,10 +189,11 @@ Core::User::SetPasswordReceived(bool state)
   _hasSentPassword = state;
 }
 
-void
+bool
 Core::User::SetPasswordValid(bool state)
 {
   _isValidPassword = state;
+  return state;
 }
 
 bool

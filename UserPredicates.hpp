@@ -15,6 +15,16 @@ public:
   Core::User* operator()(std::pair<const int, Core::User*>& pair);
 };
 
+struct FindByUsernameInMap
+{
+private:
+  std::string _name;
+
+public:
+  FindByUsernameInMap(const std::string& name);
+  Core::User* operator()(std::pair<const int, Core::User*>& pair);
+};
+
 
 struct MatchNicknameInMap
 {

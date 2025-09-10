@@ -12,6 +12,15 @@ Core::Server::FindUserByNickname(const std::string& Nickname)
     users.begin(), users.end(), UserPredicates::FindByNicknameInMap(Nickname));
 }
 
+Core::User*
+Core::Server::FindUserByUsername(const std::string& Username)
+{
+  return Algo::Iter::FindFirst<UserMap::iterator,
+                               UserPredicates::FindByUsernameInMap,
+                               User>(
+    users.begin(), users.end(), UserPredicates::FindByUsernameInMap(Username));
+}
+
 Core::Channel*
 Core::Server::FindChannelByName(const std::string& Name)
 {
@@ -39,6 +48,11 @@ bool
 Core::Server::TryPassword(const std::string& attempt)
 {
   return attempt == password;
+}
+
+bool Core::Server::IsPasswordProtected(void)
+{
+  return !password.empty();
 }
 
 void
@@ -101,4 +115,10 @@ Core::Server::RemoveChannel(Core::Channel* Chan)
   channels.erase(Chan->getName());
   delete Chan;
   return 0;
+}
+
+Core::Channel*
+Core::Server::GetChannel(const std::string& name)
+{
+  return channels[name];
 }

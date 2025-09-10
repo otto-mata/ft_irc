@@ -16,9 +16,9 @@ int
 Commands::Pass::ValidateInput(void)
 {
   if (!raw->HasArguments())
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (emitter->HasSentValidPassword())
-    return Replies::SendReply462ToUser(emitter);
+    return Replies::ERR_ALREADYREGISTRED(emitter);
   return 0;
 }
 
@@ -26,6 +26,7 @@ int
 Commands::Pass::Execute(void)
 {
   emitter->SetPasswordReceived(true);
-  emitter->SetPasswordValid(ctx->TryPassword(raw->Argument(0)));
+  if (!emitter->SetPasswordValid(ctx->TryPassword(raw->Argument(0))))
+    return Replies::ERR_PASSWDMISMATCH(emitter);
   return 0;
 }

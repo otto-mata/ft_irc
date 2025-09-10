@@ -17,7 +17,7 @@ int
 Commands::Mode::ValidateInput(void)
 {
   if (!raw->HasArguments()) {
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   }
   return 0;
 }
@@ -26,11 +26,11 @@ int
 Commands::Mode::handleOpMode(char mode)
 {
   if (raw->Arguments().size() != 3)
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (!SetTargetUserFromContext(raw->Argument(2)))
-    return Replies::SendReply401ToUserForNickname(emitter, raw->Argument(2));
+    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(2));
   if (!targetChannel->isUser(targetUser))
-    return Replies::SendReply401ToUserForNickname(emitter, targetUser->GetNickname());
+    return Replies::ERR_NOSUCHNICK(emitter, targetUser->GetNickname());
     if (mode == '-')
   {
     if (!targetChannel->isAdmin(targetUser))
@@ -51,8 +51,10 @@ Commands::Mode::handleOpMode(char mode)
 int
 Commands::Mode::handleKeyMode(char mode)
 {
+  if (mode == '+' && targetChannel->getIsPasswordProtected())
+    return Replies::ERR_KEYSET(emitter, targetChannel->getName());
   if (mode == '+' && raw->Arguments().size() < 3)
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (mode == '+'){
     targetChannel->setPassword(raw->Argument(2));
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE +k " + raw->Argument(2));
@@ -68,11 +70,15 @@ int
 Commands::Mode::handleLimMode(char mode)
 {
   if (mode == '+' && raw->Arguments().size() < 3)
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (mode == '+'){
-      // ! SET LIM
+    size_t n = 0;
+    if (!Algo::String::SaferStoul(raw->Argument(2), &n))
+      return 1;
+    targetChannel->setUserLimit(n);
   } else if (mode == '-'){
-      // ! REMOVE LIM
+    targetChannel->setIsUserLimited(false);
+    targetChannel->setUserLimit(~0);
   }
   return (0);
 }
@@ -83,26 +89,26 @@ Commands::Mode::Execute(void)
   if (!SetTargetChannelFromContext(raw->Argument(0))) {
     if (raw->Argument(0) == emitter->GetNickname()) {
       if (raw->Arguments().size() == 1)
-        return Replies::SendReply221ToUser(emitter);
+        return Replies::RPL_UMODEIS(emitter);
       else
-        return Replies::SendReply501ToUserForFlag(emitter, raw->Argument(1));
+        return Replies::ERR_UMODEUNKNOWNFLAG(emitter, raw->Argument(1));
     }
-    return Replies::SendReply403ToUserForChannelName(emitter, raw->Argument(0));
+    return Replies::ERR_USERSDONTMATCH(emitter);
   }
   if (raw->Arguments().size() < 2)
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (!targetChannel->isUser(emitter))
-    return Replies::SendReply442ToUserForChannelName(emitter, raw->Argument(0));
+    return Replies::ERR_NOTONCHANNEL(emitter, raw->Argument(0));
   if (!targetChannel->isAdmin(emitter))
-    return Replies::SendReply482ToUserForChannelName(emitter, raw->Argument(0));
+    return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(0));
 
   std::string flag = raw->Argument(1);
   char mode = flag.at(0);
   if (mode != '+' && mode != '-')
-    return Replies::SendReply501ToUserForFlag(emitter, raw->Argument(1));
+    return Replies::ERR_UMODEUNKNOWNFLAG(emitter, raw->Argument(1));
   flag = flag.substr(1);
   if (flag.empty())
-    return Replies::SendReply501ToUserForFlag(emitter, raw->Argument(1));
+    return Replies::ERR_UMODEUNKNOWNFLAG(emitter, raw->Argument(1));
   if (flag.size() == 1 || flag.size() == 2) {
     for (std::string::iterator it = flag.begin(); it < flag.end(); it++) {
 
@@ -114,7 +120,7 @@ Commands::Mode::Execute(void)
           targetChannel->setIsTopicModifiable( mode == '+' ? false : true);
           break;
         default:
-          return Replies::SendReply501ToUserForFlag(emitter, flag);
+          return Replies::ERR_UMODEUNKNOWNFLAG(emitter, flag);
       }
     }
   } else if (raw->Arguments().size() >= 2) {
@@ -126,7 +132,7 @@ Commands::Mode::Execute(void)
       case 'l':
         return handleLimMode(mode);
       default:
-        return Replies::SendReply501ToUserForFlag(emitter, flag);
+        return Replies::ERR_UMODEUNKNOWNFLAG(emitter, flag);
     }
   }
 

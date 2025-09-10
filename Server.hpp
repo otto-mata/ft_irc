@@ -46,6 +46,7 @@ public:
   Core::Channel* GetChannel(const std::string& name);
 
   Core::User* FindUserByNickname(const std::string& Nickname);
+  Core::User* FindUserByUsername(const std::string& Username);
   Core::Channel* FindChannelByName(const std::string& Name);
 
   Core::Channel* CreateChannel(const std::string& Name);
@@ -55,6 +56,7 @@ public:
   bool MatchChannelByName(const std::string& Name);
   
   bool TryPassword(const std::string& attempt);
+  bool IsPasswordProtected(void);
   void RemoveUserFromServer(Core::User* user);
 
   const std::string& Hostname(void);

@@ -64,7 +64,7 @@ public:
   void CompletedRegistrationRoutine(const std::string& from);
   
   void SetPasswordReceived(bool);
-  void SetPasswordValid(bool);
+  bool SetPasswordValid(bool);
   bool HasSentValidPassword(void);
   
   void ResolveHostname(void);

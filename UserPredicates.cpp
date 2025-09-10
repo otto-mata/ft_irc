@@ -57,3 +57,16 @@ UserPredicates::MatchNicknameInMap::operator()(
 {
   return _name == pair.second->GetNickname();
 }
+
+UserPredicates::FindByUsernameInMap::FindByUsernameInMap(
+  const std::string& name): _name(name)
+{
+}
+
+
+Core::User*
+UserPredicates::FindByUsernameInMap::operator()(
+  std::pair<const int, Core::User*>& pair)
+{
+  return _name == pair.second->GetUsername() ? pair.second : 0;
+}

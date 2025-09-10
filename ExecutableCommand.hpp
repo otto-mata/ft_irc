@@ -38,7 +38,7 @@ public:
   virtual int Execute() = 0;
 
   bool SetTargetUser(Core::User* Target);
-  bool SetTargetUserFromContext(const std::string& TargetName);
+  bool SetTargetUserFromContext(const std::string& TargetName, int mode = 0);
   bool SetTargetChannel(Core::Channel* Target);
   bool SetTargetChannelFromContext(const std::string& TargetName);
 };

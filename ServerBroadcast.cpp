@@ -8,9 +8,3 @@ Core::Server::Broadcast(std::string message, Core::User* except)
     if (it->second != except)
       it->second->AppendToOutgoingBuffer(message);
 }
-
-Core::Channel*
-Core::Server::GetChannel(const std::string& name)
-{
-  return channels[name];
-}

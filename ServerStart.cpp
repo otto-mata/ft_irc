@@ -1,24 +1,23 @@
+#include "Channel.hpp"
 #include "CommandParser.hpp"
 #include "CustomAlgo.hpp"
 #include "ExecutableCommand.hpp"
 #include "Server.hpp"
 #include "User.hpp"
-#include "Channel.hpp"
 #include <cstdio>
 #include <iostream>
 #include <list>
 #include <sstream>
 #include <unistd.h>
 
-
 void
 handleInput(Core::User* user, Core::Server* ctx)
 {
-  std::vector<std::string> cmds = Algo::String::Split(user->GetIncomingBuffer(), "\r\n");
+  std::vector<std::string> cmds =
+    Algo::String::Split(user->GetIncomingBuffer(), "\r\n");
   for (std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end();
        ++it) {
     CommandParser::MessageCommand msgCmd(*it);
-    std::cout << msgCmd.ToString() << std::endl;
     ExecutableCommand* cmd = msgCmd.ToExecutable(user, ctx);
     if (!cmd)
       continue;
@@ -63,7 +62,8 @@ manageUserDataReception(Core::UserMap& users,
         buffers[it->first].clear();
       }
     }
-    if (!it->second->GetIncomingBuffer().empty())
+    if (!it->second->GetIncomingBuffer().empty() ||
+        it->second->GetIncomingBuffer() != "\r\n")
       handleInput(it->second, ctx);
     if (it->second->ReadyToSend())
       FD_SET(it->first, wfds);
@@ -71,7 +71,6 @@ manageUserDataReception(Core::UserMap& users,
       const std::string& userSendBuffer = it->second->GetOutgoingBuffer();
       ssize_t wb =
         send(it->first, userSendBuffer.c_str(), userSendBuffer.size(), 0);
-      std::cout << ">> " + it->second->GetOutgoingBuffer() << std::endl;
       it->second->ClearOutgoingBuffer();
       if (wb < 0)
         throw std::runtime_error("Error while receiving data from client.");
@@ -169,10 +168,22 @@ Core::Server::Start(void)
     disconnected.clear();
 
     prepareClientFdsForSelect(users, fdmax, &rfds, &wfds);
-    if (select(fdmax + 1, &rfds, &wfds, 0, &tv) < 0)
-      throw std::runtime_error("Fatal select() error");
+    if (select(fdmax + 1, &rfds, &wfds, 0, &tv) < 0) {
+      if (mustStop)
+        break;
+      else
+        throw std::runtime_error("Fatal select() error");
+    }
     acceptNewClient(fd, users, &rfds);
     manageUserDataReception(users, buffers, disconnected, &rfds, &wfds, this);
     handleClientDisconnection(users, disconnected, this);
+  }
+  std::cout << "Exiting server." << std::endl;
+  for (Core::UserMap::iterator it = users.begin(); it != users.end(); it++) {
+    delete it->second;
+  }
+  for (Core::ChannelMap::iterator it = channels.begin(); it != channels.end();
+       it++) {
+    delete it->second;
   }
 }

@@ -23,7 +23,7 @@ Commands::List::ValidateInput(void)
     for (std::vector<std::string>::iterator it = v.begin(); it != v.end();
          it++) {
       if ((*it).at(0) != '#')
-        return Replies::SendReply401ToUserForNickname(emitter, *it);
+        return Replies::ERR_NOSUCHCHANNEL(emitter, *it);
     }
   }
   return 0;

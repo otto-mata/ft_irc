@@ -22,10 +22,10 @@ Commands::Join::ValidateInput(void)
     for (std::vector<std::string>::iterator it = v.begin(); it != v.end();
          it++) {
       if ((*it).at(0) != '#')
-        return Replies::SendReply401ToUserForNickname(emitter, *it);
+        return Replies::ERR_NOSUCHNICK(emitter, *it);
     }
   } else
-    return Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   return 0;
 }
 
@@ -47,16 +47,13 @@ Commands::Join::Execute(void)
     }
     if (targetChannel->getIsInviteOnly() &&
         !targetChannel->isUserWhitelist(emitter)) {
-      emitter->AppendToOutgoingBuffer(
-        ":" + ctx->Hostname() + " 473 " + emitter->GetNickname() + " #" +
-        targetChannel->getName() + " :Cannot join invite-only channel");
-      return 2; //! User not invited to channel
+      return Replies::ERR_INVITEONLYCHAN(emitter, targetChannel->getName());
     }
     if (targetChannel->getIsPasswordProtected()) {
       if (raw->Arguments().size() != 2)
-        return 3; //! No password provided for channel
+        return Replies::ERR_PASSWDMISMATCH(emitter);
       else if (!targetChannel->tryPassword(raw->Argument(1)))
-        return 4; //! Invalid password;
+        return Replies::ERR_PASSWDMISMATCH(emitter);
     }
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN " +
                              targetChannel->getName());

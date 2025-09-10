@@ -17,15 +17,22 @@ int
 Commands::Cap::ValidateInput(void)
 {
   if (!raw->HasArguments() || raw->Arguments().size() == 0) {
-    Replies::SendReply461ToUserForCommand(emitter, raw->Name());
+    Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
     return 461; //! Invalid arguments count (not enough)
   }
   const char* subs[] = {
     "LS", "LIST", "REQ", "ACK", "NAK", "END", "NEW", "DEL",
   };
-  if (!Algo::Array::Find<const char*>(raw->Argument(0).c_str())
-         .In(subs, sizeof(subs) / sizeof(subs[0])))
-    return 2;
+  bool match = false;
+  for (int i = 0; i < 8; i++) {
+    if (raw->Argument(0) == std::string(subs[i])) {
+      match = true;
+      break;
+    }
+  }
+  if (!match)
+    return Replies::ERR_UNKNOWNCOMMAND(
+      emitter, std::string(raw->Name() + " " + raw->Argument(0)));
   return 0;
 }
 
@@ -34,14 +41,16 @@ Commands::Cap::Execute(void)
 {
   if (raw->Argument(0) != "END")
     emitter->PendingCapabilitiesNegotiation();
-  else
+  else {
     emitter->FinishCapabilitiesNegotiation();
+    emitter->CompletedRegistrationRoutine(ctx->Hostname());
+  }
   if (raw->Argument(0) == "LS") {
     if (emitter->GetNickname().size() == 0)
-      emitter->AppendToOutgoingBuffer(": " + ctx->Hostname() +
-                                      "CAP * LS :\r\n");
+      emitter->AppendToOutgoingBuffer(":" + ctx->Hostname() +
+                                      " CAP * LS :\r\n");
     else
-      emitter->AppendToOutgoingBuffer(": " + ctx->Hostname() + "CAP " +
+      emitter->AppendToOutgoingBuffer(":" + ctx->Hostname() + " CAP " +
                                       emitter->GetNickname() + " LS :\r\n");
   }
   return 0;
