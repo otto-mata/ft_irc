@@ -172,6 +172,12 @@ CommandParser::MessageCommand::ToExecutable(Core::User* Emitter,
       if (Name() == "USER")
         return new Commands::User(Emitter, Context, this);
       break;
+    case 'W':
+      if (Name() == "WHOIS")
+        return new Commands::Whois(Emitter, Context, this);
+      if (Name() == "WHOWAS")
+        return new Commands::Whowas(Emitter, Context, this);
+      break;
     default:
       Replies::ERR_UNKNOWNCOMMAND(Emitter, Name());
       return 0;

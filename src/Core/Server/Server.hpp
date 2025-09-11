@@ -8,6 +8,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
+#include <list>
 
 #ifndef BACKLOG
 #define BACKLOG 5
@@ -40,6 +41,8 @@ private:
   std::string hostName;
   Logging::Engine log;
   std::vector<Core::User*> disconnected;
+  std::map<std::string, std::list<Core::User*> > nickHistory;
+
   void handleClientDisconnection();
   void prepareClientFdsForSelect();
   void acceptNewClient();
@@ -74,6 +77,8 @@ public:
   static void StopServer(void);
 
   std::vector<std::string> GetAllChannelNames(void);
+  void LogNicknameChangeForUser(Core::User* user);
+  Core::User* GetLatestUserWithNickname(const std::string& nick);
 };
 
 }

@@ -20,6 +20,8 @@ SRC := ./src/Commands/User.cpp \
 	./src/Commands/Quit.cpp \
 	./src/Commands/Topic.cpp \
 	./src/Commands/Pong.cpp \
+	./src/Commands/Whois.cpp \
+	./src/Commands/Whowas.cpp \
 	./src/Commands/ExecutableCommand.cpp \
 	./src/Common/Algo/EscapeSequence.cpp \
 	./src/Common/Algo/SaferStoul.cpp \
@@ -61,7 +63,7 @@ $(NAME): $(OBJ)
 $(OBJDIR)/%.o: ./src/%.cpp
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) -o $@ -c $<
-	@printf "\t'$@' compiled ($(CXX), $(CXXFLAGS), $<)\n"
+	@printf "\t'$@' compiled\n"
 
 clean:
 	@rm -rf $(OBJDIR)

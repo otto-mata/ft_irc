@@ -161,10 +161,10 @@ Core::Server::handleClientDisconnection()
 void
 Core::Server::Start(void)
 {
-  timeval tv;
+  /* timeval tv;
 
   tv.tv_sec = 0;
-  tv.tv_usec = (long)(POLL_INTERVAL * 100000);
+  tv.tv_usec = (long)(POLL_INTERVAL * 100000); */
 
   while (!MustStop) {
     FD_ZERO(&rfds);
@@ -174,7 +174,7 @@ Core::Server::Start(void)
     disconnected.clear();
 
     prepareClientFdsForSelect();
-    if (select(maxfd + 1, &rfds, &wfds, 0, &tv) < 0) {
+    if (select(maxfd + 1, &rfds, &wfds, 0, 0) < 0) {
       // Here, we asssume MustStop is a marker for CTRL-C.
       // Because we can't use <errno.h>, we cannot be sure that
       // select() returned -1 because of a caught signal (which would set errno to EINTR).

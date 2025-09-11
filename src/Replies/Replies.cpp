@@ -28,6 +28,54 @@ Replies::RPL_UMODEIS(Core::User* user)
 }
 
 int
+Replies::RPL_WHOISUSER(Core::User* user, Core::User* target)
+{
+  if (user && target)
+    user->AppendToOutgoingBuffer(
+      ":localhost 331 " + user->GetNickname() + " " + target->GetNickname() +
+      " " + target->GetUsername() + " * * :" + target->GetRealName());
+  return 331;
+}
+
+int
+Replies::RPL_ENDOFWHOIS(Core::User* user, Core::User* target)
+{
+  if (user && target)
+    user->AppendToOutgoingBuffer(":localhost 318 " + user->GetNickname() + " " +
+                                 target->GetNickname() + " :End of WHOIS\r\n");
+  return 318;
+}
+
+int
+Replies::RPL_ENDOFWHOWAS(Core::User* user, Core::User* target)
+{
+  if (user && target)
+    user->AppendToOutgoingBuffer(":localhost 369 " + user->GetNickname() + " " +
+                                 target->GetNickname() + " :End of WHOWAS\r\n");
+  return 369;
+}
+
+int
+Replies::RPL_WHOWASUSER(Core::User* user, Core::User* target)
+{
+  if (user && target)
+    user->AppendToOutgoingBuffer(
+      ":localhost 314 " + user->GetNickname() + " " + target->GetNickname() +
+      " " + target->GetUsername() + " * * :" + target->GetRealName());
+  return 314;
+}
+
+int
+Replies::ERR_WASNOSUCHNICK(Core::User* user, const std::string& nick)
+{
+
+  if (user)
+    user->AppendToOutgoingBuffer(":localhost 406 " + user->GetNickname() + " " +
+                                 nick + " :There was no such nickname");
+  return 406;
+}
+
+int
 Replies::ERR_UMODEUNKNOWNFLAG(Core::User* user, const std::string& flag)
 {
   if (user)
@@ -57,9 +105,13 @@ Replies::ERR_NOSUCHNICK(Core::User* user, const std::string& nick)
 int
 Replies::ERR_NICKNAMEINUSE(Core::User* user, const std::string& nick)
 {
-  if (user)
-    user->AppendToOutgoingBuffer(":localhost 433 " + user->GetNickname() + " " +
-                                 nick + " :Nickname already in use");
+  if (user) {
+    std::string nickname =
+      user->GetNickname().size() > 0 ? user->GetNickname() : "*";
+    user->AppendToOutgoingBuffer(":" + user->FullIdentityString() + " 433 " +
+                                 nickname + " " + nick +
+                                 " :Nickname already in use");
+  }
   return 433;
 }
 

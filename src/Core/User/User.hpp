@@ -64,7 +64,7 @@ public:
   void PendingCapabilitiesNegotiation(void);
   bool HasFinishedCapNeg(void);
 
-  void CompletedRegistrationRoutine(const std::string& from);
+  bool CompletedRegistrationRoutine(const std::string& from);
 
   void SetPasswordReceived(bool);
   bool SetPasswordValid(bool);

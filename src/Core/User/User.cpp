@@ -181,11 +181,11 @@ Core::User::HasFinishedCapNeg(void)
   return _capabilitiesNegotiationFinished == true;
 }
 
-void
+bool
 Core::User::CompletedRegistrationRoutine(const std::string& from)
 {
-  if (!FullyRegistered())
-    return;
+  if (!FullyRegistered() || _disconnected == false)
+    return false;
   AppendToOutgoingBuffer(":" + from + " 001 " + GetNickname() +
                          " :Hello! Welcome to IRC");
   AppendToOutgoingBuffer(":" + from + " 002 " + GetNickname() +
@@ -195,6 +195,7 @@ Core::User::CompletedRegistrationRoutine(const std::string& from)
   AppendToOutgoingBuffer(":" + from + " 004 " + GetNickname() + " " + from +
                          " ft_irc v0.0.1a");
   _disconnected = false;
+  return true;
 }
 
 void

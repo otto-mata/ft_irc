@@ -19,9 +19,8 @@ Commands::Nick::ValidateInput(void)
   if (!raw->HasArguments()) {
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   }
-  const std::string& name = raw->Argument(0);
-  if (ctx->MatchUserByNickname(name)) {
-    return Replies::ERR_NICKNAMEINUSE(emitter, name);
+  if (ctx->MatchUserByNickname(raw->Argument(0))) {
+    return Replies::ERR_NICKNAMEINUSE(emitter, raw->Argument(0));
   }
   return 0;
 }
@@ -32,5 +31,6 @@ Commands::Nick::Execute(void)
   const std::string& name = raw->Argument(0);
   emitter->SetNickname(name);
   emitter->CompletedRegistrationRoutine(ctx->Hostname());
+  ctx->LogNicknameChangeForUser(emitter);
   return 0;
 }

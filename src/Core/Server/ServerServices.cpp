@@ -1,7 +1,7 @@
 #include "ChannelPredicates.hpp"
-#include <CustomAlgo.hpp>
 #include "Server.hpp"
 #include "UserPredicates.hpp"
+#include <CustomAlgo.hpp>
 
 Core::User*
 Core::Server::FindUserByNickname(const std::string& Nickname)
@@ -50,7 +50,8 @@ Core::Server::TryPassword(const std::string& attempt)
   return attempt == password;
 }
 
-bool Core::Server::IsPasswordProtected(void)
+bool
+Core::Server::IsPasswordProtected(void)
 {
   return !password.empty();
 }
@@ -87,6 +88,24 @@ Core::Server::GetAllChannelNames(void)
     v.push_back(it->first);
   }
   return (v);
+}
+
+void
+Core::Server::LogNicknameChangeForUser(Core::User* user)
+{
+  if (!user)
+    return;
+  if (nickHistory.find(user->GetNickname()) == nickHistory.end())
+    nickHistory[user->GetNickname()] = std::list<Core::User*>();
+  nickHistory[user->GetNickname()].push_front(user);
+}
+
+Core::User*
+Core::Server::GetLatestUserWithNickname(const std::string& nick)
+{
+  if (nickHistory.find(nick) == nickHistory.end())
+    return (0);
+  return nickHistory[nick].front();
 }
 
 Core::Channel*

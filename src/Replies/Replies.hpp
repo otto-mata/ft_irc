@@ -46,6 +46,16 @@ int
 RPL_TOPIC(Core::User* user, Core::Channel* channel);
 int
 RPL_UMODEIS(Core::User* user);
+int
+RPL_WHOISUSER(Core::User* user, Core::User* target);
+int
+RPL_ENDOFWHOIS(Core::User* user, Core::User* target);
+int
+RPL_ENDOFWHOWAS(Core::User* user, Core::User* target);
+int
+RPL_WHOWASUSER(Core::User* user, Core::User* target);
+int 
+ERR_WASNOSUCHNICK(Core::User* user, const std::string& nick);
 
 } // namespace Replies
 
