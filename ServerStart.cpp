@@ -9,6 +9,7 @@
 #include <list>
 #include <sstream>
 #include <unistd.h>
+#include <sys/resource.h>
 
 /**
  * @brief Proper input handling function, executing commands as they are
@@ -174,16 +175,26 @@ Core::Server::Start(void)
 
     prepareClientFdsForSelect();
     if (select(maxfd + 1, &rfds, &wfds, 0, &tv) < 0) {
-      if (MustStop)
+      // Here, we asssume MustStop is a marker for CTRL-C.
+      // Because we can't use <errno.h>, we cannot be sure that
+      // select() returned -1 because of a caught signal (which would set errno to EINTR).
+      // This is a bit hacky, but hey...
+      if (MustStop) 
         break;
       else
         throw std::runtime_error("Fatal select() error");
     }
+    try {
     acceptNewClient();
     manageUserDataReception();
     handleClientDisconnection();
+    } catch (const std::runtime_error& e)
+    {
+      log.fatal(e.what());
+      Core::Server::StopServer();
+    }
   }
-  log.info("CTRL-C received, stopping...");
+  log.info("Stopping...");
   log.info("Deleting users...");
   for (Core::UserMap::iterator it = users.begin(); it != users.end(); it++) {
     delete it->second;
