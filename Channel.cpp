@@ -30,7 +30,7 @@ Core::Channel::Channel(const std::string& channel_name)
 Core::Channel::~Channel() {}
 
 const std::string&
-Core::Channel::getName()
+Core::Channel::GetName()
 {
   return _name;
 }
@@ -41,7 +41,7 @@ Core::Channel::SetOwner(Core::User* Owner)
   if (_owner != 0)
     return 0;
   _owner = Owner;
-  addAdmin(Owner);
+  AddAdmin(Owner);
   return 1;
 }
 
@@ -65,285 +65,180 @@ Core::Channel::userMatch(const std::string& name)
 }
 
 bool
-Core::Channel::isUser(const std::string& user_tofind)
+Core::Channel::IsUser(const std::string& user_tofind)
 {
   return userMatch(user_tofind) & (1 << 2);
 }
 
 bool
-Core::Channel::isUser(Core::User* user_tofind)
+Core::Channel::IsUser(Core::User* user_tofind)
 {
   return _users.count(user_tofind);
 }
 
 void
-Core::Channel::addUser(Core::User* user_toadd)
+Core::Channel::AddUser(Core::User* user_toadd)
 {
-  addUserWhitelist(user_toadd);
-  if (!isUser(user_toadd)) {
+  AddUserToWhitelist(user_toadd);
+  if (!IsUser(user_toadd)) {
     _users.insert(user_toadd);
   }
 }
 
 void
-Core::Channel::removeUser(Core::User* user_toremove)
+Core::Channel::RemoveUser(Core::User* user_toremove)
 {
-  if (isUser(user_toremove)) {
+  if (IsUser(user_toremove)) {
     _users.erase(user_toremove);
   }
 }
 
 bool
-Core::Channel::isUserWhitelist(const std::string& user_tofind)
+Core::Channel::IsUserInWhitelist(const std::string& user_tofind)
 {
   return userMatch(user_tofind) & 1;
 }
 
 bool
-Core::Channel::isUserWhitelist(Core::User* user_tofind)
+Core::Channel::IsUserInWhitelist(Core::User* user_tofind)
 {
   return _whitelist.count(user_tofind);
 }
 
 void
-Core::Channel::addUserWhitelist(Core::User* user_toadd)
+Core::Channel::AddUserToWhitelist(Core::User* user_toadd)
 {
-  if (!isUserWhitelist(user_toadd)) {
+  if (!IsUserInWhitelist(user_toadd)) {
     _whitelist.insert(user_toadd);
   }
 }
 
 void
-Core::Channel::removeUserWhitelist(Core::User* user_toremove)
+Core::Channel::RemoveUserFromWhitelist(Core::User* user_toremove)
 {
-  if (isUserWhitelist(user_toremove)) {
+  if (IsUserInWhitelist(user_toremove)) {
     _whitelist.erase(user_toremove);
   }
 }
 
 bool
-Core::Channel::isAdmin(const std::string& admin_tofind)
+Core::Channel::IsAdmin(const std::string& admin_tofind)
 {
   return userMatch(admin_tofind) & (1 << 1);
 }
 
 bool
-Core::Channel::isAdmin(Core::User* admin_tofind)
+Core::Channel::IsAdmin(Core::User* admin_tofind)
 {
   return _admins.count(admin_tofind);
 }
 
 void
-Core::Channel::addAdmin(Core::User* admin_toadd)
+Core::Channel::AddAdmin(Core::User* admin_toadd)
 {
-  addUser(admin_toadd);
-  if (!isAdmin(admin_toadd)) {
+  AddUser(admin_toadd);
+  if (!IsAdmin(admin_toadd)) {
     _admins.insert(admin_toadd);
   }
 }
 
 void
-Core::Channel::removeAdmin(Core::User* admin_toadd)
+Core::Channel::RemoveAdmin(Core::User* admin_toadd)
 {
-  if (isAdmin(admin_toadd)) {
+  if (IsAdmin(admin_toadd)) {
     _admins.erase(admin_toadd);
   }
 }
 
 const std::string&
-Core::Channel::getTopic()
+Core::Channel::GetTopic()
 {
   return _topic;
 }
 
 void
-Core::Channel::setTopic(const std::string& NewTopic)
+Core::Channel::SetTopic(const std::string& NewTopic)
 {
   _topic = NewTopic;
 }
 
 bool
-Core::Channel::tryPassword(const std::string& PasswordToTest)
+Core::Channel::TryPassword(const std::string& PasswordToTest)
 {
   return (_password == PasswordToTest);
 }
 
 void
-Core::Channel::setPassword(const std::string& NewPassword)
+Core::Channel::SetPassword(const std::string& NewPassword)
 {
   _password = NewPassword;
-  setIsPasswordProtected(true);
+  SetPasswordProtected(true);
 }
 
 size_t
-Core::Channel::getUserLimit()
+Core::Channel::GetUserLimit()
 {
   return _userLimit;
 }
 
 void
-Core::Channel::setUserLimit(size_t NewUserLimit)
+Core::Channel::SetUserLimit(size_t NewUserLimit)
 {
   _userLimit = NewUserLimit;
 }
 
 size_t
-Core::Channel::getUserCount()
+Core::Channel::GetUserCount()
 {
   return _users.size();
 }
 
 bool
-Core::Channel::getIsInviteOnly()
+Core::Channel::IsInviteOnly()
 {
   return _isInviteOnly;
 }
 
 void
-Core::Channel::setIsInviteOnly(bool state)
+Core::Channel::SetInviteOnly(bool state)
 {
   _isInviteOnly = state;
 }
 
 bool
-Core::Channel::getIsTopicModifiable()
+Core::Channel::IsTopicModifiable()
 {
   return _isTopicModifiable;
 }
 
 void
-Core::Channel::setIsTopicModifiable(bool state)
+Core::Channel::SetTopicModifiable(bool state)
 {
   _isTopicModifiable = state;
 }
 
 bool
-Core::Channel::getIsUserLimited()
+Core::Channel::IsUserLimited()
 {
   return _isUserLimited;
 }
 
 void
-Core::Channel::setIsUserLimited(bool state)
+Core::Channel::SetUserLimited(bool state)
 {
   _isInviteOnly = state;
 }
 
 bool
-Core::Channel::getIsPasswordProtected()
+Core::Channel::IsPasswordProtected()
 {
   return _isPasswordProtected;
 }
 
 void
-Core::Channel::setIsPasswordProtected(bool state)
+Core::Channel::SetPasswordProtected(bool state)
 {
   _isPasswordProtected = state;
-}
-
-/* Command calls */
-
-void
-Core::Channel::joinUser(Core::User* joining_user)
-{
-  if (getIsPasswordProtected()) {
-    std::cout << "Channel is password protected" << std::endl;
-    return;
-  }
-  if (getIsInviteOnly() && !isUserWhitelist(joining_user)) {
-    std::cout << "Channel is invite only and user is not whitelisted"
-              << std::endl;
-    return;
-  }
-  if (getIsUserLimited() && getUserCount() >= getUserLimit()) {
-    std::cout << "Channel full" << std::endl;
-    return;
-  }
-  addUserWhitelist(joining_user);
-  addUser(joining_user);
-}
-
-void
-Core::Channel::joinUser(Core::User* joining_user, const std::string& entered_password)
-{
-  if (getIsPasswordProtected() && !tryPassword(entered_password)) {
-    std::cout << "Incorrect password" << std::endl;
-    return;
-  }
-  if (getIsInviteOnly() && !isUserWhitelist(joining_user)) {
-    std::cout << "Channel is invite only and user is not whitelisted"
-              << std::endl;
-    return;
-  }
-  if (getIsUserLimited() && getUserCount() >= getUserLimit()) {
-    std::cout << "Channel full" << std::endl;
-    return;
-  }
-  addUserWhitelist(joining_user);
-  addUser(joining_user);
-}
-
-void
-Core::Channel::partUser(Core::User* parting_user)
-{
-  removeUser(parting_user);
-}
-
-void
-Core::Channel::inviteUser(Core::User* command_user, Core::User* invited_user)
-{
-  if (!isAdmin(command_user)) {
-    std::cout << "invite command requires admin privileges" << std::endl;
-    return;
-  }
-  if (isUserWhitelist(invited_user)) {
-    std::cout << "User allready whitelisted" << std::endl;
-    return;
-  }
-  addUserWhitelist(invited_user);
-}
-
-void
-Core::Channel::kickUser(Core::User* command_user, Core::User* kicked_user)
-{
-  if (!isAdmin(command_user)) {
-    std::cout << "kick command requires admin privileges" << std::endl;
-    return;
-  }
-  if (!isUser(kicked_user)) {
-    std::cout << "User you want to kick is not on the channel" << std::endl;
-    return;
-  }
-  removeUser(kicked_user);
-  std::cout << kicked_user << " has been kicked" << std::endl;
-}
-
-void
-Core::Channel::kickUser(Core::User* command_user,
-                  Core::User* kicked_user,
-                  const std::string& kick_reason)
-{
-  kickUser(command_user, kicked_user);
-  std::cout << kicked_user << " has been kicked for " << kick_reason
-            << std::endl;
-}
-
-void
-Core::Channel::activatePassword(const std::string& password_given)
-{
-  setPassword(password_given);
-  setIsPasswordProtected(true);
-}
-
-void
-Core::Channel::modifyTopic(Core::User* command_user, const std::string& new_topic)
-{
-  if (!getIsTopicModifiable() && isAdmin(command_user)) {
-    std::cout << "topic is protected and requires admin privileges"
-              << std::endl;
-    return;
-  }
-  setTopic(new_topic);
 }
 
 void

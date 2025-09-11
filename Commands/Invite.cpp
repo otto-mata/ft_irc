@@ -24,9 +24,9 @@ Commands::Invite::ValidateInput(void)
     return 3; //! Target user is not registered to the server
   if (raw->Argument(1).at(0) != '#' || !SetTargetChannelFromContext(raw->Argument(1)))
     return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(1));
-  if (!targetChannel->isAdmin(emitter))
+  if (!targetChannel->IsAdmin(emitter))
     return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(1));
-  if (targetChannel->isUser(targetUser))
+  if (targetChannel->IsUser(targetUser))
     return Replies::ERR_USERONCHANNEL(emitter, targetUser->GetNickname(), raw->Argument(1));
   return 0;
 }
@@ -34,12 +34,12 @@ Commands::Invite::ValidateInput(void)
 int
 Commands::Invite::Execute(void)
 {
-  targetChannel->addUserWhitelist(targetUser);
+  targetChannel->AddUserToWhitelist(targetUser);
   targetUser->AppendToOutgoingBuffer(":" + emitter->GetNickname() + " INVITE " +
                                      targetUser->GetNickname() + " " +
-                                     targetChannel->getName());
+                                     targetChannel->GetName());
   emitter->AppendToOutgoingBuffer(":localhost 341 " + emitter->GetNickname() +
                                   " " + targetUser->GetNickname() + " " +
-                                  targetChannel->getName());
+                                  targetChannel->GetName());
   return 0;
 }

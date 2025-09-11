@@ -26,19 +26,19 @@ Commands::Topic::ValidateInput(void)
 int
 Commands::Topic::Execute(void)
 {
-  if (!targetChannel->isUser(emitter))
-    return Replies::ERR_NOTONCHANNEL(emitter, targetChannel->getName());
+  if (!targetChannel->IsUser(emitter))
+    return Replies::ERR_NOTONCHANNEL(emitter, targetChannel->GetName());
   if (raw->HasTrailing()) {
-    if (!targetChannel->getIsTopicModifiable() &&
-        !targetChannel->isAdmin(emitter))
+    if (!targetChannel->IsTopicModifiable() &&
+        !targetChannel->IsAdmin(emitter))
       return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(0));
     std::string newTopic = raw->Trailing();
-    targetChannel->setTopic(newTopic);
+    targetChannel->SetTopic(newTopic);
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " TOPIC #" +
-                             targetChannel->getName() + " :" + newTopic);
+                             targetChannel->GetName() + " :" + newTopic);
     return (0);
   }
-  if (targetChannel->getTopic().empty())
+  if (targetChannel->GetTopic().empty())
     return Replies::RPL_NOTOPIC(emitter, raw->Argument(0));
   else
     return Replies::RPL_TOPIC(emitter, targetChannel);

@@ -47,29 +47,29 @@ Commands::Join::Execute(void)
         return 1; //! Error during creation
       tChan->SetOwner(emitter);
       if (raw->Arguments().size() == 2)
-        tChan->setPassword(raw->Argument(1));
+        tChan->SetPassword(raw->Argument(1));
       SetTargetChannel(tChan);
     }
-    if (targetChannel->getIsInviteOnly() &&
-        !targetChannel->isUserWhitelist(emitter)) {
-      return Replies::ERR_INVITEONLYCHAN(emitter, targetChannel->getName());
+    if (targetChannel->IsInviteOnly() &&
+        !targetChannel->IsUserInWhitelist(emitter)) {
+      return Replies::ERR_INVITEONLYCHAN(emitter, targetChannel->GetName());
     }
-    if (targetChannel->getIsPasswordProtected()) {
+    if (targetChannel->IsPasswordProtected()) {
       if (raw->Arguments().size() != 2 || index >= passes.size())
         return Replies::ERR_PASSWDMISMATCH(emitter);
-      else if (!targetChannel->tryPassword(passes.at(index))) {
+      else if (!targetChannel->TryPassword(passes.at(index))) {
         index++;
         Replies::ERR_PASSWDMISMATCH(emitter);
         continue;
       }
     }
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +
-                             targetChannel->getName());
+                             targetChannel->GetName());
     std::string welcomeBuffer =
       ":" + ctx->Hostname() + " 332 " + emitter->GetNickname() + " #" +
-      targetChannel->getName() + " :" + targetChannel->getTopic() + "\r\n";
+      targetChannel->GetName() + " :" + targetChannel->GetTopic() + "\r\n";
     welcomeBuffer += ":" + ctx->Hostname() + " 353 " + emitter->GetNickname() +
-                     " = #" + targetChannel->getName() + " :";
+                     " = #" + targetChannel->GetName() + " :";
     const Users& tChanUsers = targetChannel->GetUsers();
     for (Users::iterator it = tChanUsers.begin(); it != tChanUsers.end();
          it++) {

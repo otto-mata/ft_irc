@@ -23,25 +23,25 @@ Commands::Mode::ValidateInput(void)
 }
 
 int
-Commands::Mode::handleOpMode(char mode)
+Commands::Mode::handleOpMode(triplet& t)
 {
-  if (raw->Arguments().size() != 3)
+  if (!t.HasValue)
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
-  if (!SetTargetUserFromContext(raw->Argument(2)))
-    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(2));
-  if (!targetChannel->isUser(targetUser))
+  if (!SetTargetUserFromContext(t.Value))
+    return Replies::ERR_NOSUCHNICK(emitter, t.Value);
+  if (!targetChannel->IsUser(targetUser))
     return Replies::ERR_NOSUCHNICK(emitter, targetUser->GetNickname());
-  if (mode == '-') {
-    if (!targetChannel->isAdmin(targetUser))
+  if (t.Mode == '-') {
+    if (!targetChannel->IsAdmin(targetUser))
       return 1;
-    targetChannel->removeAdmin(targetUser);
+    targetChannel->RemoveAdmin(targetUser);
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE -o " +
                              targetUser->GetNickname());
   }
-  if (mode == '+') {
-    if (targetChannel->isAdmin(targetUser))
-      return 2;
-    targetChannel->addAdmin(targetUser);
+  if (t.Mode == '+') {
+    if (targetChannel->IsAdmin(targetUser))
+      return 0;
+    targetChannel->AddAdmin(targetUser);
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE +o " +
                              targetUser->GetNickname());
   }
@@ -49,37 +49,36 @@ Commands::Mode::handleOpMode(char mode)
 }
 
 int
-Commands::Mode::handleKeyMode(char mode)
+Commands::Mode::handleKeyMode(triplet& t)
 {
-  if (mode == '+' && raw->Arguments().size() < 3)
+  if (t.Mode == '+' && !t.HasValue)
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
-  if (mode == '+') {
-    targetChannel->setPassword(raw->Argument(2));
+  if (t.Mode == '+') {
+    targetChannel->SetPassword(t.Value);
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
-                             targetChannel->getName() + " +k " +
-                             raw->Argument(2));
-  } else if (mode == '-') {
-    targetChannel->setPassword("");
-    targetChannel->setIsPasswordProtected(false);
+                             targetChannel->GetName() + " +k " + t.Value);
+  } else if (t.Mode == '-') {
+    targetChannel->SetPassword("");
+    targetChannel->SetPasswordProtected(false);
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
-                             targetChannel->getName() + " -k ");
+                             targetChannel->GetName() + " -k ");
   }
   return (0);
 }
 
 int
-Commands::Mode::handleLimMode(char mode)
+Commands::Mode::handleLimMode(triplet& t)
 {
-  if (mode == '+' && raw->Arguments().size() < 3)
+  if (t.Mode == '+' && !t.HasValue)
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
-  if (mode == '+') {
+  if (t.Mode == '+') {
     size_t n = 0;
-    if (!Algo::String::SaferStoul(raw->Argument(2), &n))
+    if (!Algo::String::SaferStoul(t.Value, &n))
       return 1;
-    targetChannel->setUserLimit(n);
-  } else if (mode == '-') {
-    targetChannel->setIsUserLimited(false);
-    targetChannel->setUserLimit(~0);
+    targetChannel->SetUserLimit(n);
+  } else if (t.Mode == '-') {
+    targetChannel->SetUserLimited(false);
+    targetChannel->SetUserLimit(~0);
   }
   return (0);
 }
@@ -98,56 +97,60 @@ Commands::Mode::Execute(void)
   }
   if (raw->Arguments().size() < 2)
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
-  if (!targetChannel->isUser(emitter))
+  if (!targetChannel->IsUser(emitter))
     return Replies::ERR_NOTONCHANNEL(emitter, raw->Argument(0));
-  if (!targetChannel->isAdmin(emitter))
+  if (!targetChannel->IsAdmin(emitter))
     return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(0));
 
-  std::string flag = raw->Argument(1);
-  char mode = flag.at(0);
-  if (mode != '+' && mode != '-')
-    return Replies::ERR_UMODEUNKNOWNFLAG(emitter, raw->Argument(1));
-  flag = flag.substr(1);
-  if (flag.empty()) {
-    return Replies::ERR_UMODEUNKNOWNFLAG(emitter, raw->Argument(1));
-  }
-  if (flag.size() == 1 || flag.size() == 2) {
-    for (std::string::iterator it = flag.begin(); it < flag.end(); it++) {
+  std::string flags(raw->Argument(1));
+  std::vector<std::string> args;
+  std::vector<triplet> modeUpdates;
 
-      switch (*it) {
-        case 'i':
-          targetChannel->setIsInviteOnly(mode == '+' ? true : false);
-          targetChannel->Broadcast(":" + emitter->FullIdentityString() +
-                                   " MODE #" + targetChannel->getName() + " " +
-                                   mode + "i");
-          break;
-        case 't':
-          targetChannel->setIsTopicModifiable(mode == '+' ? false : true);
-          targetChannel->Broadcast(":" + emitter->FullIdentityString() +
-                                   " MODE #" + targetChannel->getName() + " " +
-                                   mode + "t");
-          break;
-        case 'k':
-          return handleKeyMode(mode);
-        case 'o':
-          return handleOpMode(mode);
-        case 'l':
-          return handleLimMode(mode);
-        default:
-          return Replies::ERR_UMODEUNKNOWNFLAG(emitter, flag);
-      }
+  for (size_t i = 2; i < raw->Arguments().size(); i++) {
+    args.push_back(raw->Argument(i));
+  }
+  size_t index = 0;
+  char mode = '\0';
+  for (std::string::iterator it = flags.begin(); it < flags.end(); it++) {
+    if (*it == '-' || *it == '+') {
+      mode = *it;
+      continue;
     }
-  } else if (raw->Arguments().size() >= 2) {
-    switch (flag.at(0)) {
-      case 'k':
-        return handleKeyMode(mode);
-      case 'o':
-        return handleOpMode(mode);
-      case 'l':
-        return handleLimMode(mode);
-      default:
-        return Replies::ERR_UMODEUNKNOWNFLAG(emitter, flag);
+    std::string v;
+    bool hasV = index < args.size() && *it != 'i' && *it != 't';
+    if (hasV) {
+      v = args.at(index);
+      index++;
     }
+    triplet t((*it), v, hasV, mode);
+    modeUpdates.push_back(t);
+  }
+  for (std::vector<triplet>::iterator it = modeUpdates.begin();
+       it < modeUpdates.end();
+       it++) {
+    int execRet = 0;
+    if ((*it).Flag == 'i') {
+      targetChannel->SetInviteOnly((*it).Mode == '+' ? true : false);
+      targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
+                               targetChannel->GetName() + " " + (*it).Mode +
+                               "i");
+    } else if ((*it).Flag == 't') {
+      targetChannel->SetTopicModifiable((*it).Mode == '+' ? false : true);
+      targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
+                               targetChannel->GetName() + " " + (*it).Mode +
+                               "t");
+    } else if ((*it).Flag == 'k')
+      execRet = handleKeyMode(*it);
+    else if ((*it).Flag == 'o')
+      execRet = handleOpMode(*it);
+    else if ((*it).Flag == 'l')
+      execRet = handleLimMode(*it);
+    else
+      execRet =
+        Replies::ERR_UMODEUNKNOWNFLAG(emitter, std::string() + (*it).Flag);
+
+    if (execRet){
+      return execRet;}
   }
 
   return 0;

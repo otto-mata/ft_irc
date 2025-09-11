@@ -5,7 +5,7 @@ ChannelPredicates::FindByNameInMap::FindByNameInMap(const std::string& name): _n
 Core::Channel*
 ChannelPredicates::FindByNameInMap::operator()(std::pair<const std::string, Core::Channel*>& pair)
 {
-  return _name == pair.second->getName() ? pair.second : 0;;
+  return _name == pair.second->GetName() ? pair.second : 0;;
 }
 
 ChannelPredicates::MatchNameInMap::MatchNameInMap(const std::string& name):_name(name) {}
@@ -13,5 +13,5 @@ ChannelPredicates::MatchNameInMap::MatchNameInMap(const std::string& name):_name
 bool
 ChannelPredicates::MatchNameInMap::operator()(std::pair<const std::string, Core::Channel*>& pair)
 {
-  return _name == pair.second->getName();
+  return _name == pair.second->GetName();
 }

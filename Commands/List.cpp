@@ -50,8 +50,8 @@ Commands::List::Execute(void)
     Core::Channel* chan = ctx->GetChannel(*it);
     std::ostringstream os;
     os << ":" << ctx->Hostname() << " 322 " << emitter->GetNickname() << " "
-       << chan->getName() << " " << chan->GetUsers().size() << " :"
-       << chan->getTopic();
+       << chan->GetName() << " " << chan->GetUsers().size() << " :"
+       << chan->GetTopic();
     emitter->AppendToOutgoingBuffer(os.str());
   }
   emitter->AppendToOutgoingBuffer(":" + ctx->Hostname() + " " +

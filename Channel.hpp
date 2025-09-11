@@ -45,60 +45,48 @@ public:
 
   /* Basic class settings */
 
-  const std::string& getName();
+  const std::string& GetName();
 
   int SetOwner(Core::User* Owner);
   Core::User* GetOwner(void);
 
-  bool isUser(const std::string& user_tofind);
-  bool isUser(Core::User* user_tofind);
-  void addUser(Core::User* user_toadd);
-  void removeUser(Core::User* user_toremove);
+  bool IsUser(const std::string& user_tofind);
+  bool IsUser(Core::User* user_tofind);
+  void AddUser(Core::User* user_toadd);
+  void RemoveUser(Core::User* user_toremove);
 
-  bool isUserWhitelist(const std::string& user_tofind);
-  bool isUserWhitelist(Core::User* user_tofind);
-  void addUserWhitelist(Core::User* user_toadd);
-  void removeUserWhitelist(Core::User* user_toremove);
+  bool IsUserInWhitelist(const std::string& user_tofind);
+  bool IsUserInWhitelist(Core::User* user_tofind);
+  void AddUserToWhitelist(Core::User* user_toadd);
+  void RemoveUserFromWhitelist(Core::User* user_toremove);
 
-  bool isAdmin(const std::string& admin_tofind);
-  bool isAdmin(Core::User* admin_tofind);
-  void addAdmin(Core::User* admin_toadd);
-  void removeAdmin(Core::User* admin_toremove);
+  bool IsAdmin(const std::string& admin_tofind);
+  bool IsAdmin(Core::User* admin_tofind);
+  void AddAdmin(Core::User* admin_toadd);
+  void RemoveAdmin(Core::User* admin_toremove);
 
-  const std::string& getTopic();
-  void setTopic(const std::string& NewTopic);
+  const std::string& GetTopic();
+  void SetTopic(const std::string& NewTopic);
 
-  bool tryPassword(const std::string& PasswordToTest);
-  void setPassword(const std::string& NewPassword);
+  bool TryPassword(const std::string& PasswordToTest);
+  void SetPassword(const std::string& NewPassword);
 
-  size_t getUserLimit();
-  void setUserLimit(size_t NewUserLimit);
-  size_t getUserCount();
+  size_t GetUserLimit();
+  void SetUserLimit(size_t NewUserLimit);
+  size_t GetUserCount();
 
-  bool getIsInviteOnly();
-  void setIsInviteOnly(bool state);
+  bool IsInviteOnly();
+  void SetInviteOnly(bool state);
 
-  bool getIsTopicModifiable();
-  void setIsTopicModifiable(bool state);
+  bool IsTopicModifiable();
+  void SetTopicModifiable(bool state);
 
-  bool getIsUserLimited();
-  void setIsUserLimited(bool state);
+  bool IsUserLimited();
+  void SetUserLimited(bool state);
 
-  bool getIsPasswordProtected();
-  void setIsPasswordProtected(bool state);
+  bool IsPasswordProtected();
+  void SetPasswordProtected(bool state);
 
-  /* Command calls */
-
-  void joinUser(Core::User* joining_user);
-  void joinUser(Core::User* joining_user, const std::string& entered_password);
-  void partUser(Core::User* parting_user);
-  void inviteUser(Core::User* command_user, Core::User* invited_user);
-  void kickUser(Core::User* command_user, Core::User* kicked_user);
-  void kickUser(Core::User* command_user,
-                Core::User* kicked_user,
-                const std::string& kick_reason);
-  void activatePassword(const std::string& password_given);
-  void modifyTopic(Core::User* command_user, const std::string& new_topic);
   void Broadcast(const std::string& m, Core::User* except = 0);
 
   const Users& GetUsers(void);

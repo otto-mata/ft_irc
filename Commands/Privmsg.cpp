@@ -28,7 +28,7 @@ Commands::Privmsg::Execute(void)
     if (!SetTargetChannelFromContext(raw->Argument(0)))
       return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(0));
     targetChannel->Broadcast(":" + emitter->FullIdentityString() +
-                             " PRIVMSG #" + targetChannel->getName() + " :" +
+                             " PRIVMSG #" + targetChannel->GetName() + " :" +
                              raw->Trailing(), emitter);
     return 0;
   }

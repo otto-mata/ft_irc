@@ -48,7 +48,7 @@ private:
 
 public:
   static bool MustStop;
-  Server(unsigned short p = 6667);
+  Server(unsigned short p = 6667, std::string password = "");
   ~Server(void);
 
   void Start(void);

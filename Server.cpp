@@ -7,8 +7,8 @@
 
 bool Core::Server::MustStop = false;
 
-Core::Server::Server(unsigned short p)
-  : password("password")
+Core::Server::Server(unsigned short p, std::string _password)
+  : password(_password)
   , hostName("localhost")
   , log("ft_irc")
 {

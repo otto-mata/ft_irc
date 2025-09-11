@@ -174,7 +174,7 @@ Replies::RPL_TOPIC(Core::User* user, Core::Channel* channel)
 {
   if (user && channel)
     user->AppendToOutgoingBuffer(":localhost 332 " + user->GetNickname() +
-                                 " #" + channel->getName() + " :" +
-                                 channel->getTopic());
+                                 " #" + channel->GetName() + " :" +
+                                 channel->GetTopic());
   return 0;
 }

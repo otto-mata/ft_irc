@@ -60,8 +60,8 @@ Core::Server::RemoveUserFromServer(Core::User* user)
 {
   for (Core::ChannelMap::iterator it = channels.begin(); it != channels.end();
        ++it) {
-    if (it->second->isUser(user))
-      it->second->removeUser(user);
+    if (it->second->IsUser(user))
+      it->second->RemoveUser(user);
   }
   user->MarkForDeletion();
 }
@@ -110,9 +110,9 @@ Core::Server::RemoveChannel(Core::Channel* Chan)
 {
   if (!Chan)
     return (1);
-  if (!MatchChannelByName(Chan->getName()))
+  if (!MatchChannelByName(Chan->GetName()))
     return (2);
-  channels.erase(Chan->getName());
+  channels.erase(Chan->GetName());
   delete Chan;
   return 0;
 }
