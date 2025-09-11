@@ -3,7 +3,6 @@
 #include "../Replies/Replies.hpp"
 #include "../Server.hpp"
 #include "../User.hpp"
-#include "../Replies/Replies.hpp"
 
 Commands::Ping::Ping(Core::User* Emitter,
                      Core::Server* Context,
@@ -24,7 +23,7 @@ Commands::Ping::Execute(void)
   if (!raw->HasArguments() || raw->Arguments().empty() ||
       (!raw->Arguments().empty() && raw->Argument(0) == ctx->Hostname())) {
     emitter->AppendToOutgoingBuffer(":" + ctx->Hostname() + " PONG " +
-                                    emitter->GetNickname());
+                                    ctx->Hostname() + " :" + ctx->Hostname());
     return (0);
   }
   if (!SetTargetUserFromContext(raw->Argument(0)))

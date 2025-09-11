@@ -75,7 +75,7 @@ Core::Server::Hostname(void)
 void
 Core::Server::StopServer(void)
 {
-  mustStop = true;
+  MustStop = true;
 }
 
 std::vector<std::string>

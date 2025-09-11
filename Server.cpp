@@ -1,15 +1,16 @@
 #include "Server.hpp"
 #include "User.hpp"
 #include <cstdio>
-#include <iostream>
+#include <sstream>
 #include <list>
 #include <unistd.h>
 
-bool Core::Server::mustStop = false;
+bool Core::Server::MustStop = false;
 
 Core::Server::Server(unsigned short p)
   : password("password")
   , hostName("localhost")
+  , log("ft_irc")
 {
   port = htons(p);
   fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
@@ -34,8 +35,12 @@ Core::Server::Server(unsigned short p)
     close(fd);
     throw std::runtime_error("Could not start listenning on socket");
   }
-  mustStop = false;
-  std::cout << "Server started on port " << p << "." << std::endl;
+  MustStop = false;
+  std::ostringstream startLog;
+  startLog << "Server started on port " << p << ".";
+  log.info(startLog.str());
 }
 
-Core::Server::~Server() {}
+Core::Server::~Server() {
+  log.info("Server exited.");
+}

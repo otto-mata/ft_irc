@@ -48,7 +48,6 @@ ExecutableCommand::SetTargetChannelFromContext(const std::string& TargetName)
   size_t pos = 0;
   if (TargetName.find('#') == 0)
     pos++;
-  std::cout << TargetName.substr(pos) << std::endl;
   targetChannel = ctx->FindChannelByName(TargetName.substr(pos));
   return targetChannel != 0;
 }

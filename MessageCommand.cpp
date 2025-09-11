@@ -1,8 +1,9 @@
 #include "CommandParser.hpp"
+#include "Commands/Commands.hpp"
 #include "Exceptions.hpp"
 #include "ExecutableCommand.hpp"
+#include "Replies/Replies.hpp"
 #include "Server.hpp"
-#include "Commands/Commands.hpp"
 
 CommandParser::MessageCommand::MessageCommand(const std::string& arg)
 {
@@ -113,74 +114,68 @@ CommandParser::MessageCommand::HasTrailing(void)
 }
 
 ExecutableCommand*
-CommandParser::MessageCommand::ToExecutable(Core::User* Emitter, Core::Server* Context)
+CommandParser::MessageCommand::ToExecutable(Core::User* Emitter,
+                                            Core::Server* Context)
 {
-  switch (Name()[0])
-  {
-  case 'C':
-    if (Name() == "CAP")
-      return new Commands::Cap(Emitter, Context, this);
-    break;
-  case 'I':
-    if (Name() == "INVITE")
-      return new Commands::Invite(Emitter, Context, this);
-    break;
-  case 'J':
-    if (Name() == "JOIN")
-      return new Commands::Join(Emitter, Context, this);
-    break;
-  case 'K':
-    if (Name() == "KICK")
-      return new Commands::Kick(Emitter, Context, this);
-    break;
-  case 'L':
-    if (Name() == "LIST")
-      return new Commands::List(Emitter, Context, this);
-    break;
-  case 'M':
-    if (Name() == "MODE")
-      return new Commands::Mode(Emitter, Context, this);
-    break;
-  case 'N':
-    if (Name() == "NICK")
-      return new Commands::Nick(Emitter, Context, this);
-    else if (Name() == "NOTICE")
-      return new Commands::Privmsg(Emitter, Context, this);
-    break;
-  case 'P':
-    if (Name() == "PART")
-      return new Commands::Part(Emitter, Context, this);
-    if (Name() == "PASS")
-      return new Commands::Pass(Emitter, Context, this);
-    if (Name() == "PING")
-      return new Commands::Ping(Emitter, Context, this);
-    if (Name() == "PONG")
-      return new Commands::Pong(Emitter, Context, this);
-    if (Name() == "PRIVMSG")
-      return new Commands::Privmsg(Emitter, Context, this);
-    break;
-  case 'Q':
-    if (Name() == "QUIT")
-      return new Commands::Quit(Emitter, Context, this);
-    break;
-  case 'T':
-    if (Name() == "TOPIC")
-      return new Commands::Topic(Emitter, Context, this);
-    break;
-  case 'U':
-    if (Name() == "USER")
-      return new Commands::User(Emitter, Context, this);
-    break;
-  case 'W':
-    if (Name() == "WHOIS")
-      return new Commands::Whois(Emitter, Context, this);
-    if (Name() == "WHOWAS")
-      return new Commands::Whowas(Emitter, Context, this);
-    break;
-  
-  default:
-    return 0;
-    break;
+  switch (Name()[0]) {
+    case 'C':
+      if (Name() == "CAP")
+        return new Commands::Cap(Emitter, Context, this);
+      break;
+    case 'I':
+      if (Name() == "INVITE")
+        return new Commands::Invite(Emitter, Context, this);
+      break;
+    case 'J':
+      if (Name() == "JOIN")
+        return new Commands::Join(Emitter, Context, this);
+      break;
+    case 'K':
+      if (Name() == "KICK")
+        return new Commands::Kick(Emitter, Context, this);
+      break;
+    case 'L':
+      if (Name() == "LIST")
+        return new Commands::List(Emitter, Context, this);
+      break;
+    case 'M':
+      if (Name() == "MODE")
+        return new Commands::Mode(Emitter, Context, this);
+      break;
+    case 'N':
+      if (Name() == "NICK")
+        return new Commands::Nick(Emitter, Context, this);
+      else if (Name() == "NOTICE")
+        return new Commands::Privmsg(Emitter, Context, this);
+      break;
+    case 'P':
+      if (Name() == "PART")
+        return new Commands::Part(Emitter, Context, this);
+      if (Name() == "PASS")
+        return new Commands::Pass(Emitter, Context, this);
+      if (Name() == "PING")
+        return new Commands::Ping(Emitter, Context, this);
+      if (Name() == "PONG")
+        return new Commands::Pong(Emitter, Context, this);
+      if (Name() == "PRIVMSG")
+        return new Commands::Privmsg(Emitter, Context, this);
+      break;
+    case 'Q':
+      if (Name() == "QUIT")
+        return new Commands::Quit(Emitter, Context, this);
+      break;
+    case 'T':
+      if (Name() == "TOPIC")
+        return new Commands::Topic(Emitter, Context, this);
+      break;
+    case 'U':
+      if (Name() == "USER")
+        return new Commands::User(Emitter, Context, this);
+      break;
+    default:
+      Replies::ERR_UNKNOWNCOMMAND(Emitter, Name());
+      return 0;
+      break;
   }
   return 0;
 }

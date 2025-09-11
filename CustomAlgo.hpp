@@ -62,7 +62,11 @@ namespace String {
 std::vector<std::string>
 Split(std::string s, const std::string& delimiter);
 
-bool SaferStoul(std::string s, unsigned long *res);
+bool
+SaferStoul(std::string s, unsigned long* res);
+
+std::string
+EscapeSequence(std::string s);
 } // namespace String
 
 } // namespace Algo

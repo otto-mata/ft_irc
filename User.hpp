@@ -1,6 +1,7 @@
 #ifndef USER_HPP
 #define USER_HPP
 #include "Common.hpp"
+#include "Logging/Logger.hpp"
 
 namespace Core {
 
@@ -16,6 +17,8 @@ private:
   std::string _realname;
   std::string _ipAdress;
   std::string _quitMessage;
+  Logging::Engine log;
+  unsigned short _remotePort;
   bool _isRegistered;
   bool _hasNick;
   bool _hasUser;
@@ -36,14 +39,16 @@ public:
 
   void SetIncomingBuffer(const std::string& from);
   const std::string& GetIncomingBuffer(void);
-  
+  std::string GetEscapedIncomingBuffer(void);
+
   std::string FullIdentityString(void);
-  
+
   void AppendToOutgoingBuffer(const std::string& from);
   void AppendToOutgoingBuffer(const char* from);
   void SetOutgoingBuffer(const std::string& from);
   void SetOutgoingBuffer(const char* from);
   const std::string& GetOutgoingBuffer(void);
+  std::string GetEscapedOutgoingBuffer(void);
 
   void ClearOutgoingBuffer(void);
   void ClearIncomingBuffer(void);
@@ -62,13 +67,14 @@ public:
   bool HasFinishedCapNeg(void);
 
   void CompletedRegistrationRoutine(const std::string& from);
-  
+
   void SetPasswordReceived(bool);
   bool SetPasswordValid(bool);
   bool HasSentValidPassword(void);
-  
+
   void ResolveHostname(void);
   const std::string& GetHostname(void);
+  std::string RemoteConnectionString(void);
 
   void SetQuitMessage(const std::string& msg);
   const std::string& GetQuitMessage(void);

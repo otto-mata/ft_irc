@@ -8,8 +8,8 @@
 #include <string>
 
 #define DEFAULT_NAME "unamed_channel"
-#define DEFAULT_TOPIC "undefined_topic"
-#define DEFAULT_PASSWORD "unsafe_password"
+#define DEFAULT_TOPIC ""
+#define DEFAULT_PASSWORD ""
 #define DEFAULT_USER_LIMIT_COUNT 42
 #define DEFAULT_IS_INVITE_ONLY 0
 #define DEFAULT_IS_TOPIC_MODIFIABLE 1

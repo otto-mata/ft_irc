@@ -13,7 +13,8 @@ Algo::String::Split(std::string s, const std::string& delimiter)
     tokens.push_back(token);
     s.erase(0, pos + delimiter.length());
   }
-  tokens.push_back(s);
+  if (s.size() > 0)
+    tokens.push_back(s);
 
   return tokens;
 }

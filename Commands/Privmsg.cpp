@@ -16,7 +16,7 @@ Commands::Privmsg::Privmsg(Core::User* Emitter,
 int
 Commands::Privmsg::ValidateInput(void)
 {
-  if (raw->Arguments().size() < 1 || !raw->HasTrailing())
+  if (!raw->HasArguments() || !raw->HasTrailing())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   return 0;
 }
@@ -26,7 +26,7 @@ Commands::Privmsg::Execute(void)
 {
   if (raw->Argument(0).at(0) == '#') {
     if (!SetTargetChannelFromContext(raw->Argument(0)))
-      return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
+      return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(0));
     targetChannel->Broadcast(":" + emitter->FullIdentityString() +
                              " PRIVMSG #" + targetChannel->getName() + " :" +
                              raw->Trailing(), emitter);

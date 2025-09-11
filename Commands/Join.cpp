@@ -32,12 +32,17 @@ Commands::Join::ValidateInput(void)
 int
 Commands::Join::Execute(void)
 {
-
-  std::string argCpy(raw->Argument(0));
-  std::vector<std::string> v = Algo::String::Split(argCpy, ",");
-  for (std::vector<std::string>::iterator it = v.begin(); it != v.end(); it++) {
+  std::vector<std::string> passes;
+  std::vector<std::string> channels =
+    Algo::String::Split(std::string(raw->Argument(0)), ",");
+  if (raw->Arguments().size() == 2)
+    passes = Algo::String::Split(std::string(raw->Argument(1)), ",");
+  size_t index = 0;
+  for (std::vector<std::string>::iterator it = channels.begin();
+       it != channels.end();
+       it++) {
     if (!SetTargetChannelFromContext(*it)) {
-      Core::Channel* tChan = ctx->CreateChannel(raw->Argument(0));
+      Core::Channel* tChan = ctx->CreateChannel(*it);
       if (tChan == 0)
         return 1; //! Error during creation
       tChan->SetOwner(emitter);
@@ -50,18 +55,21 @@ Commands::Join::Execute(void)
       return Replies::ERR_INVITEONLYCHAN(emitter, targetChannel->getName());
     }
     if (targetChannel->getIsPasswordProtected()) {
-      if (raw->Arguments().size() != 2)
+      if (raw->Arguments().size() != 2 || index >= passes.size())
         return Replies::ERR_PASSWDMISMATCH(emitter);
-      else if (!targetChannel->tryPassword(raw->Argument(1)))
-        return Replies::ERR_PASSWDMISMATCH(emitter);
+      else if (!targetChannel->tryPassword(passes.at(index))) {
+        index++;
+        Replies::ERR_PASSWDMISMATCH(emitter);
+        continue;
+      }
     }
-    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN " +
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +
                              targetChannel->getName());
     std::string welcomeBuffer =
-      ":" + ctx->Hostname() + " 332 " + emitter->GetNickname() + " " +
+      ":" + ctx->Hostname() + " 332 " + emitter->GetNickname() + " #" +
       targetChannel->getName() + " :" + targetChannel->getTopic() + "\r\n";
     welcomeBuffer += ":" + ctx->Hostname() + " 353 " + emitter->GetNickname() +
-                     " = " + targetChannel->getName() + " :";
+                     " = #" + targetChannel->getName() + " :";
     const Users& tChanUsers = targetChannel->GetUsers();
     for (Users::iterator it = tChanUsers.begin(); it != tChanUsers.end();
          it++) {

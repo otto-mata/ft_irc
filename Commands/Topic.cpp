@@ -34,7 +34,7 @@ Commands::Topic::Execute(void)
       return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(0));
     std::string newTopic = raw->Trailing();
     targetChannel->setTopic(newTopic);
-    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " #" +
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " TOPIC #" +
                              targetChannel->getName() + " :" + newTopic);
     return (0);
   }

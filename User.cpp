@@ -1,8 +1,11 @@
 #include "User.hpp"
+#include "CustomAlgo.hpp"
+#include <algorithm>
 #include <arpa/inet.h>
 #include <iostream>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <sstream>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -20,11 +23,13 @@ Core::User::User(int fd)
   , _toDelete(false)
 {
   ResolveHostname();
+  log = Logging::Engine("ft_irc|user|" + RemoteConnectionString());
 }
 
 Core::User::~User(void)
 {
   close(_fd);
+  log.debug("Connection to remote client closed.");
 }
 
 bool
@@ -43,6 +48,12 @@ const std::string&
 Core::User::GetIncomingBuffer(void)
 {
   return _incomingBuffer;
+}
+
+std::string
+Core::User::GetEscapedIncomingBuffer(void)
+{
+  return Algo::String::EscapeSequence(_incomingBuffer);
 }
 
 std::string
@@ -96,6 +107,12 @@ const std::string&
 Core::User::GetOutgoingBuffer(void)
 {
   return _outgoingBuffer;
+}
+
+std::string
+Core::User::GetEscapedOutgoingBuffer(void)
+{
+  return Algo::String::EscapeSequence(_outgoingBuffer);
 }
 
 void
@@ -171,7 +188,6 @@ Core::User::CompletedRegistrationRoutine(const std::string& from)
 {
   if (!FullyRegistered())
     return;
-  std::cout << "OK REG" << std::endl;
   AppendToOutgoingBuffer(":" + from + " 001 " + GetNickname() +
                          " :Hello! Welcome to IRC");
   AppendToOutgoingBuffer(":" + from + " 002 " + GetNickname() +
@@ -207,22 +223,38 @@ Core::User::ResolveHostname(void)
 {
   struct sockaddr_in addr;
   socklen_t len = sizeof(addr);
+  char hostname[1024];
+  char service[32];
 
   if (getpeername(_fd, (struct sockaddr*)&addr, &len) == -1)
     return;
   _ipAdress = std::string(inet_ntoa(addr.sin_addr));
-  struct hostent* host =
-    gethostbyaddr((const void*)&addr.sin_addr, sizeof(addr.sin_addr), AF_INET);
-  if (host)
-    _hostname = std::string(host->h_name);
-  else
+
+  if (getnameinfo((struct sockaddr*)&addr,
+                  sizeof(addr),
+                  hostname,
+                  sizeof(hostname),
+                  service,
+                  sizeof(service),
+                  0)) {
+    _hostname = std::string(hostname);
+  } else
     _hostname = _ipAdress;
+  _remotePort = ntohs(addr.sin_port);
 }
 
 const std::string&
 Core::User::GetHostname(void)
 {
   return _hostname;
+}
+
+std::string
+Core::User::RemoteConnectionString(void)
+{
+  std::ostringstream stream;
+  stream << _hostname << ":" << _remotePort;
+  return stream.str();
 }
 
 void

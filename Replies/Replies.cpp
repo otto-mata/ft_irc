@@ -40,8 +40,8 @@ int
 Replies::ERR_NOTONCHANNEL(Core::User* user, const std::string& channel)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 442 " + channel +
-                                 ": You are not in this channel");
+    user->AppendToOutgoingBuffer(":localhost 442 " + user->GetNickname() + " " +
+                                 channel + ": You are not in this channel");
   return 442;
 }
 
@@ -49,8 +49,8 @@ int
 Replies::ERR_NOSUCHNICK(Core::User* user, const std::string& nick)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 401 " + nick +
-                                 " :No such nick/channel");
+    user->AppendToOutgoingBuffer(":localhost 401 " + user->GetNickname() + " " +
+                                 nick + " :No such nick/channel");
   return 401;
 }
 
@@ -58,8 +58,8 @@ int
 Replies::ERR_NICKNAMEINUSE(Core::User* user, const std::string& nick)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 433 " + nick +
-                                 " :Nickname already in use");
+    user->AppendToOutgoingBuffer(":localhost 433 " + user->GetNickname() + " " +
+                                 nick + " :Nickname already in use");
   return 433;
 }
 
@@ -67,8 +67,8 @@ int
 Replies::ERR_NOSUCHCHANNEL(Core::User* user, const std::string& name)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 403 " + name +
-                                 " :No such channel");
+    user->AppendToOutgoingBuffer(":localhost 403 " + user->GetNickname() + " " +
+                                 name + " :No such channel");
   return 403;
 }
 
@@ -76,8 +76,8 @@ int
 Replies::ERR_CHANOPRIVSNEEDED(Core::User* user, const std::string& channel)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 482 " + channel +
-                                 " :You are not a channel operator");
+    user->AppendToOutgoingBuffer(":localhost 482 " + user->GetNickname() + " " +
+                                 channel + " :You are not a channel operator");
   return 482;
 }
 
@@ -85,7 +85,8 @@ int
 Replies::ERR_UNKNOWNCOMMAND(Core::User* user, const std::string& cmd)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 421 " + cmd + " :Unknown command");
+    user->AppendToOutgoingBuffer(":localhost 421 " + user->GetNickname() + " " +
+                                 cmd + " :Unknown command");
 
   return 421;
 }
@@ -96,7 +97,8 @@ Replies::ERR_USERONCHANNEL(Core::User* user,
                            const std::string& channel)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 443 " + nickname + " " + channel +
+    user->AppendToOutgoingBuffer(":localhost 443 " + user->GetNickname() + " " +
+                                 nickname + " " + channel +
                                  " :is already on channel");
 
   return 443;
@@ -106,8 +108,8 @@ int
 Replies::ERR_INVITEONLYCHAN(Core::User* user, const std::string& channelName)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 473 " + channelName +
-                                 " :Cannot join channel (+i)");
+    user->AppendToOutgoingBuffer(":localhost 473 " + user->GetNickname() + " " +
+                                 channelName + " :Cannot join channel (+i)");
 
   return 473;
 }
@@ -116,8 +118,8 @@ int
 Replies::ERR_BADCHANNELKEY(Core::User* user, const std::string& channelName)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 475 " + channelName +
-                                 " :Cannot join channel (+k)");
+    user->AppendToOutgoingBuffer(":localhost 475 " + user->GetNickname() + " " +
+                                 channelName + " :Cannot join channel (+k)");
 
   return 475;
 }
@@ -126,8 +128,8 @@ int
 Replies::ERR_CHANNELISFULL(Core::User* user, const std::string& channelName)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 471 " + channelName +
-                                 " :Cannot join channel (+l)");
+    user->AppendToOutgoingBuffer(":localhost 471 " + user->GetNickname() + " " +
+                                 channelName + " :Cannot join channel (+l)");
   return 471;
 }
 
@@ -135,8 +137,8 @@ int
 Replies::ERR_KEYSET(Core::User* user, const std::string& channelName)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 467 " + channelName +
-                                 " :Channel key already set");
+    user->AppendToOutgoingBuffer(":localhost 467 " + user->GetNickname() + " " +
+                                 channelName + " :Channel key already set");
   return 467;
 }
 
@@ -144,7 +146,8 @@ int
 Replies::ERR_PASSWDMISMATCH(Core::User* user)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 464 :Password incorrect");
+    user->AppendToOutgoingBuffer(":localhost 464 " + user->GetNickname() +
+                                 " :Password incorrect");
   return 464;
 }
 
@@ -152,8 +155,8 @@ int
 Replies::ERR_USERSDONTMATCH(Core::User* user)
 {
   if (user)
-    user->AppendToOutgoingBuffer(
-      ":localhost 502 :Cannot change MODE for another user");
+    user->AppendToOutgoingBuffer(":localhost 502 " + user->GetNickname() +
+                                 " :Cannot change MODE for another user");
   return 502;
 }
 

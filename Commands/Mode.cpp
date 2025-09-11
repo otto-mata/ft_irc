@@ -31,19 +31,19 @@ Commands::Mode::handleOpMode(char mode)
     return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(2));
   if (!targetChannel->isUser(targetUser))
     return Replies::ERR_NOSUCHNICK(emitter, targetUser->GetNickname());
-    if (mode == '-')
-  {
+  if (mode == '-') {
     if (!targetChannel->isAdmin(targetUser))
       return 1;
     targetChannel->removeAdmin(targetUser);
-    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE -o " + targetUser->GetNickname());
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE -o " +
+                             targetUser->GetNickname());
   }
-  if (mode == '+')
-  {
+  if (mode == '+') {
     if (targetChannel->isAdmin(targetUser))
       return 2;
     targetChannel->addAdmin(targetUser);
-    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE +o " + targetUser->GetNickname());
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE +o " +
+                             targetUser->GetNickname());
   }
   return (0);
 }
@@ -51,17 +51,18 @@ Commands::Mode::handleOpMode(char mode)
 int
 Commands::Mode::handleKeyMode(char mode)
 {
-  if (mode == '+' && targetChannel->getIsPasswordProtected())
-    return Replies::ERR_KEYSET(emitter, targetChannel->getName());
   if (mode == '+' && raw->Arguments().size() < 3)
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
-  if (mode == '+'){
+  if (mode == '+') {
     targetChannel->setPassword(raw->Argument(2));
-    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE +k " + raw->Argument(2));
-  } else if (mode == '-'){
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
+                             targetChannel->getName() + " +k " +
+                             raw->Argument(2));
+  } else if (mode == '-') {
     targetChannel->setPassword("");
     targetChannel->setIsPasswordProtected(false);
-    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE -k ");
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
+                             targetChannel->getName() + " -k ");
   }
   return (0);
 }
@@ -71,12 +72,12 @@ Commands::Mode::handleLimMode(char mode)
 {
   if (mode == '+' && raw->Arguments().size() < 3)
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
-  if (mode == '+'){
+  if (mode == '+') {
     size_t n = 0;
     if (!Algo::String::SaferStoul(raw->Argument(2), &n))
       return 1;
     targetChannel->setUserLimit(n);
-  } else if (mode == '-'){
+  } else if (mode == '-') {
     targetChannel->setIsUserLimited(false);
     targetChannel->setUserLimit(~0);
   }
@@ -107,18 +108,31 @@ Commands::Mode::Execute(void)
   if (mode != '+' && mode != '-')
     return Replies::ERR_UMODEUNKNOWNFLAG(emitter, raw->Argument(1));
   flag = flag.substr(1);
-  if (flag.empty())
+  if (flag.empty()) {
     return Replies::ERR_UMODEUNKNOWNFLAG(emitter, raw->Argument(1));
+  }
   if (flag.size() == 1 || flag.size() == 2) {
     for (std::string::iterator it = flag.begin(); it < flag.end(); it++) {
 
       switch (*it) {
         case 'i':
-          targetChannel->setIsInviteOnly( mode == '+' ? true : false);
+          targetChannel->setIsInviteOnly(mode == '+' ? true : false);
+          targetChannel->Broadcast(":" + emitter->FullIdentityString() +
+                                   " MODE #" + targetChannel->getName() + " " +
+                                   mode + "i");
           break;
         case 't':
-          targetChannel->setIsTopicModifiable( mode == '+' ? false : true);
+          targetChannel->setIsTopicModifiable(mode == '+' ? false : true);
+          targetChannel->Broadcast(":" + emitter->FullIdentityString() +
+                                   " MODE #" + targetChannel->getName() + " " +
+                                   mode + "t");
           break;
+        case 'k':
+          return handleKeyMode(mode);
+        case 'o':
+          return handleOpMode(mode);
+        case 'l':
+          return handleLimMode(mode);
         default:
           return Replies::ERR_UMODEUNKNOWNFLAG(emitter, flag);
       }

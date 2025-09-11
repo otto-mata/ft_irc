@@ -2,6 +2,7 @@
 #define SERVER_HPP
 
 #include "Common.hpp"
+#include "Logging/Logger.hpp"
 #include <exception>
 #include <map>
 #include <sstream>
@@ -28,15 +29,25 @@ class Server
 private:
   unsigned short port;
   int fd;
+  fd_set rfds;
+  fd_set wfds;
+  int maxfd;
   std::string password;
   SockAddrIn in;
   Core::UserMap users;
   Core::ChannelMap channels;
   Core::BufferMap buffers;
   std::string hostName;
-  
+  Logging::Engine log;
+  std::vector<Core::User*> disconnected;
+  void handleClientDisconnection();
+  void prepareClientFdsForSelect();
+  void acceptNewClient();
+  void manageUserDataReception();
+  void handleInput(Core::User* user);
+
 public:
-  static bool mustStop;
+  static bool MustStop;
   Server(unsigned short p = 6667);
   ~Server(void);
 
@@ -54,7 +65,7 @@ public:
 
   bool MatchUserByNickname(const std::string& Nickname);
   bool MatchChannelByName(const std::string& Name);
-  
+
   bool TryPassword(const std::string& attempt);
   bool IsPasswordProtected(void);
   void RemoveUserFromServer(Core::User* user);

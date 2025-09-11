@@ -16,7 +16,7 @@ main()
   try {
     srv.Start();
   } catch (const std::runtime_error& e) {
-    if (Core::Server::mustStop)
+    if (Core::Server::MustStop)
       return (0);
   }
   return (0);
