@@ -170,15 +170,14 @@ The server implements the following IRC commands:
 ### Connection Commands
 - `PASS <password>`: Authenticate with server password
 - `NICK <nickname>`: Set user nickname
-- `USER <username> <hostname> <servername> <realname>`: Register user information
-- `QUIT [<message>]`: Disconnect from server
+- `USER <username> <hostname> <servername> :<realname>`: Register user information
+- `QUIT [:<message>]`: Disconnect from server
 
 ### Channel Commands
 - `JOIN <channel> [<password>]`: Join a channel
-- `PART <channel> [<message>]`: Leave a channel
-- `TOPIC <channel> [<topic>]`: View or set channel topic
+- `PART <channel> [:<message>]`: Leave a channel
+- `TOPIC <channel> [:<topic>]`: View or set channel topic
 - `LIST [<channel>]`: List channels and their topics
-- `NAMES <channel>`: List users in a channel
 
 ### Communication Commands
 - `PRIVMSG <target> <message>`: Send private message
@@ -316,10 +315,10 @@ src/
 2. **Connect Multiple Clients**:
    ```bash
    # Terminal 1
-   nc localhost 6667
+   nc localhost 6667 -C
    
    # Terminal 2
-   nc localhost 6667
+   nc localhost 6667 -C
    ```
 
 3. **Test Commands**:
@@ -339,22 +338,6 @@ The project includes comprehensive error checking and validation. Test scenarios
 - **Command Validation**: Invalid parameters and sequences
 - **Channel Operations**: Mode changes, user management
 - **Error Conditions**: Network failures, invalid inputs
-
-## Contributing
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/new-feature`
-3. **Make changes** following the code style
-4. **Test thoroughly** with multiple clients
-5. **Submit a pull request** with detailed description
-
-### Guidelines
-
-- Follow existing code style and patterns
-- Add comments for complex logic
-- Update documentation for new features
-- Test with multiple IRC clients
-- Ensure C++98 compatibility
 
 ## License
 
