@@ -1,145 +1,365 @@
 # ft_irc
 
-IRC server, compatible with official clients. (See [RFC 1459](https://datatracker.ietf.org/doc/html/rfc1459))
+A complete IRC (Internet Relay Chat) server implementation in C++98, compatible with official IRC clients and following RFC 1459 specifications.
 
-## Architecture and work
+## Table of Contents
 
-### Socket server
+- [Features](#features)
+- [Architecture](#architecture)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Commands](#commands)
+- [Data Structures](#data-structures)
+- [Build System](#build-system)
+- [Development](#development)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
 
-Create listening socket (bind, listen, accept).
+## Features
 
-Handle multiple clients using select().
+- **Full IRC Protocol Support**: Implements RFC 1459 compliant IRC server
+- **Multi-client Support**: Handles multiple concurrent connections using `select()`
+- **Non-blocking I/O**: Efficient handling of client communications
+- **Channel Management**: Complete channel system with operators, modes, and permissions
+- **User Authentication**: Password-protected server access
+- **Comprehensive Command Set**: All major IRC commands implemented
+- **Message of the Day (MOTD)**: Customizable welcome message
+- **Logging System**: Detailed logging with different log levels
+- **Error Handling**: Robust error handling and validation
+- **Memory Management**: Proper resource cleanup and memory management
 
-Manage non-blocking I/O.
+## Architecture
 
-Handle partial data with packet buffering.
-This will be done with a separate `map` , linking an `int fd` to a buffer.
-This is critical, as commands should be parsed only upon full reception (indicated by a `\r\n` (`CRLF`)).
+### Core Components
 
-The users should be stored in a `map` , linking an `int fd`  to a `User` object.
+The server is built around several key components:
 
-The channels should be stored in a `map` , linking a `std::string name`  to a `Channel` object.
+#### Server Class (`Core::Server`)
+- Manages the main server socket and client connections
+- Handles incoming connections and data reception
+- Manages user and channel collections
+- Provides broadcasting capabilities
+- Implements the main server loop using `select()`
 
-The server should also be able to broadcast a message to every connected client, and to every connected client except the origin. 
+#### User Class (`Core::User`)
+- Represents connected clients
+- Manages user state (nickname, username, realname, etc.)
+- Handles input/output buffers
+- Tracks registration status and capabilities
 
-### Channel Object
+#### Channel Class (`Core::Channel`)
+- Represents IRC channels
+- Manages channel users, operators, and permissions
+- Handles channel modes and settings
+- Provides broadcasting to channel members
 
-The `Channel` Object represents a channel created on the server.
-It should have the following attributes:
+#### Command System
+- Modular command implementation
+- Each command inherits from `ExecutableCommand`
+- Input validation and execution phases
+- Error handling with appropriate IRC replies
 
-- `std::string name;`
-- `User *owner;`
-- `std::string password;`
-- `size_t maxUsers;`
-- `bool inviteOnly;`
-- `bool protectedTopic;`
-- `std::string topic;`
-- `std::list<User *> operators;`
-- `std::list<User *> users;`
-- `std::list<User *> guests`
-- `bool isABotChannel`
+### Network Architecture
 
-### User Object
+- **Socket Server**: Uses TCP sockets with `bind()`, `listen()`, and `accept()`
+- **Multi-client Handling**: Uses `select()` for efficient I/O multiplexing
+- **Non-blocking Operations**: All I/O operations are non-blocking
+- **Buffer Management**: Separate buffers for incoming and outgoing data per client
+- **Partial Message Handling**: Buffers incomplete messages until `\r\n` termination
 
-The `User` Object represents a connected client to the server, whether it is authenticated or not.
-It should have the following attributes:
+## Requirements
 
-- File Descriptor
-- Nickname
-- Host name
-- Incoming Buffer
-- Outgoing Buffer
-- Username
-- Real Name
-- IP Address
-- Has Nickname
-- Has Username
-- Is Password Valid
-- Is Registered
+- **C++ Compiler**: C++98 compliant compiler (tested with g++)
+- **Operating System**: Linux/Unix-like systems
+- **Build Tools**: Make
+- **Libraries**: Standard C++ library only (no external dependencies)
 
-### Command Parsing
+## Installation
 
-The command parsing class may be implemented as such:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/otto-mata/ft_irc.git
+   cd ft_irc
+   ```
 
-```cpp
-class CommandParser
-{
-private:
-  std::string* source;
-  std::string cmd;
-  std::vector<std::string>* params;
-  std::string* trailing;
-public:
-  CommandParser(std::string commandStr);
-  ~CommandParser();
-};
+2. **Build the project**:
+   ```bash
+   make
+   ```
+
+   Optional build flags:
+   - `make DEBUG=1`: Build with debug symbols
+   - `make FSAN=1`: Build with address sanitizer
+
+3. **Clean build artifacts**:
+   ```bash
+   make clean    # Remove object files
+   make fclean   # Remove object files and executable
+   make re       # Rebuild from scratch
+   ```
+
+## Usage
+
+### Starting the Server
+
+```bash
+./ircserv <port> <password>
 ```
 
-This class must parse a full user request into a usable and modular object, simplifying the work of command execution down the line.
+**Parameters:**
+- `<port>`: Port number to listen on (1-65535)
+- `<password>`: Server password for client authentication
 
-### Command Object
-
-Those commands have to be implemented:
-
-- `CAP`
-- `INVITE`
-- `JOIN`
-- `KICK`
-- `LIST`
-- `MODE`
-- `NICK`
-- `NOTICE`
-- `PART`
-- `PASS`
-- `PING`
-- `PONG`
-- `PRIVMSG`
-- `QUIT`
-- `TOPIC`
-- `WHOIS`
-- `WHOWAS`
-
-The implementation should be as following:
-
-A main, generic, abstract `CommandBase` class, of which will derive every other command.
-This class will have a similar declaration to:
-
-```cpp
-
-class CommandBase
-{
-protected:
-  User* emitter;
-  User* targetUser;
-  Channel* targetChannel;
-  Server* ctx;
-  Command* params;
-public:
-  CommandBase(User* user = 0, Server* server = 0, Command* cmd = 0);
-  ~CommandBase();
-  virtual int execute() = 0;
-  virtual int check() = 0;
-};
+**Example:**
+```bash
+./ircserv 6667 mypassword
 ```
 
-This will ensure every command can be used in the same exact way.
+### Connecting with IRC Clients
 
-For example, the `NICK` command may be implemented as:
+Use any RFC 1459 compliant IRC client:
 
-```cpp
-class CMDNick
-{
-public:
-	int execute()
-	{
-		std::string nickname = params->params[0]; // Assuming NICK nickname
-		ctx.UpdateUserNickname(emitter, nickname);
-	}
+```bash
+# Using netcat for testing
+echo "PASS mypassword" | nc localhost 6667
+echo "NICK testuser" | nc localhost 6667
+echo "USER testuser 0 * :Test User" | nc localhost 6667
 
-	int check()
-	{
-		return params && params->params.size() > 0;
-	}
-	
-};
+# Using irssi
+irssi -c localhost -p 6667
+
+# Using weechat
+weechat -s localhost -p 6667
 ```
+
+### Server Control
+
+- **Start**: Run `./ircserv <port> <password>`
+- **Stop**: Press `Ctrl+C` to gracefully shutdown
+- **Signals**: 
+  - `SIGINT` (`Ctrl+C`): Graceful shutdown
+  - `SIGQUIT`: Ignored
+
+## Configuration
+
+### Command Line Arguments
+
+The server accepts exactly two arguments:
+1. **Port**: TCP port to bind to (must be available)
+2. **Password**: Server password (required for client connections)
+
+### Message of the Day (MOTD)
+
+The server displays a welcome message from `.motd` file in the root directory. Edit this file to customize the MOTD.
+
+### Build Configuration
+
+Modify the `Makefile` for custom build settings:
+- `CXXFLAGS`: Compiler flags
+- `CXX`: Compiler selection
+- `DEBUGF`: Debug flags
+- `FSANF`: Sanitizer flags
+
+## Commands
+
+The server implements the following IRC commands:
+
+### Connection Commands
+- `PASS <password>`: Authenticate with server password
+- `NICK <nickname>`: Set user nickname
+- `USER <username> <hostname> <servername> <realname>`: Register user information
+- `QUIT [<message>]`: Disconnect from server
+
+### Channel Commands
+- `JOIN <channel> [<password>]`: Join a channel
+- `PART <channel> [<message>]`: Leave a channel
+- `TOPIC <channel> [<topic>]`: View or set channel topic
+- `LIST [<channel>]`: List channels and their topics
+- `NAMES <channel>`: List users in a channel
+
+### Communication Commands
+- `PRIVMSG <target> <message>`: Send private message
+- `NOTICE <target> <message>`: Send notice message
+
+### Channel Management
+- `MODE <channel> <mode> [<parameters>]`: Change channel modes
+- `INVITE <nickname> <channel>`: Invite user to channel
+- `KICK <channel> <user> [<comment>]`: Remove user from channel
+
+### Server Commands
+- `PING <server>`: Test connection
+- `PONG <server>`: Respond to ping
+- `WHOIS <nickname>`: Get user information
+- `WHOWAS <nickname>`: Get information about disconnected users
+
+### Advanced Features
+- `CAP <subcommand> [<capabilities>]`: Capabilities negotiation
+
+## Data Structures
+
+### User Management
+```cpp
+class User {
+    int _fd;                    // Socket file descriptor
+    std::string _nickname;      // User nickname
+    std::string _username;      // User username
+    std::string _realname;      // Real name
+    std::string _hostname;      // Client hostname
+    std::string _ipAdress;      // IP address
+    std::string _incomingBuffer; // Input buffer
+    std::string _outgoingBuffer; // Output buffer
+    bool _hasNick;              // Nickname set
+    bool _hasUser;              // Username set
+    bool _hasSentPassword;      // Password sent
+    bool _isValidPassword;      // Password valid
+    bool _disconnected;         // Disconnection flag
+}
+```
+
+### Channel Management
+```cpp
+class Channel {
+    std::string _name;          // Channel name
+    Users _users;               // Channel users
+    Users _whitelist;           // Invited users
+    Users _admins;              // Channel operators
+    User* _owner;               // Channel owner
+    std::string _topic;         // Channel topic
+    std::string _password;      // Channel password
+    size_t _userLimit;          // User limit
+    bool _isInviteOnly;         // Invite-only mode
+    bool _isTopicModifiable;    // Topic protection
+    bool _isUserLimited;        // User limit active
+    bool _isPasswordProtected;  // Password protection
+}
+```
+
+### Server State
+```cpp
+class Server {
+    unsigned short port;        // Listening port
+    int fd;                     // Server socket
+    std::string password;       // Server password
+    UserMap users;              // Connected users
+    ChannelMap channels;        // Active channels
+    BufferMap buffers;          // Client buffers
+    std::string hostName;       // Server hostname
+}
+```
+
+## Build System
+
+### Makefile Structure
+
+The build system uses GNU Make with the following features:
+
+- **Automatic Dependency Generation**: Uses `-MMD -MP` flags
+- **Object File Management**: Organized in `build/` directory
+- **Modular Compilation**: Separate compilation of source files
+- **Build Variants**: Debug and sanitizer builds
+
+### Source Organization
+
+```
+src/
+├── main.cpp                    # Entry point
+├── Commands/                   # IRC commands
+├── Core/                       # Core server logic
+│   ├── Args/                   # Argument parsing
+│   ├── Channel/                # Channel management
+│   ├── Server/                 # Server implementation
+│   └── User/                   # User management
+├── Common/                     # Shared utilities
+├── Logging/                    # Logging system
+├── Parsing/                    # Message parsing
+└── Replies/                    # IRC reply generation
+```
+
+## Development
+
+### Code Style
+
+- **Language**: C++98 standard
+- **Naming**: Snake_case for variables and functions
+- **Classes**: PascalCase for class names
+- **Namespaces**: Organized under `Core` and `Commands`
+- **Error Handling**: Return codes and exceptions
+- **Memory Management**: RAII principles
+
+### Adding New Commands
+
+1. Create command class in `src/Commands/`
+2. Inherit from `ExecutableCommand`
+3. Implement `ValidateInput()` and `Execute()`
+4. Add to command factory/registry
+5. Update `Commands.hpp`
+
+### Extending Server Features
+
+- **New Channel Modes**: Modify `Channel` class
+- **Authentication Methods**: Extend `User` registration
+- **Network Protocols**: Add to server socket handling
+- **Logging Levels**: Enhance `Logging::Engine`
+
+## Testing
+
+### Manual Testing
+
+1. **Start Server**:
+   ```bash
+   ./ircserv 6667 testpass
+   ```
+
+2. **Connect Multiple Clients**:
+   ```bash
+   # Terminal 1
+   nc localhost 6667
+   
+   # Terminal 2
+   nc localhost 6667
+   ```
+
+3. **Test Commands**:
+   ```
+   PASS testpass
+   NICK user1
+   USER user1 0 * :Test User 1
+   JOIN #test
+   PRIVMSG #test Hello World!
+   ```
+
+### Automated Testing
+
+The project includes comprehensive error checking and validation. Test scenarios include:
+
+- **Connection Limits**: Multiple concurrent connections
+- **Command Validation**: Invalid parameters and sequences
+- **Channel Operations**: Mode changes, user management
+- **Error Conditions**: Network failures, invalid inputs
+
+## Contributing
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/new-feature`
+3. **Make changes** following the code style
+4. **Test thoroughly** with multiple clients
+5. **Submit a pull request** with detailed description
+
+### Guidelines
+
+- Follow existing code style and patterns
+- Add comments for complex logic
+- Update documentation for new features
+- Test with multiple IRC clients
+- Ensure C++98 compatibility
+
+## License
+
+This project is part of the 42 School curriculum. See project requirements for usage terms.
+
+---
+
+**Note**: This implementation is designed for educational purposes and follows the IRC RFC 1459 specification. For production use, consider additional security measures and scalability improvements.
