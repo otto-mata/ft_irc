@@ -2,12 +2,15 @@
 #include <CustomAlgo.hpp>
 #include <algorithm>
 #include <arpa/inet.h>
+#include <fstream>
 #include <iostream>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sstream>
 #include <sys/socket.h>
 #include <unistd.h>
+
+std::string Core::User::MotdFile = "./.motd";
 
 Core::User::User(int fd)
   : _fd(fd)
@@ -187,13 +190,14 @@ Core::User::CompletedRegistrationRoutine(const std::string& from)
   if (!FullyRegistered() || _disconnected == false)
     return false;
   AppendToOutgoingBuffer(":" + from + " 001 " + GetNickname() +
-                         " :Hello! Welcome to IRC");
+                         " :Hello! Welcome to IRC " + FullIdentityString());
   AppendToOutgoingBuffer(":" + from + " 002 " + GetNickname() +
-                         " :The current server is " + from);
+                         " :Your host is ft_irc, running 0.0.1a");
   AppendToOutgoingBuffer(":" + from + " 003 " + GetNickname() +
                          " :This server was created at some point");
   AppendToOutgoingBuffer(":" + from + " 004 " + GetNickname() + " " + from +
-                         " ft_irc v0.0.1a");
+                         " ft_irc 0.0.1a * itklo klo");
+  sendMotd();
   _disconnected = false;
   return true;
 }
@@ -278,4 +282,25 @@ bool
 Core::User::MustBeDeleted(void)
 {
   return _toDelete;
+}
+
+void
+Core::User::sendMotd(void)
+{
+  std::ifstream f;
+  f.open(Core::User::MotdFile.c_str());
+  if (f.fail()) {
+    AppendToOutgoingBuffer(":localhost 422 " + _nickname +
+                           " :MOTD File is missing");
+    return;
+  }
+  AppendToOutgoingBuffer(":localhost 375 " + _nickname +
+                         " :=-=-=-=-=Message of the day=-=-=-=-=");
+  std::string line;
+  while (!f.eof()) {
+    getline(f, line);
+    AppendToOutgoingBuffer(":localhost 372 " + _nickname + " :" + line);
+  }
+  AppendToOutgoingBuffer(":localhost 376 " + _nickname +
+                         " :=-=-=-=-=Message of the day=-=-=-=-=");
 }

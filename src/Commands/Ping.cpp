@@ -14,6 +14,8 @@ Commands::Ping::Ping(Core::User* Emitter,
 int
 Commands::Ping::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   return 0;
 }
 

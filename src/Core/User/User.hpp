@@ -26,8 +26,10 @@ private:
   bool _disconnected;
   bool _capabilitiesNegotiationFinished;
   bool _toDelete;
+  void sendMotd(void);
 
 public:
+  static std::string MotdFile;
   User(int fd);
   ~User(void);
   bool ReadyToSend(void);

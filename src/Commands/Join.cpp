@@ -16,6 +16,8 @@ Commands::Join::Join(Core::User* Emitter,
 int
 Commands::Join::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   if (raw->HasArguments()) {
     std::string argCpy(raw->Argument(0));
     std::vector<std::string> v = Algo::String::Split(argCpy, ",");
@@ -64,7 +66,7 @@ Commands::Join::Execute(void)
       }
     }
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +
-                             targetChannel->GetName());
+                             targetChannel->GetName(), emitter);
     targetChannel->AddUser(emitter);
     std::string welcomeBuffer =
       ":" + ctx->Hostname() + " 332 " + emitter->GetNickname() + " #" +

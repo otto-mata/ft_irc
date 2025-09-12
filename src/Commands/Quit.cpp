@@ -12,6 +12,8 @@ Commands::Quit::Quit(Core::User* Emitter, Core::Server* Context, CommandParser::
 int
 Commands::Quit::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   return 0;
 }
 

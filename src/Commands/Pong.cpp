@@ -13,6 +13,8 @@ Commands::Pong::Pong(Core::User* Emitter, Core::Server* Context, CommandParser::
 int
 Commands::Pong::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   if (raw->Arguments().empty())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   return 0;

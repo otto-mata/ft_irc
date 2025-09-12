@@ -19,8 +19,8 @@ Commands::User::ValidateInput(void)
     return 1;
   if (!raw->HasArguments() || raw->Arguments().size() != 3 || !raw->HasTrailing())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
-  // if (ctx->FindUserByUsername(raw->Argument(0)))
-  //   return Replies::ERR_ALREADYREGISTRED(emitter);
+  if (emitter->FullyRegistered())
+    return Replies::ERR_ALREADYREGISTRED(emitter);
   return 0;
 }
 

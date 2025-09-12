@@ -16,6 +16,8 @@ Commands::Privmsg::Privmsg(Core::User* Emitter,
 int
 Commands::Privmsg::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   if (!raw->HasArguments() || !raw->HasTrailing())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (raw->Argument(0).at(0) == '#') {
@@ -33,7 +35,7 @@ Commands::Privmsg::Execute(void)
     targetChannel->Broadcast(":" + emitter->FullIdentityString() +
                                " PRIVMSG #" + targetChannel->GetName() + " :" +
                                raw->Trailing(),
-                             0);
+                             emitter);
   if (targetUser)
     targetUser->AppendToOutgoingBuffer(":" + emitter->FullIdentityString() +
                                        " PRIVMSG " + targetUser->GetNickname() +

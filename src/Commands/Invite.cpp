@@ -16,6 +16,8 @@ Commands::Invite::Invite(Core::User* Emitter,
 int
 Commands::Invite::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   if (!raw->HasArguments() || raw->Arguments().size() < 2) 
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (!SetTargetUserFromContext(raw->Argument(0)))

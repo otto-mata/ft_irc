@@ -150,7 +150,7 @@ Replies::ERR_USERONCHANNEL(Core::User* user,
 {
   if (user)
     user->AppendToOutgoingBuffer(":localhost 443 " + user->GetNickname() + " " +
-                                 nickname + " " + channel +
+                                 nickname + " #" + channel +
                                  " :is already on channel");
 
   return 443;
@@ -217,7 +217,7 @@ Replies::RPL_NOTOPIC(Core::User* user, const std::string& channel)
 {
   if (user)
     user->AppendToOutgoingBuffer(":localhost 331 " + user->GetNickname() +
-                                 " #" + channel + " :No topic set for channel");
+                                 " " + channel + " :No topic set for channel");
   return 0;
 }
 
@@ -226,7 +226,7 @@ Replies::RPL_TOPIC(Core::User* user, Core::Channel* channel)
 {
   if (user && channel)
     user->AppendToOutgoingBuffer(":localhost 332 " + user->GetNickname() +
-                                 " #" + channel->GetName() + " :" +
+                                 " " + channel->GetName() + " :" +
                                  channel->GetTopic());
   return 0;
 }

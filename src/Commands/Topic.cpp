@@ -16,6 +16,8 @@ Commands::Topic::Topic(Core::User* Emitter,
 int
 Commands::Topic::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   if (!raw->HasArguments())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (!SetTargetChannelFromContext(raw->Argument(0)))

@@ -17,6 +17,8 @@ Commands::List::List(Core::User* Emitter,
 int
 Commands::List::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   if (raw->HasArguments()) {
     std::string argCpy(raw->Argument(0));
     std::vector<std::string> v = Algo::String::Split(argCpy, ",");
@@ -39,22 +41,19 @@ Commands::List::Execute(void)
   if (!raw->HasArguments())
     channels = ctx->GetAllChannelNames();
   else {
-    ChanNames v =
-      Algo::String::Split(std::string(raw->Argument(0)), ",");
-    for (ChanNames::iterator it = v.begin(); it != v.end();
-         it++) {
+    ChanNames v = Algo::String::Split(std::string(raw->Argument(0)), ",");
+    for (ChanNames::iterator it = v.begin(); it != v.end(); it++) {
       channels.push_back((*it).substr(1));
     }
   }
+  emitter->AppendToOutgoingBuffer(":" + ctx->Hostname() + " 321 " + emitter->GetNickname() + " Channel : User count  Topic");
   for (ChanNames::iterator it = channels.begin(); it != channels.end(); it++) {
     Core::Channel* chan = ctx->GetChannel(*it);
     std::ostringstream os;
-    os << ":" << ctx->Hostname() << " 322 " << emitter->GetNickname() << " "
-       << chan->GetName() << " " << chan->GetUsers().size() << " :"
-       << chan->GetTopic();
+    os << ":" << ctx->Hostname() << " 322 " << emitter->GetNickname() << " " << chan->GetName() << " "
+       << chan->GetUsers().size() << " :" << chan->GetTopic();
     emitter->AppendToOutgoingBuffer(os.str());
   }
-  emitter->AppendToOutgoingBuffer(":" + ctx->Hostname() + " " +
-                                  emitter->GetNickname() + " :End of list");
+  emitter->AppendToOutgoingBuffer(":" + ctx->Hostname() + " 323 " + emitter->GetNickname() + " :End of /LIST");
   return 0;
 }

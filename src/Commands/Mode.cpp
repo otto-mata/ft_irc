@@ -16,6 +16,8 @@ Commands::Mode::Mode(Core::User* Emitter,
 int
 Commands::Mode::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   if (!raw->HasArguments()) {
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   }
@@ -35,14 +37,16 @@ Commands::Mode::handleOpMode(triplet& t)
     if (!targetChannel->IsAdmin(targetUser))
       return 1;
     targetChannel->RemoveAdmin(targetUser);
-    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE -o " +
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
+                             targetChannel->GetName() + " -o " +
                              targetUser->GetNickname());
   }
   if (t.Mode == '+') {
     if (targetChannel->IsAdmin(targetUser))
       return 0;
     targetChannel->AddAdmin(targetUser);
-    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE +o " +
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
+                             targetChannel->GetName() + " +o " +
                              targetUser->GetNickname());
   }
   return (0);
@@ -75,10 +79,14 @@ Commands::Mode::handleLimMode(triplet& t)
     size_t n = 0;
     if (!Algo::String::SaferStoul(t.Value, &n))
       return 1;
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
+                             targetChannel->GetName() + " +l " + t.Value);
     targetChannel->SetUserLimit(n);
   } else if (t.Mode == '-') {
     targetChannel->SetUserLimited(false);
     targetChannel->SetUserLimit(~0);
+    targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
+                             targetChannel->GetName() + " -l");
   }
   return (0);
 }
@@ -149,8 +157,9 @@ Commands::Mode::Execute(void)
       execRet =
         Replies::ERR_UMODEUNKNOWNFLAG(emitter, std::string() + (*it).Flag);
 
-    if (execRet){
-      return execRet;}
+    if (execRet) {
+      return execRet;
+    }
   }
 
   return 0;

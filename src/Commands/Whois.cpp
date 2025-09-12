@@ -16,6 +16,8 @@ Commands::Whois::Whois(Core::User* Emitter,
 int
 Commands::Whois::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   if (!raw->HasArguments())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (!SetTargetUserFromContext(raw->Argument(0)))

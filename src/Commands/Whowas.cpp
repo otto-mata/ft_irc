@@ -16,6 +16,8 @@ Commands::Whowas::Whowas(Core::User* Emitter,
 int
 Commands::Whowas::ValidateInput(void)
 {
+  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
+    return 1;
   if (!raw->HasArguments())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (!SetTargetUser(ctx->GetLatestUserWithNickname(raw->Argument(0))))
