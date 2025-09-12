@@ -65,6 +65,7 @@ Commands::Join::Execute(void)
     }
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +
                              targetChannel->GetName());
+    targetChannel->AddUser(emitter);
     std::string welcomeBuffer =
       ":" + ctx->Hostname() + " 332 " + emitter->GetNickname() + " #" +
       targetChannel->GetName() + " :" + targetChannel->GetTopic() + "\r\n";
