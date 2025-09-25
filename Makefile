@@ -79,4 +79,7 @@ default: $(NAME)
 
 -include $(OBJ:.o=.d)
 
+bot: ./src/Bot/Bot.cpp
+	c++ -Wall -Werror -Wextra -std=c++98 ./src/Bot/Bot.cpp -o BotIRC
+
 .PHONY: all clean fclean re
