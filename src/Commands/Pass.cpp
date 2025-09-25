@@ -15,8 +15,6 @@ Commands::Pass::Pass(Core::User* Emitter,
 int
 Commands::Pass::ValidateInput(void)
 {
-  if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
-    return 1;
   if (!raw->HasArguments())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   if (emitter->HasSentValidPassword())
