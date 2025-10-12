@@ -5,6 +5,15 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <signal.h>
+
+static int sock = -1;
+
+void stopbot(__attribute_maybe_unused__ int n)
+{
+	std::cout << "Stopping bot" << std::endl;
+	close(sock);
+}
 
 int main(int argc, char **argv)
 {
@@ -18,7 +27,7 @@ int main(int argc, char **argv)
 	std::cout << port << std::endl;
 
 	// Création de la socket
-	int sock = socket(AF_INET, SOCK_STREAM, 0);
+	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock < 0) {
 		std::cerr << "Socket creation failure" << std::endl;
 		return 1;
@@ -56,11 +65,14 @@ int main(int argc, char **argv)
 	std::string join = "JOIN #general\r\n";
 	send(sock, join.c_str(), join.size(), 0);
 
+	signal(SIGINT, stopbot);
 	char buffer[512];
 	while (true) {
 		int n = recv(sock, buffer, sizeof(buffer) - 1, 0);
 		if (n <= 0)
 			break;
+		if (sock < 0)
+			return (0);
 		buffer[n] = '\0';
 		std::string msg(buffer);
 
@@ -68,7 +80,7 @@ int main(int argc, char **argv)
 
 		if (msg.find(" 464 ") != std::string::npos) {
 			std::cerr << "Erreur : mot de passe incorrect." << std::endl;
-			return (1);
+			return (close(sock), 1);
 		}
 
 		if (msg.find("PING") == 0) {
@@ -83,6 +95,9 @@ int main(int argc, char **argv)
 		if (msg.find("tblochet") != std::string::npos) {
 			std::string reply = "PRIVMSG #general :NON C'EST THOMAS!\r\n";
 			send(sock, reply.c_str(), reply.size(), 0);
+		}
+		if (msg.find("!stopbot") != std::string::npos) {
+			return (close(sock), 0);
 		}
 	}
 
