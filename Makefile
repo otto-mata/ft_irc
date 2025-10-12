@@ -79,7 +79,20 @@ default: $(NAME)
 
 -include $(OBJ:.o=.d)
 
-bot: ./src/Bot/Bot.cpp
-	c++ -Wall -Werror -Wextra -std=c++98 ./src/Bot/Bot.cpp -o BotIRC
+bot: BotIRC
+
+BotIRC: ./src/Bot/Bot.o
+	c++ -Wall -Werror -Wextra -std=c++98 ./src/Bot/Bot.o -o BotIRC
+
+./src/Bot/Bot.o: ./src/Bot/Bot.cpp
+	c++ -Wall -Werror -Wextra -std=c++98 ./src/Bot/Bot.cpp -o ./src/Bot/Bot.o -c
+
+cleanbot:
+	rm -rf ./src/Bot/Bot.o
+
+fcleanbot: cleanbot
+	rm -rf BotIRC
+
+rebot: fcleanbot bot
 
 .PHONY: all clean fclean re
