@@ -41,6 +41,7 @@ Commands::Join::Execute(void)
   if (raw->Arguments().size() == 2)
     passes = Algo::String::Split(std::string(raw->Argument(1)), ",");
   size_t index = 0;
+  //std::vector<std::string>::iterator it = channels.begin();
   for (std::vector<std::string>::iterator it = channels.begin();
        it != channels.end();
        it++) {
@@ -62,8 +63,7 @@ Commands::Join::Execute(void)
         return Replies::ERR_PASSWDMISMATCH(emitter);
       else if (!targetChannel->TryPassword(passes.at(index))) {
         index++;
-        Replies::ERR_PASSWDMISMATCH(emitter);
-        continue;
+		return Replies::ERR_PASSWDMISMATCH(emitter);
       }
     }
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +
