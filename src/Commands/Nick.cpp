@@ -29,6 +29,16 @@ int
 Commands::Nick::Execute(void)
 {
   const std::string& name = raw->Argument(0);
+  if (emitter->FullyRegistered()) {
+    Core::ChannelMap  joined = emitter->getJoinedChanels();
+    std::string       broadcast(":" + emitter->FullIdentityString() + " NICK :" + name);
+
+    if (joined.size() == 0)
+      emitter->AppendToOutgoingBuffer(broadcast);
+    else
+      for (Core::ChannelMap::iterator it = joined.begin() ; it != joined.end() ; it++)
+        it->second->Broadcast(broadcast);
+  }
   emitter->SetNickname(name);
   emitter->CompletedRegistrationRoutine(ctx->Hostname());
   ctx->LogNicknameChangeForUser(emitter);

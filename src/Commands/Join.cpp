@@ -34,9 +34,10 @@ Commands::Join::ValidateInput(void)
 int
 Commands::Join::Execute(void)
 {
+
   std::vector<std::string> passes;
   std::vector<std::string> channels =
-    Algo::String::Split(std::string(raw->Argument(0)), ",");
+  Algo::String::Split(std::string(raw->Argument(0)), ",");
   if (raw->Arguments().size() == 2)
     passes = Algo::String::Split(std::string(raw->Argument(1)), ",");
   size_t index = 0;
@@ -67,6 +68,7 @@ Commands::Join::Execute(void)
     }
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +
                              targetChannel->GetName(), emitter);
+    // emitter->AppendToOutgoingBuffer(":" + emitter->FullIdentityString() + " JOIN #" + targetChannel->GetName());
     targetChannel->AddUser(emitter);
     std::string welcomeBuffer =
       ":" + ctx->Hostname() + " 332 " + emitter->GetNickname() + " #" +
