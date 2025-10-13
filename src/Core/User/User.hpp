@@ -2,8 +2,13 @@
 #define USER_HPP
 #include <Common.hpp>
 #include <Logger.hpp>
+#include <map>
+
 
 namespace Core {
+
+class Channel;
+typedef std::map<std::string, Core::Channel*> ChannelMap;
 
 class User
 {
@@ -17,6 +22,7 @@ private:
   std::string _realname;
   std::string _ipAdress;
   std::string _quitMessage;
+  Core::ChannelMap joinedChanels;
   Logging::Engine log;
   unsigned short _remotePort;
   bool _hasNick;
@@ -80,6 +86,10 @@ public:
   const std::string& GetQuitMessage(void);
   void MarkForDeletion(void);
   bool MustBeDeleted(void);
+
+  const Core::ChannelMap  &getJoinedChanels(void);
+  void  addChannel(Core::Channel *toadd, const std::string &name);
+  void  removeChannnel(std::string name);
 };
 
 } // namespace Core

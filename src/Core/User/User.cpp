@@ -226,23 +226,23 @@ Core::User::ResolveHostname(void)
 {
   struct sockaddr_in addr;
   socklen_t len = sizeof(addr);
-  char hostname[1024];
-  char service[32];
+  // char hostname[1024];
+  // char service[32];
 
   if (getpeername(_fd, (struct sockaddr*)&addr, &len) == -1)
     return;
   _ipAdress = std::string(inet_ntoa(addr.sin_addr));
 
-  if (getnameinfo((struct sockaddr*)&addr,
-                  sizeof(addr),
-                  hostname,
-                  sizeof(hostname),
-                  service,
-                  sizeof(service),
-                  0)) {
-    _hostname = std::string(hostname);
-  } else
-    _hostname = _ipAdress;
+  // if (getnameinfo((struct sockaddr*)&addr,
+  //                 sizeof(addr),
+  //                 hostname,
+  //                 sizeof(hostname),
+  //                 service,
+  //                 sizeof(service),
+  //                 0)) {
+  //   _hostname = std::string(hostname);
+  // } else
+  _hostname = _ipAdress;
   _remotePort = ntohs(addr.sin_port);
 }
 
@@ -303,4 +303,17 @@ Core::User::sendMotd(void)
   }
   AppendToOutgoingBuffer(":localhost 376 " + _nickname +
                          " :=-=-=-=-=Message of the day=-=-=-=-=");
+}
+
+const Core::ChannelMap  &Core::User::getJoinedChanels(void) {
+  return joinedChanels;
+}
+
+void  Core::User::addChannel(Core::Channel *toadd, const std::string &name) {
+  joinedChanels[name] = toadd;
+
+}
+
+void  Core::User::removeChannnel(std::string name) {
+  joinedChanels.erase(name);
 }

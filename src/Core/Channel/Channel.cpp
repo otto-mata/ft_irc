@@ -82,6 +82,7 @@ Core::Channel::AddUser(Core::User* user_toadd)
   AddUserToWhitelist(user_toadd);
   if (!IsUser(user_toadd)) {
     _users.insert(user_toadd);
+    user_toadd->addChannel(this, _name);
   }
 }
 
@@ -90,6 +91,7 @@ Core::Channel::RemoveUser(Core::User* user_toremove)
 {
   if (IsUser(user_toremove)) {
     _users.erase(user_toremove);
+    user_toremove->removeChannnel(_name);
   }
 }
 

@@ -4,6 +4,7 @@
 #include <sstream>
 #include <list>
 #include <unistd.h>
+#include <csignal>
 
 bool Core::Server::MustStop = false;
 
@@ -12,6 +13,7 @@ Core::Server::Server(unsigned short p, std::string _password)
   , hostName("localhost")
   , log("ft_irc")
 {
+  signal(SIGPIPE, SIG_IGN);
   port = htons(p);
   fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
   if (fd < 0)

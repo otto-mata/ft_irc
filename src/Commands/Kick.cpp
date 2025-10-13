@@ -21,12 +21,12 @@ Commands::Kick::ValidateInput(void)
   if (!raw->HasArguments() || raw->Arguments().size() < 2) {
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   }
-  if (!SetTargetUserFromContext(raw->Argument(0)))
-    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
+  if (!SetTargetUserFromContext(raw->Argument(1)))
+    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(1));
   if (!targetUser->FullyRegistered())
     return 3; //! Target user is not registered to the server
-  if (raw->Argument(1).find('#') != 0 || !SetTargetChannelFromContext(raw->Argument(1)))
-    return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(1));
+  if (raw->Argument(0).find('#') != 0 || !SetTargetChannelFromContext(raw->Argument(0)))
+    return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(0));
   if (!targetChannel->IsAdmin(emitter))
     return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(1));
   if (!targetChannel->IsUser(targetUser))
@@ -37,15 +37,16 @@ Commands::Kick::ValidateInput(void)
 int
 Commands::Kick::Execute(void)
 {
-  targetUser->AppendToOutgoingBuffer(":" + targetUser->GetNickname() +
-                                     " PART #" + targetChannel->GetName() +
-                                     "\r\n");
-  std::string broadcast = ":" + emitter->GetNickname() + " KICK #" +
+  // targetUser->AppendToOutgoingBuffer(":" + targetUser->GetNickname() +
+  //                                    " PART #" + targetChannel->GetName() +
+                                    //  "\r\n");
+  std::string broadcast = ":" + emitter->FullIdentityString() + " KICK #" +
                           targetChannel->GetName() + " " +
                           targetUser->GetNickname();
   if (raw->HasTrailing())
     broadcast += " :" + raw->Trailing();
   targetChannel->Broadcast(broadcast);
+  // targetUser->AppendToOutgoingBuffer(broadcast);
   targetChannel->RemoveUser(targetUser);
   targetChannel->RemoveAdmin(targetUser);
   if (targetChannel->GetUsers().empty() && targetChannel->IsInviteOnly())
