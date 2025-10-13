@@ -36,6 +36,7 @@ Commands::Part::Execute(void)
     ":" + emitter->FullIdentityString() + " PART #" + targetChannel->GetName();
   if (raw->HasTrailing())
     broadcast += " :" + raw->Trailing();
+  broadcast += "\r\n";
   targetChannel->Broadcast(broadcast);
   targetChannel->RemoveUser(emitter);
   targetChannel->RemoveAdmin(emitter);

@@ -55,7 +55,8 @@ Commands::Join::Execute(void)
     }
     if (targetChannel->IsInviteOnly() &&
         !targetChannel->IsUserInWhitelist(emitter)) {
-      return Replies::ERR_INVITEONLYCHAN(emitter, targetChannel->GetName());
+        Replies::ERR_INVITEONLYCHAN(emitter, targetChannel->GetName());
+        continue;
     }
     if (targetChannel->IsPasswordProtected()) {
       if (raw->Arguments().size() != 2 || index >= passes.size())

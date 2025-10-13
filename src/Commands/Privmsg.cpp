@@ -31,7 +31,7 @@ Commands::Privmsg::ValidateInput(void)
 int
 Commands::Privmsg::Execute(void)
 {
-  if (targetChannel)
+  if (targetChannel && targetChannel->IsUser(emitter))
     targetChannel->Broadcast(":" + emitter->FullIdentityString() +
                                " PRIVMSG #" + targetChannel->GetName() + " :" +
                                raw->Trailing(),

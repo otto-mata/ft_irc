@@ -37,16 +37,12 @@ Commands::Kick::ValidateInput(void)
 int
 Commands::Kick::Execute(void)
 {
-  // targetUser->AppendToOutgoingBuffer(":" + targetUser->GetNickname() +
-  //                                    " PART #" + targetChannel->GetName() +
-                                    //  "\r\n");
   std::string broadcast = ":" + emitter->FullIdentityString() + " KICK #" +
                           targetChannel->GetName() + " " +
                           targetUser->GetNickname();
   if (raw->HasTrailing())
     broadcast += " :" + raw->Trailing();
   targetChannel->Broadcast(broadcast);
-  // targetUser->AppendToOutgoingBuffer(broadcast);
   targetChannel->RemoveUser(targetUser);
   targetChannel->RemoveAdmin(targetUser);
   if (targetChannel->GetUsers().empty() && targetChannel->IsInviteOnly())
