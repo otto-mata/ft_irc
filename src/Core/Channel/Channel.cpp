@@ -90,8 +90,13 @@ void
 Core::Channel::RemoveUser(Core::User* user_toremove)
 {
   if (IsUser(user_toremove)) {
+	std::cout << "found user " + user_toremove->GetNickname() << std::endl;
     _users.erase(user_toremove);
     user_toremove->removeChannnel(_name);
+  }
+  if (IsUser(user_toremove))
+  {
+	std::cout << "wtf" << std::endl;
   }
 }
 

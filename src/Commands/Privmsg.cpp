@@ -23,6 +23,8 @@ Commands::Privmsg::ValidateInput(void)
   if (raw->Argument(0).at(0) == '#') {
     if (!SetTargetChannelFromContext(raw->Argument(0)))
       return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(0));
+	if (!targetChannel->IsUser(emitter))
+	  return Replies::ERR_NOTONCHANNEL(emitter, raw->Argument(0));
   } else if (!SetTargetUserFromContext(raw->Argument(0)))
     return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
   return 0;
@@ -32,10 +34,12 @@ int
 Commands::Privmsg::Execute(void)
 {
   if (targetChannel)
+  {
     targetChannel->Broadcast(":" + emitter->FullIdentityString() +
                                " PRIVMSG #" + targetChannel->GetName() + " :" +
                                raw->Trailing(),
                              emitter);
+  }
   if (targetUser)
     targetUser->AppendToOutgoingBuffer(":" + emitter->FullIdentityString() +
                                        " PRIVMSG " + targetUser->GetNickname() +

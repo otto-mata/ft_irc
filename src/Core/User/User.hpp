@@ -47,6 +47,8 @@ public:
   const std::string& GetIncomingBuffer(void);
   std::string GetEscapedIncomingBuffer(void);
 
+  void Send(const std::string& message);
+
   std::string FullIdentityString(void);
 
   void AppendToOutgoingBuffer(const std::string& from);

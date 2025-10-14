@@ -31,14 +31,22 @@ Commands::Part::ValidateInput(void)
 int
 Commands::Part::Execute(void)
 {
-
   std::string broadcast =
     ":" + emitter->FullIdentityString() + " PART #" + targetChannel->GetName();
+  std::string broadcast2 =
+    ":" + emitter->FullIdentityString() + " KICK #" + targetChannel->GetName() + " " + emitter->GetNickname();
   if (raw->HasTrailing())
-    broadcast += " :" + raw->Trailing();
-  targetChannel->Broadcast(broadcast);
+  {
+	broadcast += " :" + raw->Trailing();
+  }
+
   targetChannel->RemoveUser(emitter);
   targetChannel->RemoveAdmin(emitter);
+
+  targetChannel->Broadcast(broadcast);
+  emitter->Send(broadcast2);
+  
+
   if (targetChannel->GetUsers().empty())
     ctx->RemoveChannel(targetChannel);
   return 0;
