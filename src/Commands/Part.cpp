@@ -31,12 +31,12 @@ Commands::Part::ValidateInput(void)
 int
 Commands::Part::Execute(void)
 {
-
+  //error dans le part, si on leave plusieurs channels, il doit faire un message par channels/m'enfin
   std::string broadcast =
-    ":" + emitter->FullIdentityString() + " PART #" + targetChannel->GetName();
+    ":" + emitter->GetNickname() + "!" + emitter->GetUsername() + "@host PART #" + targetChannel->GetName();
+    // ":" + emitter->FullIdentityString() + " PART #" + targetChannel->GetName();
   if (raw->HasTrailing())
     broadcast += " :" + raw->Trailing();
-  broadcast += "\r\n";
   targetChannel->Broadcast(broadcast);
   targetChannel->RemoveUser(emitter);
   targetChannel->RemoveAdmin(emitter);

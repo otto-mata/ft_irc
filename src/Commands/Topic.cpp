@@ -33,7 +33,7 @@ Commands::Topic::Execute(void)
   if (raw->HasTrailing()) {
     if (!targetChannel->IsTopicModifiable() &&
         !targetChannel->IsAdmin(emitter))
-      return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(0));
+      return 1; //Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(0));
     std::string newTopic = raw->Trailing();
     targetChannel->SetTopic(newTopic);
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " TOPIC #" +

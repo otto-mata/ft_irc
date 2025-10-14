@@ -29,10 +29,6 @@ Core::Server::handleInput(Core::User* user)
     CommandParser::MessageCommand msgCmd(*it);
     if (msgCmd.Name().size() == 0)
       continue;
-    if (msgCmd.Name() == "CAP" && user->FullyRegistered()) {
-      user->AppendToOutgoingBuffer(":" + Hostname() + " 421 " + user->GetNickname() + " CAP : already connected\r\n");
-      break;
-    }
     ExecutableCommand* cmd = msgCmd.ToExecutable(user, this);
     if (!cmd)
       continue;
