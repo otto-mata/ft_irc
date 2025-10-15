@@ -38,7 +38,6 @@ Commands::Privmsg::Execute(void)
                                " PRIVMSG #" + targetChannel->GetName() + " :" +
                                raw->Trailing(),
                              emitter);
-  }
   if (targetUser)
     targetUser->AppendToOutgoingBuffer(":" + emitter->FullIdentityString() +
                                        " PRIVMSG " + targetUser->GetNickname() +

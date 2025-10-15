@@ -151,7 +151,7 @@ Core::Server::handleClientDisconnection()
   for (std::vector<Core::User*>::iterator it = disconnected.begin();
        it != disconnected.end();
        it++) {
-    Broadcast(":" + (*it)->GetNickname() + " QUIT :" + (*it)->GetQuitMessage(),
+    Broadcast(":" + (*it)->FullIdentityString() + " QUIT :" + (*it)->GetQuitMessage(),
               (*it));
     users.erase((*it)->Fileno());
     delete *it;

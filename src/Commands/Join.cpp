@@ -79,7 +79,7 @@ Commands::Join::Execute(void)
       ":" + ctx->Hostname() + " 332 " + emitter->GetNickname() + " #" +
       targetChannel->GetName() + " :" + targetChannel->GetTopic() + "\r\n";
     welcomeBuffer += ":" + ctx->Hostname() + " 353 " + emitter->GetNickname() +
-                     " = #" + targetChannel->GetName() + " :";
+ +                    " = #" + targetChannel->GetName() + " :";
     const Users& tChanUsers = targetChannel->GetUsers();
     for (Users::iterator it = tChanUsers.begin(); it != tChanUsers.end();
          it++) {
