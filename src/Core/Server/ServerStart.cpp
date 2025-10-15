@@ -10,6 +10,7 @@
 #include <sstream>
 #include <unistd.h>
 #include <sys/resource.h>
+#include <fcntl.h>
 
 /**
  * @brief Proper input handling function, executing commands as they are
@@ -113,6 +114,7 @@ Core::Server::acceptNewClient()
     if (cfd < 0) {
       throw std::runtime_error("Could not accept connection to server");
     }
+    fcntl(cfd, F_SETFL, O_NONBLOCK);
     users[cfd] = new Core::User(cfd);
     log.debug("New connection from " + users[cfd]->RemoteConnectionString());
   }
