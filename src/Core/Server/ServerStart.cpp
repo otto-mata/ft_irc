@@ -10,6 +10,7 @@
 #include <sstream>
 #include <unistd.h>
 #include <sys/resource.h>
+#include <fcntl.h>
 
 /**
  * @brief Proper input handling function, executing commands as they are
@@ -113,6 +114,7 @@ Core::Server::acceptNewClient()
     if (cfd < 0) {
       throw std::runtime_error("Could not accept connection to server");
     }
+    fcntl(cfd, F_SETFL, O_NONBLOCK);
     users[cfd] = new Core::User(cfd);
     log.debug("New connection from " + users[cfd]->RemoteConnectionString());
   }
@@ -151,7 +153,7 @@ Core::Server::handleClientDisconnection()
   for (std::vector<Core::User*>::iterator it = disconnected.begin();
        it != disconnected.end();
        it++) {
-    Broadcast(":" + (*it)->GetNickname() + " QUIT :" + (*it)->GetQuitMessage(),
+    Broadcast(":" + (*it)->FullIdentityString() + " QUIT :" + (*it)->GetQuitMessage(),
               (*it));
       ChannelMap chanels = (*it)->getJoinedChanels();
       for (ChannelMap::iterator chan = chanels.begin();

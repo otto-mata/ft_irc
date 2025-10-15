@@ -1,4 +1,3 @@
-
 #include "Privmsg.hpp"
 #include <Channel.hpp>
 #include <CustomAlgo.hpp>
