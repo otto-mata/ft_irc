@@ -1,6 +1,7 @@
 
 #include "Privmsg.hpp"
 #include <Channel.hpp>
+#include <CustomAlgo.hpp>
 #include <ExecutableCommand.hpp>
 #include <Replies.hpp>
 #include <Server.hpp>
@@ -20,28 +21,42 @@ Commands::Privmsg::ValidateInput(void)
     return 1;
   if (!raw->HasArguments() || !raw->HasTrailing())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
-  if (raw->Argument(0).at(0) == '#') {
-    if (!SetTargetChannelFromContext(raw->Argument(0)))
-      return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(0));
-	if (!targetChannel->IsUser(emitter))
-	  return Replies::ERR_NOTONCHANNEL(emitter, raw->Argument(0));
-  } else if (!SetTargetUserFromContext(raw->Argument(0)))
-    return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
   return 0;
 }
 
 int
 Commands::Privmsg::Execute(void)
 {
-  if (targetChannel && targetChannel->IsUser(emitter))
-    targetChannel->Broadcast(":" + emitter->FullIdentityString() +
-                               " PRIVMSG #" + targetChannel->GetName() + " :" +
-                               raw->Trailing(),
-                             emitter);
-  }
-  if (targetUser)
-    targetUser->AppendToOutgoingBuffer(":" + emitter->FullIdentityString() +
-                                       " PRIVMSG " + targetUser->GetNickname() +
-                                       " :" + raw->Trailing());
+  std::string base = ":" + emitter->FullIdentityString() + " PRIVMSG ";
+  std::vector<std::string> targets =
+    Algo::String::Split(std::string(raw->Argument(0)), ",");
+  
+  for (std::vector<std::string>::iterator it = targets.begin();
+      it != targets.end();
+      it++) {
+    if (it->at(0) == '#') {
+      if (!SetTargetChannelFromContext(raw->Argument(0))) {
+        Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(0));
+        continue;
+      }
+      if (!targetChannel->IsUser(emitter)) {
+        Replies::ERR_NOTONCHANNEL(emitter, raw->Argument(0));
+        continue;
+      }
+      if (targetChannel && targetChannel->IsUser(emitter))
+        targetChannel->Broadcast( base + "#" + targetChannel->GetName() + " :" +
+                                raw->Trailing(), emitter);
+    }
+    else {
+      if (!SetTargetUserFromContext(raw->Argument(0)) || targetUser == emitter) {
+        Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
+        continue;
+      }
+      if (targetUser)
+        targetUser->AppendToOutgoingBuffer(base + targetUser->GetNickname() + " :" + 
+                                            raw->Trailing());
+      }
+    }
   return 0;
 }
+

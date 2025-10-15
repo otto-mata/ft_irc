@@ -153,6 +153,14 @@ Core::Server::handleClientDisconnection()
        it++) {
     Broadcast(":" + (*it)->GetNickname() + " QUIT :" + (*it)->GetQuitMessage(),
               (*it));
+      ChannelMap chanels = (*it)->getJoinedChanels();
+      for (ChannelMap::iterator chan = chanels.begin();
+          chan != chanels.end();
+          chan++) {
+            chan->second->RemoveUser((*it));
+            if (chan->second->GetUsers().empty())
+              RemoveChannel(chan->second);
+          }
     users.erase((*it)->Fileno());
     delete *it;
   }

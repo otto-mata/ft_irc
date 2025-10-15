@@ -23,7 +23,7 @@ Commands::Quit::Execute(void)
   std::string trail = "Left the chat";
   if (raw->HasTrailing())
     trail = raw->Trailing();
-  ctx->Broadcast(":"+ emitter->FullIdentityString() + " QUIT :" + trail);
-  ctx->RemoveUserFromServer(emitter);
+  emitter->SetQuitMessage(trail);
+  emitter->MarkForDeletion();
   return 0;
 }
