@@ -11,7 +11,7 @@
 #include <list>
 
 #ifndef BACKLOG
-#define BACKLOG 5
+#define BACKLOG 64
 #endif
 
 #ifndef POLL_INTERVAL
