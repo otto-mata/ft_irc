@@ -72,35 +72,38 @@ int main(int argc, char **argv)
 		if (n <= 0)
 			break;
 		if (sock < 0)
-			return (0);
+			break;
 		buffer[n] = '\0';
 		std::string msg(buffer);
 
 		std::cout << msg;
 
+		std::string reply;
 		if (msg.find(" 464 ") != std::string::npos) {
 			std::cerr << "Erreur : mot de passe incorrect." << std::endl;
-			return (close(sock), 1);
+			break ;
 		}
 
 		if (msg.find("PING") == 0) {
-			std::string pong = "PONG" + msg.substr(4) + "\r\n";
-			send(sock, pong.c_str(), pong.size(), 0);
+			reply = "PONG" + msg.substr(4) + "\r\n";
+			send(sock, reply.c_str(), reply.size(), 0);
 		}
 
 		if (msg.find("!ping") != std::string::npos) {
-			std::string reply = "PRIVMSG #general :PONG\r\n";
+			reply = "PRIVMSG #general :PONG\r\n";
 			send(sock, reply.c_str(), reply.size(), 0);
 		}
 		if (msg.find("tblochet") != std::string::npos) {
-			std::string reply = "PRIVMSG #general :NON C'EST THOMAS!\r\n";
+			reply = "PRIVMSG #general :NON C'EST THOMAS!\r\n";
 			send(sock, reply.c_str(), reply.size(), 0);
 		}
 		if (msg.find("!stopbot") != std::string::npos) {
-			return (close(sock), 0);
+			break ;
 		}
 	}
 
+	std::string reply = "QUIT :Left the chat\r\n";
+	send(sock, reply.c_str(), reply.size(), 0);
 	close(sock);
 	return 0;
 }
