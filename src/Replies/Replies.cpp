@@ -32,9 +32,9 @@ Replies::RPL_WHOISUSER(Core::User* user, Core::User* target)
 {
   if (user && target)
     user->AppendToOutgoingBuffer(
-      ":localhost 331 " + user->GetNickname() + " " + target->GetNickname() +
+      ":localhost 311 " + user->GetNickname() + " " + target->GetNickname() +
       " " + target->GetUsername() + " * * :" + target->GetRealName());
-  return 331;
+  return 311;
 }
 
 int
@@ -198,9 +198,9 @@ int
 Replies::ERR_PASSWDMISMATCH(Core::User* user)
 {
   if (user)
-    user->AppendToOutgoingBuffer(":localhost 464 " + user->GetNickname() +
+    user->AppendToOutgoingBuffer(":localhost 475 " + user->GetNickname() +
                                  " :Password incorrect");
-  return 464;
+  return 475;
 }
 
 int

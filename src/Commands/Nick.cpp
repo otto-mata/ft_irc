@@ -5,6 +5,9 @@
 #include <Server.hpp>
 #include <User.hpp>
 
+typedef std::set<Core::User*> UserSet;
+
+
 Commands::Nick::Nick(Core::User* Emitter,
                      Core::Server* Context,
                      CommandParser::MessageCommand* Raw)
@@ -30,14 +33,19 @@ Commands::Nick::Execute(void)
 {
   const std::string& name = raw->Argument(0);
   if (emitter->FullyRegistered()) {
-    Core::ChannelMap  joined = emitter->getJoinedChanels();
-    std::string       broadcast(":" + emitter->FullIdentityString() + " NICK :" + name);
+    Core::ChannelMap    joined = emitter->getJoinedChanels();
+    UserSet             to_send_to;
+    std::string         broadcast(":" + emitter->FullIdentityString() + " NICK :" + name);
 
     if (joined.size() == 0)
       emitter->AppendToOutgoingBuffer(broadcast);
     else
       for (Core::ChannelMap::iterator it = joined.begin() ; it != joined.end() ; it++)
-        it->second->Broadcast(broadcast);
+        to_send_to.insert(it->second->GetUsers().begin(), it->second->GetUsers().end());
+    
+    if (to_send_to.size() > 0)
+      for (UserSet::iterator it = to_send_to.begin() ; it != to_send_to.end() ; it++)
+        (*it)->AppendToOutgoingBuffer(broadcast);
   }
   emitter->SetNickname(name);
   emitter->CompletedRegistrationRoutine(ctx->Hostname());

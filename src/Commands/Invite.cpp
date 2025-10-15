@@ -27,7 +27,7 @@ Commands::Invite::ValidateInput(void)
   if (raw->Argument(1).at(0) != '#' || !SetTargetChannelFromContext(raw->Argument(1)))
     return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(1));
   if (!targetChannel->IsAdmin(emitter))
-    return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(1));
+    return 1;//Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(1));
   if (targetChannel->IsUser(targetUser))
     return Replies::ERR_USERONCHANNEL(emitter, targetUser->GetNickname(), raw->Argument(1));
   return 0;

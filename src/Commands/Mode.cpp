@@ -108,7 +108,7 @@ Commands::Mode::Execute(void)
   if (!targetChannel->IsUser(emitter))
     return Replies::ERR_NOTONCHANNEL(emitter, raw->Argument(0));
   if (!targetChannel->IsAdmin(emitter))
-    return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(0));
+    return 1; //Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(0));
 
   std::string flags(raw->Argument(1));
   std::vector<std::string> args;
