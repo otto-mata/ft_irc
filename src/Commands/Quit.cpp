@@ -15,11 +15,12 @@ Commands::Quit::ValidateInput(void) {
 }
 
 int
-Commands::Quit::Execute(void) {
-    std::string trail = "Left the chat";
-    if (raw->HasTrailing())
-        trail = raw->Trailing();
-    emitter->SetQuitMessage(trail);
-    ctx->RemoveUserFromServer(emitter);
-    return 0;
+Commands::Quit::Execute(void)
+{
+  std::string trail = "Left the chat";
+  if (raw->HasTrailing())
+    trail = raw->Trailing();
+  emitter->SetQuitMessage(trail);
+  emitter->MarkForDeletion();
+  return 0;
 }
