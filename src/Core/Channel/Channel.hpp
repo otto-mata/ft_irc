@@ -1,6 +1,8 @@
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
+#include <stdint.h>
+
 #include "User.hpp"
 #include <iostream>
 #include <map>
@@ -11,86 +13,105 @@
 #define DEFAULT_TOPIC ""
 #define DEFAULT_PASSWORD ""
 #define DEFAULT_USER_LIMIT_COUNT 42
-#define DEFAULT_IS_INVITE_ONLY 0
-#define DEFAULT_IS_TOPIC_MODIFIABLE 1
-#define DEFAULT_IS_USER_LIMITED 0
-#define DEFAULT_IS_PASSWORD_PROTECTED 0
+#define DEFAULT_IS_INVITE_ONLY false
+#define DEFAULT_IS_TOPIC_MODIFIABLE true
+#define DEFAULT_IS_USER_LIMITED false
+#define DEFAULT_IS_PASSWORD_PROTECTED false
 
-typedef std::set<Core::User*> Users;
+typedef std::set<Core::User *> Users;
 
 namespace Core {
+    class Channel {
+    private:
+        std::string _name;
+        Users _users;
+        Users _whitelist;
+        Users _admins;
+        Core::User *_owner;
+        std::string _topic;
+        std::string _password;
+        size_t _userLimit;
+        bool _isInviteOnly;
+        bool _isTopicModifiable;
+        bool _isUserLimited;
+        bool _isPasswordProtected;
 
-class Channel
-{
-private:
-  std::string _name;
-  Users _users;
-  Users _whitelist;
-  Users _admins;
-  Core::User* _owner;
-  std::string _topic;
-  std::string _password;
-  size_t _userLimit;
-  bool _isInviteOnly;
-  bool _isTopicModifiable;
-  bool _isUserLimited;
-  bool _isPasswordProtected;
+        uint8_t userMatch(const std::string &name);
 
-  uint8_t userMatch(const std::string& name);
+    public:
+        Channel();
 
-public:
-  Channel();
-  Channel(const std::string& channel_name);
-  ~Channel();
+        Channel(const std::string &channel_name);
 
-  /* Basic class settings */
+        ~Channel();
 
-  const std::string& GetName();
+        /* Basic class settings */
 
-  int SetOwner(Core::User* Owner);
-  Core::User* GetOwner(void);
+        const std::string &GetName();
 
-  bool IsUser(const std::string& user_tofind);
-  bool IsUser(Core::User* user_tofind);
-  void AddUser(Core::User* user_toadd);
-  void RemoveUser(Core::User* user_toremove);
+        int SetOwner(Core::User *Owner);
 
-  bool IsUserInWhitelist(const std::string& user_tofind);
-  bool IsUserInWhitelist(Core::User* user_tofind);
-  void AddUserToWhitelist(Core::User* user_toadd);
-  void RemoveUserFromWhitelist(Core::User* user_toremove);
+        Core::User *GetOwner();
 
-  bool IsAdmin(const std::string& admin_tofind);
-  bool IsAdmin(Core::User* admin_tofind);
-  void AddAdmin(Core::User* admin_toadd);
-  void RemoveAdmin(Core::User* admin_toremove);
+        bool IsUser(const std::string &user_tofind);
 
-  const std::string& GetTopic();
-  void SetTopic(const std::string& NewTopic);
+        bool IsUser(Core::User *user_tofind);
 
-  bool TryPassword(const std::string& PasswordToTest);
-  void SetPassword(const std::string& NewPassword);
+        void AddUser(Core::User *user_toadd);
 
-  size_t GetUserLimit();
-  void SetUserLimit(size_t NewUserLimit);
-  size_t GetUserCount();
+        void RemoveUser(Core::User *user_toremove);
 
-  bool IsInviteOnly();
-  void SetInviteOnly(bool state);
+        bool IsUserInWhitelist(const std::string &user_tofind);
 
-  bool IsTopicModifiable();
-  void SetTopicModifiable(bool state);
+        bool IsUserInWhitelist(Core::User *user_tofind);
 
-  bool IsUserLimited();
-  void SetUserLimited(bool state);
+        void AddUserToWhitelist(Core::User *user_toadd);
 
-  bool IsPasswordProtected();
-  void SetPasswordProtected(bool state);
+        void RemoveUserFromWhitelist(Core::User *user_toremove);
 
-  void Broadcast(const std::string& m, Core::User* except = 0);
+        bool IsAdmin(const std::string &admin_tofind);
 
-  const Users& GetUsers(void);
-};
+        bool IsAdmin(Core::User *admin_tofind);
 
+        void AddAdmin(Core::User *admin_toadd);
+
+        void RemoveAdmin(Core::User *admin_toremove);
+
+        const std::string &GetTopic();
+
+        void SetTopic(const std::string &NewTopic);
+
+        bool TryPassword(const std::string &PasswordToTest);
+
+        void SetPassword(const std::string &NewPassword);
+
+        size_t GetUserLimit();
+
+        void SetUserLimit(size_t NewUserLimit);
+
+        size_t GetUserCount();
+
+        bool IsInviteOnly();
+
+        void SetInviteOnly(bool state);
+
+        bool IsTopicModifiable();
+
+        void SetTopicModifiable(bool state);
+
+        bool IsUserLimited();
+
+        void SetUserLimited(bool state);
+
+        bool IsPasswordProtected();
+
+        void SetPasswordProtected(bool state);
+
+        void Broadcast(const std::string &m, Core::User *except = 0);
+
+        const Users &GetUsers();
+
+        std::string GetChannelModes();
+    };
 } // namespace Core
 #endif

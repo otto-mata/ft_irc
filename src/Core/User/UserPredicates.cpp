@@ -1,72 +1,60 @@
 #include "UserPredicates.hpp"
 
 UserPredicates::FindByNicknameInMap::FindByNicknameInMap(
-  const std::string& name)
-  : _name(name)
-{
+    const std::string &name)
+    : _name(name) {
 }
 
-Core::User*
+Core::User *
 UserPredicates::FindByNicknameInMap::operator()(
-  std::pair<const int, Core::User*>& pair)
-{
-  return _name == pair.second->GetNickname() ? pair.second : 0;
+    std::pair<const int, Core::User *> &pair) {
+    return _name == pair.second->GetNickname() ? pair.second : 0;
 }
 
-UserPredicates::MatchNickname::MatchNickname(const std::string& name)
-  : _name(name)
-{
-}
-
-bool
-UserPredicates::MatchNickname::operator()(Core::User* user)
-{
-  return _name == user->GetNickname();
-}
-
-UserPredicates::MatchUsername::MatchUsername(const std::string& name)
-  : _name(name)
-{
+UserPredicates::MatchNickname::MatchNickname(const std::string &name)
+    : _name(name) {
 }
 
 bool
-UserPredicates::MatchUsername::operator()(Core::User* user)
-{
-  return _name == user->GetUsername();
+UserPredicates::MatchNickname::operator()(Core::User *user) {
+    return _name == user->GetNickname();
 }
 
-UserPredicates::MatchRealname::MatchRealname(const std::string& name)
-  : _name(name)
-{
+UserPredicates::MatchUsername::MatchUsername(const std::string &name)
+    : _name(name) {
 }
 
 bool
-UserPredicates::MatchRealname::operator()(Core::User* user)
-{
-  return _name == user->GetRealName();
+UserPredicates::MatchUsername::operator()(Core::User *user) {
+    return _name == user->GetUsername();
 }
 
-UserPredicates::MatchNicknameInMap::MatchNicknameInMap(const std::string& name)
-  : _name(name)
-{
+UserPredicates::MatchRealname::MatchRealname(const std::string &name)
+    : _name(name) {
+}
+
+bool
+UserPredicates::MatchRealname::operator()(Core::User *user) {
+    return _name == user->GetRealName();
+}
+
+UserPredicates::MatchNicknameInMap::MatchNicknameInMap(const std::string &name)
+    : _name(name) {
 }
 
 bool
 UserPredicates::MatchNicknameInMap::operator()(
-  std::pair<const int, Core::User*>& pair)
-{
-  return _name == pair.second->GetNickname();
+    std::pair<const int, Core::User *> &pair) {
+    return _name == pair.second->GetNickname();
 }
 
 UserPredicates::FindByUsernameInMap::FindByUsernameInMap(
-  const std::string& name): _name(name)
-{
+    const std::string &name) : _name(name) {
 }
 
 
-Core::User*
+Core::User *
 UserPredicates::FindByUsernameInMap::operator()(
-  std::pair<const int, Core::User*>& pair)
-{
-  return _name == pair.second->GetUsername() ? pair.second : 0;
+    std::pair<const int, Core::User *> &pair) {
+    return _name == pair.second->GetUsername() ? pair.second : 0;
 }

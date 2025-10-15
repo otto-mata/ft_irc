@@ -6,94 +6,118 @@
 
 
 namespace Core {
+    class Channel;
+    typedef std::map<std::string, Core::Channel *> ChannelMap;
 
-class Channel;
-typedef std::map<std::string, Core::Channel*> ChannelMap;
+    class User {
+    private:
+        int _fd;
+        std::string _nickname;
+        std::string _hostname;
+        std::string _incomingBuffer;
+        std::string _outgoingBuffer;
+        std::string _username;
+        std::string _realname;
+        std::string _ipAdress;
+        std::string _quitMessage;
+        Core::ChannelMap joinedChanels;
+        Logging::Engine log;
+        unsigned short _remotePort;
+        bool _hasNick;
+        bool _hasUser;
+        bool _hasSentPassword;
+        bool _isValidPassword;
+        bool _disconnected;
+        bool _capabilitiesNegotiationFinished;
+        bool _toDelete;
 
-class User
-{
-private:
-  int _fd;
-  std::string _nickname;
-  std::string _hostname;
-  std::string _incomingBuffer;
-  std::string _outgoingBuffer;
-  std::string _username;
-  std::string _realname;
-  std::string _ipAdress;
-  std::string _quitMessage;
-  Core::ChannelMap joinedChanels;
-  Logging::Engine log;
-  unsigned short _remotePort;
-  bool _hasNick;
-  bool _hasUser;
-  bool _hasSentPassword;
-  bool _isValidPassword;
-  bool _disconnected;
-  bool _capabilitiesNegotiationFinished;
-  bool _toDelete;
-  void sendMotd(void);
+        void sendMotd(void);
 
-public:
-  static std::string MotdFile;
-  User(int fd);
-  ~User(void);
-  bool ReadyToSend(void);
-  int Fileno(void);
+    public:
+        static std::string MotdFile;
 
-  bool FullyRegistered(void);
+        User(int fd);
 
-  void SetIncomingBuffer(const std::string& from);
-  const std::string& GetIncomingBuffer(void);
-  std::string GetEscapedIncomingBuffer(void);
+        ~User(void);
 
-  void Send(const std::string& message);
+        bool ReadyToSend(void);
 
-  std::string FullIdentityString(void);
+        int Fileno(void);
 
-  void AppendToOutgoingBuffer(const std::string& from);
-  void AppendToOutgoingBuffer(const char* from);
-  void SetOutgoingBuffer(const std::string& from);
-  void SetOutgoingBuffer(const char* from);
-  const std::string& GetOutgoingBuffer(void);
-  std::string GetEscapedOutgoingBuffer(void);
+        bool FullyRegistered(void);
 
-  void ClearOutgoingBuffer(void);
-  void ClearIncomingBuffer(void);
+        void SetIncomingBuffer(const std::string &from);
 
-  void SetNickname(const std::string& from);
-  const std::string& GetNickname(void);
+        const std::string &GetIncomingBuffer(void);
 
-  void SetUsername(const std::string& from);
-  const std::string& GetUsername(void);
+        std::string GetEscapedIncomingBuffer(void);
 
-  void SetRealName(const std::string& from);
-  const std::string& GetRealName(void);
+        void Send(const std::string &message);
 
-  void FinishCapabilitiesNegotiation(void);
-  void PendingCapabilitiesNegotiation(void);
-  bool HasFinishedCapNeg(void);
+        std::string FullIdentityString(void);
 
-  bool CompletedRegistrationRoutine(const std::string& from);
+        void AppendToOutgoingBuffer(const std::string &from);
 
-  void SetPasswordReceived(bool);
-  bool SetPasswordValid(bool);
-  bool HasSentValidPassword(void);
+        void AppendToOutgoingBuffer(const char *from);
 
-  void ResolveHostname(void);
-  const std::string& GetHostname(void);
-  std::string RemoteConnectionString(void);
+        void SetOutgoingBuffer(const std::string &from);
 
-  void SetQuitMessage(const std::string& msg);
-  const std::string& GetQuitMessage(void);
-  void MarkForDeletion(void);
-  bool MustBeDeleted(void);
+        void SetOutgoingBuffer(const char *from);
 
-  const Core::ChannelMap  &getJoinedChanels(void);
-  void  addChannel(Core::Channel *toadd, const std::string &name);
-  void  removeChannnel(std::string name);
-};
+        const std::string &GetOutgoingBuffer(void);
 
+        std::string GetEscapedOutgoingBuffer(void);
+
+        void ClearOutgoingBuffer(void);
+
+        void ClearIncomingBuffer(void);
+
+        void SetNickname(const std::string &from);
+
+        const std::string &GetNickname(void);
+
+        void SetUsername(const std::string &from);
+
+        const std::string &GetUsername(void);
+
+        void SetRealName(const std::string &from);
+
+        const std::string &GetRealName(void);
+
+        void FinishCapabilitiesNegotiation(void);
+
+        void PendingCapabilitiesNegotiation(void);
+
+        bool HasFinishedCapNeg(void);
+
+        bool CompletedRegistrationRoutine(const std::string &from);
+
+        void SetPasswordReceived(bool);
+
+        bool SetPasswordValid(bool);
+
+        bool HasSentValidPassword(void);
+
+        void ResolveHostname(void);
+
+        const std::string &GetHostname(void);
+
+        std::string RemoteConnectionString(void);
+
+        void SetQuitMessage(const std::string &msg);
+
+        const std::string &GetQuitMessage(void);
+
+        void MarkForDeletion(void);
+
+        bool MustBeDeleted(void);
+
+        const Core::ChannelMap &getJoinedChanels(void);
+
+        void addChannel(Core::Channel *toadd, const std::string &name);
+
+        void removeChannnel(std::string name);
+    };
 } // namespace Core
 
 #endif

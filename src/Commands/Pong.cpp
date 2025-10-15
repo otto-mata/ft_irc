@@ -15,7 +15,7 @@ Commands::Pong::ValidateInput(void)
 {
   if (!emitter->FullyRegistered() ||(ctx->IsPasswordProtected() && !emitter->HasSentValidPassword()))
     return 1;
-  if (raw->Arguments().empty())
+  if (!raw->HasArguments() || raw->Arguments().empty())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
   return 0;
 }

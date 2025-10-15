@@ -4,68 +4,66 @@
 #include <string>
 
 namespace UserPredicates {
+    struct FindByNicknameInMap {
+    private:
+        std::string _name;
 
-struct FindByNicknameInMap
-{
-private:
-  std::string _name;
+    public:
+        FindByNicknameInMap(const std::string &name);
 
-public:
-  FindByNicknameInMap(const std::string& name);
-  Core::User* operator()(std::pair<const int, Core::User*>& pair);
-};
+        Core::User *operator()(std::pair<const int, Core::User *> &pair);
+    };
 
-struct FindByUsernameInMap
-{
-private:
-  std::string _name;
+    struct FindByUsernameInMap {
+    private:
+        std::string _name;
 
-public:
-  FindByUsernameInMap(const std::string& name);
-  Core::User* operator()(std::pair<const int, Core::User*>& pair);
-};
+    public:
+        FindByUsernameInMap(const std::string &name);
+
+        Core::User *operator()(std::pair<const int, Core::User *> &pair);
+    };
 
 
-struct MatchNicknameInMap
-{
-private:
-  std::string _name;
+    struct MatchNicknameInMap {
+    private:
+        std::string _name;
 
-public:
-  MatchNicknameInMap(const std::string& name);
-  bool operator()(std::pair<const int, Core::User*>& pair);
-};
+    public:
+        MatchNicknameInMap(const std::string &name);
 
-struct MatchNickname
-{
-private:
-  std::string _name;
+        bool operator()(std::pair<const int, Core::User *> &pair);
+    };
 
-public:
-  MatchNickname(const std::string& name);
-  bool operator()(Core::User* user);
-};
+    struct MatchNickname {
+    private:
+        std::string _name;
 
-struct MatchRealname
-{
-private:
-  std::string _name;
+    public:
+        MatchNickname(const std::string &name);
 
-public:
-  MatchRealname(const std::string& name);
-  bool operator()(Core::User* user);
-};
+        bool operator()(Core::User *user);
+    };
 
-struct MatchUsername
-{
-private:
-  std::string _name;
+    struct MatchRealname {
+    private:
+        std::string _name;
 
-public:
-  MatchUsername(const std::string& name);
-  bool operator()(Core::User* user);
-};
+    public:
+        MatchRealname(const std::string &name);
 
+        bool operator()(Core::User *user);
+    };
+
+    struct MatchUsername {
+    private:
+        std::string _name;
+
+    public:
+        MatchUsername(const std::string &name);
+
+        bool operator()(Core::User *user);
+    };
 };
 
 #endif

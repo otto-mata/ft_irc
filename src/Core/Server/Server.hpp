@@ -19,67 +19,81 @@
 #endif
 
 namespace Core {
-class User;
-class Channel;
-typedef std::map<int, Core::User*> UserMap;
-typedef std::map<std::string, Core::Channel*> ChannelMap;
-typedef std::map<int, std::string> BufferMap;
+    class User;
+    class Channel;
+    typedef std::map<int, Core::User *> UserMap;
+    typedef std::map<std::string, Core::Channel *> ChannelMap;
+    typedef std::map<int, std::string> BufferMap;
 
-class Server
-{
-private:
-  unsigned short port;
-  int fd;
-  fd_set rfds;
-  fd_set wfds;
-  int maxfd;
-  std::string password;
-  SockAddrIn in;
-  Core::UserMap users;
-  Core::ChannelMap channels;
-  Core::BufferMap buffers;
-  std::string hostName;
-  Logging::Engine log;
-  std::vector<Core::User*> disconnected;
-  std::map<std::string, std::list<Core::User*> > nickHistory;
+    class Server {
+    private:
+        unsigned short port;
+        int fd;
+        fd_set rfds;
+        fd_set wfds;
+        int maxfd;
+        std::string password;
+        SockAddrIn in;
+        Core::UserMap users;
+        Core::ChannelMap channels;
+        Core::BufferMap buffers;
+        std::string hostName;
+        Logging::Engine log;
+        std::vector<Core::User *> disconnected;
+        std::map<std::string, std::list<Core::User *> > nickHistory;
 
-  void handleClientDisconnection();
-  void prepareClientFdsForSelect();
-  void acceptNewClient();
-  void manageUserDataReception();
-  void handleInput(Core::User* user);
+        void handleClientDisconnection();
 
-public:
-  static bool MustStop;
-  Server(unsigned short p = 6667, std::string password = "");
-  ~Server(void);
+        void prepareClientFdsForSelect();
 
-  void Start(void);
-  void Broadcast(std::string message, Core::User* except = 0);
+        void acceptNewClient();
 
-  Core::Channel* GetChannel(const std::string& name);
+        void manageUserDataReception();
 
-  Core::User* FindUserByNickname(const std::string& Nickname);
-  Core::User* FindUserByUsername(const std::string& Username);
-  Core::Channel* FindChannelByName(const std::string& Name);
+        void handleInput(Core::User *user);
 
-  Core::Channel* CreateChannel(const std::string& Name);
-  int RemoveChannel(Core::Channel* Chan);
+    public:
+        static bool MustStop;
 
-  bool MatchUserByNickname(const std::string& Nickname);
-  bool MatchChannelByName(const std::string& Name);
+        Server(unsigned short p = 6667, std::string password = "");
 
-  bool TryPassword(const std::string& attempt);
-  bool IsPasswordProtected(void);
-  void RemoveUserFromServer(Core::User* user);
+        ~Server(void);
 
-  const std::string& Hostname(void);
-  static void StopServer(void);
+        void Start(void);
 
-  std::vector<std::string> GetAllChannelNames(void);
-  void LogNicknameChangeForUser(Core::User* user);
-  Core::User* GetLatestUserWithNickname(const std::string& nick);
-};
+        void Broadcast(std::string message, Core::User *except = 0);
 
+        Core::Channel *GetChannel(const std::string &name);
+
+        Core::User *FindUserByNickname(const std::string &Nickname);
+
+        Core::User *FindUserByUsername(const std::string &Username);
+
+        Core::Channel *FindChannelByName(const std::string &Name);
+
+        Core::Channel *CreateChannel(const std::string &Name);
+
+        int RemoveChannel(Core::Channel *Chan);
+
+        bool MatchUserByNickname(const std::string &Nickname);
+
+        bool MatchChannelByName(const std::string &Name);
+
+        bool TryPassword(const std::string &attempt);
+
+        bool IsPasswordProtected(void);
+
+        void RemoveUserFromServer(Core::User *user);
+
+        const std::string &Hostname(void);
+
+        static void StopServer(void);
+
+        std::vector<std::string> GetAllChannelNames(void);
+
+        void LogNicknameChangeForUser(Core::User *user);
+
+        Core::User *GetLatestUserWithNickname(const std::string &nick);
+    };
 }
 #endif
