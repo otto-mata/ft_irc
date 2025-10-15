@@ -317,3 +317,16 @@ void  Core::User::addChannel(Core::Channel *toadd, const std::string &name) {
 void  Core::User::removeChannnel(std::string name) {
   joinedChanels.erase(name);
 }
+
+void Core::User::Send(const std::string& message)
+{
+    std::string fullMessage = message + "\r\n";
+
+    ssize_t sent = send(_fd, fullMessage.c_str(), fullMessage.length(), 0);
+    if (sent < 0)
+    {
+        perror("send failed");
+    }
+}
+
+

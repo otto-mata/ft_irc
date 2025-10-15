@@ -41,9 +41,11 @@ Commands::Join::Execute(void)
   if (raw->Arguments().size() == 2)
     passes = Algo::String::Split(std::string(raw->Argument(1)), ",");
   size_t index = 0;
+  //std::vector<std::string>::iterator it = channels.begin();
   for (std::vector<std::string>::iterator it = channels.begin();
        it != channels.end();
        it++) {
+
     if (!SetTargetChannelFromContext(*it)) {
       Core::Channel* tChan = ctx->CreateChannel(*it);
       if (tChan == 0)
@@ -53,20 +55,22 @@ Commands::Join::Execute(void)
         tChan->SetPassword(raw->Argument(1));
       SetTargetChannel(tChan);
     }
+
     if (targetChannel->IsInviteOnly() &&
         !targetChannel->IsUserInWhitelist(emitter)) {
         Replies::ERR_INVITEONLYCHAN(emitter, targetChannel->GetName());
         continue;
     }
+
     if (targetChannel->IsPasswordProtected()) {
       if (raw->Arguments().size() != 2 || index >= passes.size())
-        return Replies::ERR_PASSWDMISMATCH(emitter);
+        return Replies::ERR_BADCHANNELKEY(emitter, targetChannel->GetName());
       else if (!targetChannel->TryPassword(passes.at(index))) {
         index++;
-        Replies::ERR_PASSWDMISMATCH(emitter);
-        continue;
+		return Replies::ERR_BADCHANNELKEY(emitter, targetChannel->GetName());
       }
     }
+
     targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +
                              targetChannel->GetName(), emitter);
     // emitter->AppendToOutgoingBuffer(":" + emitter->FullIdentityString() + " JOIN #" + targetChannel->GetName());
