@@ -28,7 +28,7 @@ Commands::Kick::ValidateInput(void)
   if (raw->Argument(0).find('#') != 0 || !SetTargetChannelFromContext(raw->Argument(0)))
     return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(0));
   if (!targetChannel->IsAdmin(emitter))
-    return Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(1));
+    return 1;//Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(1));
   if (!targetChannel->IsUser(targetUser))
     return Replies::ERR_USERONCHANNEL(emitter, targetUser->GetNickname(), targetChannel->GetName());
   return 0;
