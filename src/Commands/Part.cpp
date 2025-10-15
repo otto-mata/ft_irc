@@ -1,5 +1,5 @@
-
 #include "Part.hpp"
+#include <CustomAlgo.hpp>
 #include <Channel.hpp>
 #include <ExecutableCommand.hpp>
 #include <Replies.hpp>
@@ -20,27 +20,46 @@ Commands::Part::ValidateInput(void)
     return 1;
   if (!raw->HasArguments())
     return Replies::ERR_NEEDMOREPARAMS(emitter, raw->Name());
-  if (raw->Argument(0).find('#') != 0 ||
-      !SetTargetChannelFromContext(raw->Argument(0)))
-    return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(0));
-  if (!targetChannel->IsUser(emitter))
-    return Replies::ERR_NOTONCHANNEL(emitter, targetChannel->GetName());
   return 0;
 }
 
 int
 Commands::Part::Execute(void)
 {
-  //error dans le part, si on leave plusieurs channels, il doit faire un message par channels/m'enfin
-  std::string broadcast =
-    ":" + emitter->GetNickname() + "!" + emitter->GetUsername() + "@host PART #" + targetChannel->GetName();
-    // ":" + emitter->FullIdentityString() + " PART #" + targetChannel->GetName();
-  if (raw->HasTrailing())
-    broadcast += " :" + raw->Trailing();
-  targetChannel->Broadcast(broadcast);
-  targetChannel->RemoveUser(emitter);
-  targetChannel->RemoveAdmin(emitter);
-  if (targetChannel->GetUsers().empty())
-    ctx->RemoveChannel(targetChannel);
+  std::string broadcast;
+  std::vector<std::string> channels =
+    Algo::String::Split(std::string(raw->Argument(0)), ",");
+  for (std::vector<std::string>::iterator it = channels.begin();
+       it != channels.end();
+       it++) {  
+    
+    if (it->at(0) == '#') {
+      if (!SetTargetChannelFromContext(*it)) {
+        Replies::ERR_NOSUCHCHANNEL(emitter, *it);
+        continue;
+      }
+    }
+    else {
+      Replies::ERR_NOSUCHCHANNEL(emitter, *it);
+      continue;
+    }
+    if (!targetChannel->IsUser(emitter)) {
+      Replies::ERR_NOTONCHANNEL(emitter, targetChannel->GetName());
+      continue;
+    }
+  
+    broadcast = ":" + emitter->FullIdentityString() + " PART #" + targetChannel->GetName();;
+    if (raw->HasTrailing())
+      broadcast += " :" + raw->Trailing();
+
+    targetChannel->Broadcast(broadcast, emitter);
+    emitter->AppendToOutgoingBuffer(
+      ":IRC!admin@localhost KICK #" + targetChannel->GetName() + " " + emitter->GetNickname());
+
+    targetChannel->RemoveUser(emitter);
+    targetChannel->RemoveAdmin(emitter);
+    if (targetChannel->GetUsers().empty())
+      ctx->RemoveChannel(targetChannel);
+  }
   return 0;
 }
