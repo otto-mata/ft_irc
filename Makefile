@@ -26,6 +26,7 @@ SRC := ./src/Commands/User.cpp \
 	./src/Common/Algo/EscapeSequence.cpp \
 	./src/Common/Algo/SaferStoul.cpp \
 	./src/Common/Algo/Split.cpp \
+	./src/Common/Algo/ToLower.cpp \
 	./src/Core/Args/Args.cpp \
 	./src/Core/Channel/Channel.cpp \
 	./src/Core/Channel/ChannelPredicates.cpp \

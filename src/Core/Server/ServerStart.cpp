@@ -11,6 +11,8 @@
 #include <unistd.h>
 #include <sys/resource.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <vector>
 
 /**
  * @brief Proper input handling function, executing commands as they are
@@ -18,14 +20,15 @@
  * @param user Command emitter
  * @param ctx Server Context
  */
-void
-Core::Server::handleInput(Core::User *user) {
+void Core::Server::handleInput(Core::User *user)
+{
     if (user->GetIncomingBuffer().size() == 0)
         return;
     std::vector<std::string> cmds =
-            Algo::String::Split(user->GetIncomingBuffer(), "\r\n");
+        Algo::String::Split(user->GetIncomingBuffer(), "\r\n");
     for (std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end();
-         ++it) {
+         ++it)
+    {
         CommandParser::MessageCommand msgCmd(*it);
         if (msgCmd.Name().size() == 0)
             continue;
@@ -48,22 +51,38 @@ Core::Server::handleInput(Core::User *user) {
  * @param wfds Write fd set
  * @param ctx Server Context
  */
-void
-Core::Server::manageUserDataReception() {
-    for (Core::UserMap::iterator it = users.begin(); it != users.end(); ++it) {
-        if (FD_ISSET(it->first, &rfds)) {
+void Core::Server::manageUserDataReception()
+{
+    for (Core::UserMap::iterator it = users.begin(); it != users.end(); ++it)
+    {
+        if (FD_ISSET(it->first, &rfds))
+        {
             char buffer[PKT_SIZE + 1];
             ssize_t rb = recv(it->first, buffer, PKT_SIZE, 0);
             if (rb < 0)
-                throw std::runtime_error("Error while receiving data from client.");
-            if (rb == 0) {
+            {
+                if (errno == EAGAIN || errno == EWOULDBLOCK)
+                {
+                    // Operation would block, skip for now
+                    continue;
+                }
+                else
+                {
+                    disconnected.push_back(it->second);
+                    buffers[it->first].clear();
+                    continue;
+                }
+            }
+            if (rb == 0)
+            {
                 disconnected.push_back(it->second);
                 buffers[it->first].clear();
                 continue;
             }
             buffer[rb] = 0;
             buffers[it->first].append(buffer);
-            if (buffers[it->first].find("\r\n") != std::string::npos) {
+            if (buffers[it->first].find("\r\n") != std::string::npos)
+            {
                 it->second->SetIncomingBuffer(buffers[it->first]);
                 log.debug("[" + it->second->RemoteConnectionString() + "] => [" +
                           Hostname() + "] " + it->second->GetEscapedIncomingBuffer());
@@ -71,23 +90,43 @@ Core::Server::manageUserDataReception() {
             }
         }
         handleInput(it->second);
-        if (FD_ISSET(it->first, &wfds)) {
+        if (FD_ISSET(it->first, &wfds))
+        {
             std::vector<std::string> cmds =
-                    Algo::String::Split(it->second->GetOutgoingBuffer(), "\r\n");
+                Algo::String::Split(it->second->GetOutgoingBuffer(), "\r\n");
+            bool allSent = true;
             for (std::vector<std::string>::iterator part = cmds.begin();
                  part != cmds.end();
-                 ++part) {
+                 ++part)
+            {
                 (*part).append("\r\n");
                 log.debug("[" + Hostname() + "] => [" +
                           it->second->RemoteConnectionString() + "] " +
                           Algo::String::EscapeSequence(*part));
                 ssize_t wb = send(it->first, (*part).c_str(), (*part).size(), 0);
                 if (wb < 0)
-                    throw std::runtime_error("Error while receiving data from client.");
+                {
+                    if (errno == EAGAIN || errno == EWOULDBLOCK)
+                    {
+                        // Would block, stop sending for now, keep buffer
+                        allSent = false;
+                        break;
+                    }
+                    else
+                    {
+                        allSent = false;
+                        disconnected.push_back(it->second);
+                        break;
+                    }
+                }
             }
-            it->second->ClearOutgoingBuffer();
+            if (allSent)
+            {
+                it->second->ClearOutgoingBuffer();
+            }
         }
-        if (it->second->MustBeDeleted()) {
+        if (it->second->MustBeDeleted())
+        {
             disconnected.push_back(it->second);
             buffers[it->first].clear();
         }
@@ -100,15 +139,25 @@ Core::Server::manageUserDataReception() {
  * @param users Ref to the server's UserMap
  * @param rfds Read fd set
  */
-void
-Core::Server::acceptNewClient() {
+void Core::Server::acceptNewClient()
+{
     SockAddrIn client;
     socklen_t slen = sizeof(client);
 
-    if (FD_ISSET(fd, &rfds)) {
-        int cfd = accept(fd, (struct sockaddr *) &client, &slen);
-        if (cfd < 0) {
-            throw std::runtime_error("Could not accept connection to server");
+    if (FD_ISSET(fd, &rfds))
+    {
+        int cfd = accept(fd, (struct sockaddr *)&client, &slen);
+        if (cfd < 0)
+        {
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+            {
+                // No connection ready, skip
+                return;
+            }
+            else
+            {
+                throw std::runtime_error("Could not accept connection to server");
+            }
         }
         fcntl(cfd, F_SETFL, O_NONBLOCK);
         users[cfd] = new Core::User(cfd);
@@ -124,9 +173,10 @@ Core::Server::acceptNewClient() {
  * @param rfds Read fd set
  * @param wfds Write fd set
  */
-void
-Core::Server::prepareClientFdsForSelect() {
-    for (Core::UserMap::iterator it = users.begin(); it != users.end(); ++it) {
+void Core::Server::prepareClientFdsForSelect()
+{
+    for (Core::UserMap::iterator it = users.begin(); it != users.end(); ++it)
+    {
         FD_SET(it->first, &rfds);
         if (it->second->ReadyToSend())
             FD_SET(it->first, &wfds);
@@ -142,31 +192,45 @@ Core::Server::prepareClientFdsForSelect() {
  * @param ctx Server Context
  */
 
-void
-Core::Server::handleClientDisconnection() {
+void Core::Server::handleClientDisconnection()
+{
+    std::vector<Core::Channel *> emptyChannels;
     for (std::vector<Core::User *>::iterator it = disconnected.begin();
          it != disconnected.end();
-         it++) {
+         it++)
+    {
         Broadcast(":" + (*it)->FullIdentityString() + " QUIT :" + (*it)->GetQuitMessage(),
                   (*it));
         ChannelMap chanels = (*it)->getJoinedChanels();
         for (ChannelMap::iterator chan = chanels.begin();
              chan != chanels.end();
              chan++)
+        {
             chan->second->RemoveUser((*it));
+            if (chan->second->GetUserCount() == 0)
+            {
+                emptyChannels.push_back(chan->second);
+            }
+        }
         users.erase((*it)->Fileno());
         delete *it;
     }
+    for (std::vector<Core::Channel *>::iterator it = emptyChannels.begin();
+         it != emptyChannels.end(); ++it)
+    {
+        RemoveChannel(*it);
+    }
 }
 
-void
-Core::Server::Start(void) {
+void Core::Server::Start(void)
+{
     /* timeval tv;
 
     tv.tv_sec = 0;
     tv.tv_usec = (long)(POLL_INTERVAL * 100000); */
 
-    while (!MustStop) {
+    while (!MustStop)
+    {
         FD_ZERO(&rfds);
         FD_ZERO(&wfds);
         FD_SET(fd, &rfds);
@@ -174,7 +238,8 @@ Core::Server::Start(void) {
         disconnected.clear();
 
         prepareClientFdsForSelect();
-        if (select(maxfd + 1, &rfds, &wfds, 0, 0) < 0) {
+        if (select(maxfd + 1, &rfds, &wfds, 0, 0) < 0)
+        {
             // Here, we asssume MustStop is a marker for CTRL-C.
             // Because we can't use <errno.h>, we cannot be sure that
             // select() returned -1 because of a caught signal (which would set errno to EINTR).
@@ -184,11 +249,14 @@ Core::Server::Start(void) {
             else
                 throw std::runtime_error("Fatal select() error");
         }
-        try {
+        try
+        {
             acceptNewClient();
             manageUserDataReception();
             handleClientDisconnection();
-        } catch (const std::runtime_error &e) {
+        }
+        catch (const std::runtime_error &e)
+        {
             log.fatal(e.what());
             Core::Server::StopServer();
         }
@@ -196,12 +264,14 @@ Core::Server::Start(void) {
     log.info("Stopping...");
     close(fd);
     log.info("Deleting users...");
-    for (Core::UserMap::iterator it = users.begin(); it != users.end(); it++) {
+    for (Core::UserMap::iterator it = users.begin(); it != users.end(); it++)
+    {
         delete it->second;
     }
     log.info("Deleting channels...");
     for (Core::ChannelMap::iterator it = channels.begin(); it != channels.end();
-         it++) {
+         it++)
+    {
         delete it->second;
     }
     log.info("Server stopped.");

@@ -1,4 +1,5 @@
 #include "UserPredicates.hpp"
+#include <CustomAlgo.hpp>
 
 UserPredicates::FindByNicknameInMap::FindByNicknameInMap(
     const std::string &name)
@@ -8,7 +9,7 @@ UserPredicates::FindByNicknameInMap::FindByNicknameInMap(
 Core::User *
 UserPredicates::FindByNicknameInMap::operator()(
     std::pair<const int, Core::User *> &pair) {
-    return _name == pair.second->GetNickname() ? pair.second : 0;
+    return Algo::String::ToLower(_name) == Algo::String::ToLower(pair.second->GetNickname()) ? pair.second : 0;
 }
 
 UserPredicates::MatchNickname::MatchNickname(const std::string &name)
@@ -17,7 +18,7 @@ UserPredicates::MatchNickname::MatchNickname(const std::string &name)
 
 bool
 UserPredicates::MatchNickname::operator()(Core::User *user) {
-    return _name == user->GetNickname();
+    return Algo::String::ToLower(_name) == Algo::String::ToLower(user->GetNickname());
 }
 
 UserPredicates::MatchUsername::MatchUsername(const std::string &name)
@@ -45,7 +46,7 @@ UserPredicates::MatchNicknameInMap::MatchNicknameInMap(const std::string &name)
 bool
 UserPredicates::MatchNicknameInMap::operator()(
     std::pair<const int, Core::User *> &pair) {
-    return _name == pair.second->GetNickname();
+    return Algo::String::ToLower(_name) == Algo::String::ToLower(pair.second->GetNickname());
 }
 
 UserPredicates::FindByUsernameInMap::FindByUsernameInMap(

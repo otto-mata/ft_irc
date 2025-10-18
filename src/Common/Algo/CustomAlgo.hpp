@@ -2,6 +2,7 @@
 #define CUSTOM_ALGO_HPP
 #include <string>
 #include <vector>
+#include <cctype>
 
 namespace Algo {
     namespace Iter {
@@ -60,6 +61,9 @@ namespace Algo {
 
         std::string
         EscapeSequence(std::string s);
+
+        std::string
+        ToLower(std::string s);
     } // namespace String
 } // namespace Algo
 

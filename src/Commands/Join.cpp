@@ -46,8 +46,6 @@ Commands::Join::Execute(void) {
             if (tChan == 0)
                 return 1; //! Error during creation
             tChan->SetOwner(emitter);
-            if (raw->Arguments().size() == 2)
-                tChan->SetPassword(raw->Argument(1));
             SetTargetChannel(tChan);
         }
 
@@ -68,9 +66,9 @@ Commands::Join::Execute(void) {
             if (raw->Arguments().size() != 2 || index >= passes.size())
                 return Replies::ERR_BADCHANNELKEY(emitter, targetChannel->GetName());
             else if (!targetChannel->TryPassword(passes.at(index))) {
-                index++;
                 return Replies::ERR_BADCHANNELKEY(emitter, targetChannel->GetName());
             }
+            index++;
         }
 
         targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +

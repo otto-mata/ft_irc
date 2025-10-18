@@ -1,6 +1,7 @@
 #include <Channel.hpp>
 #include <CustomAlgo.hpp>
 #include "UserPredicates.hpp"
+#include <sstream>
 
 Core::Channel::Channel()
     : _name(DEFAULT_NAME)
@@ -230,11 +231,17 @@ Core::Channel::GetChannelModes() {
         modes.append("i");
     if (!IsTopicModifiable())
         modes.append("t");
-    if (IsUserLimited())
+    if (IsUserLimited()) {
         modes.append("l");
+    }
     if (IsPasswordProtected())
         modes.append("k");
     if (!modes.empty())
         modes = "+" + modes;
+    if (IsUserLimited()) {
+        std::ostringstream oss;
+        oss << " " << GetUserLimit();
+        modes += oss.str();
+    }
     return modes;
 }
