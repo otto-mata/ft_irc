@@ -192,6 +192,7 @@ void Core::Server::prepareClientFdsForSelect()
  * @param ctx Server Context
  */
 
+
 void
 Core::Server::handleClientDisconnection() {
     std::vector<Core::Channel *> emptyChannels;
