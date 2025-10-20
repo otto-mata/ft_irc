@@ -23,11 +23,6 @@ Commands::Ping::Execute(void) {
         (!raw->Arguments().empty() && raw->Argument(0) == ctx->Hostname())) {
         emitter->AppendToOutgoingBuffer(":" + ctx->Hostname() + " PONG " +
                                         ctx->Hostname() + " :" + ctx->Hostname());
-        return (0);
     }
-    if (!SetTargetUserFromContext(raw->Argument(0)))
-        return Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
-    targetUser->AppendToOutgoingBuffer(":" + emitter->GetNickname() + " PING " +
-                                       targetUser->GetNickname());
     return 0;
 }

@@ -13,6 +13,7 @@ SRC := ./src/Commands/User.cpp \
 	./src/Commands/List.cpp \
 	./src/Commands/Mode.cpp \
 	./src/Commands/Nick.cpp \
+	./src/Commands/Notice.cpp \
 	./src/Commands/Part.cpp \
 	./src/Commands/Pass.cpp \
 	./src/Commands/Ping.cpp \

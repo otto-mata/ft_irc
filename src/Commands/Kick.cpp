@@ -38,6 +38,9 @@ Commands::Kick::Execute(void) {
                             targetUser->GetNickname();
     if (raw->HasTrailing())
         broadcast += " :" + raw->Trailing();
+    std::string part = ":" + targetUser->FullIdentityString() + " PART #" + targetChannel->GetName();
+    
+    targetUser->AppendToOutgoingBuffer(part);
     targetChannel->Broadcast(broadcast);
     targetChannel->RemoveUser(targetUser);
     targetChannel->RemoveAdmin(targetUser);

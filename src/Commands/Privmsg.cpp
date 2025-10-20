@@ -33,12 +33,12 @@ Commands::Privmsg::Execute(void)
       it != targets.end();
       it++) {
     if (it->at(0) == '#') {
-      if (!SetTargetChannelFromContext(raw->Argument(0))) {
-        Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(0));
+      if (!SetTargetChannelFromContext(*it)) {
+        Replies::ERR_NOSUCHCHANNEL(emitter, *it);
         continue;
       }
       if (!targetChannel->IsUser(emitter)) {
-        Replies::ERR_NOTONCHANNEL(emitter, raw->Argument(0));
+        Replies::ERR_NOTONCHANNEL(emitter, *it);
         continue;
       }
       if (targetChannel && targetChannel->IsUser(emitter)){
@@ -50,8 +50,8 @@ Commands::Privmsg::Execute(void)
       }
     }
     else {
-      if (!SetTargetUserFromContext(raw->Argument(0)) || targetUser == emitter) {
-        Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
+      if (!SetTargetUserFromContext(*it) || targetUser == emitter) {
+        Replies::ERR_NOSUCHNICK(emitter, *it);
         continue;
       }
       if (targetUser) {
