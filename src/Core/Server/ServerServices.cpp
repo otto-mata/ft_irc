@@ -110,14 +110,13 @@ Core::Server::CreateChannel(const std::string &Name) {
     size_t pos = 0;
     if (Name.find('#') == 0)
         pos++;
-    std::string noHashtagName = Name.substr(pos);
+    const std::string noHashtagName = Name.substr(pos);
     std::string key = Algo::String::ToLower(noHashtagName);
     if (channels.find(key) != channels.end())
         return 0;
     Core::Channel *newChannel = new Channel(noHashtagName);
-    if (!newChannel)
-        return 0;
-    channels[key] = newChannel;
+    if (newChannel != NULL)
+        channels[key] = newChannel;
     return newChannel;
 }
 

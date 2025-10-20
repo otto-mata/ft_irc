@@ -72,8 +72,7 @@ Commands::Join::Execute(void) {
         }
 
         targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +
-                                 targetChannel->GetName(), emitter);
-        // emitter->AppendToOutgoingBuffer(":" + emitter->FullIdentityString() + " JOIN #" + targetChannel->GetName());
+                                 targetChannel->GetName());
         targetChannel->AddUser(emitter);
         std::string welcomeBuffer =
                 ":" + ctx->Hostname() + " 332 " + emitter->GetNickname() + " #" +
@@ -83,7 +82,7 @@ Commands::Join::Execute(void) {
         const Users &tChanUsers = targetChannel->GetUsers();
         for (Users::iterator it = tChanUsers.begin(); it != tChanUsers.end();
              ++it) {
-            welcomeBuffer += targetChannel->IsAdmin(*it) ? "@" : "";
+            // welcomeBuffer += targetChannel->IsAdmin(*it) ? "@" : "";
             welcomeBuffer += (*it)->GetNickname() + " ";
         }
         welcomeBuffer += "\r\n:" + ctx->Hostname() + " 366 " + emitter->GetNickname() + " #" + targetChannel->GetName()

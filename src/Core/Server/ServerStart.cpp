@@ -192,37 +192,31 @@ void Core::Server::prepareClientFdsForSelect()
  * @param ctx Server Context
  */
 
-void Core::Server::handleClientDisconnection()
-{
+void
+Core::Server::handleClientDisconnection() {
     std::vector<Core::Channel *> emptyChannels;
     for (std::vector<Core::User *>::iterator it = disconnected.begin();
          it != disconnected.end();
-         it++)
-    {
+         ++it) {
         Broadcast(":" + (*it)->FullIdentityString() + " QUIT :" + (*it)->GetQuitMessage(),
                   (*it));
-        ChannelMap chanels = (*it)->getJoinedChanels();
-        for (ChannelMap::iterator chan = chanels.begin();
-             chan != chanels.end();
-             chan++)
-        {
+        ChannelMap channels = (*it)->getJoinedChanels();
+        for (ChannelMap::iterator chan = channels.begin();
+             chan != channels.end();
+             ++chan) {
             chan->second->RemoveUser((*it));
             if (chan->second->GetUserCount() == 0)
-            {
                 emptyChannels.push_back(chan->second);
-            }
         }
         users.erase((*it)->Fileno());
         delete *it;
     }
-    for (std::vector<Core::Channel *>::iterator it = emptyChannels.begin();
-         it != emptyChannels.end(); ++it)
-    {
+    for (std::vector<Core::Channel *>::iterator it = emptyChannels.begin(); it != emptyChannels.end(); ++it) {
         RemoveChannel(*it);
     }
 }
 
-void Core::Server::Start(void)
+void Core::Server::Start()
 {
     /* timeval tv;
 
@@ -264,14 +258,12 @@ void Core::Server::Start(void)
     log.info("Stopping...");
     close(fd);
     log.info("Deleting users...");
-    for (Core::UserMap::iterator it = users.begin(); it != users.end(); it++)
-    {
+    for (Core::UserMap::iterator it = users.begin(); it != users.end(); ++it) {
         delete it->second;
     }
     log.info("Deleting channels...");
     for (Core::ChannelMap::iterator it = channels.begin(); it != channels.end();
-         it++)
-    {
+         ++it) {
         delete it->second;
     }
     log.info("Server stopped.");

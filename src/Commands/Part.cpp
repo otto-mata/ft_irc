@@ -42,7 +42,7 @@ Commands::Part::Execute() {
             continue;
         }
 
-        std::string broadcast = ":" + emitter->FullIdentityString() + " PART #" + targetChannel->GetName();;
+        std::string broadcast = ":" + emitter->FullIdentityString() + " PART #" + targetChannel->GetName();
         if (raw->HasTrailing())
             broadcast += " :" + raw->Trailing();
 
