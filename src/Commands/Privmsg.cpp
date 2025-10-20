@@ -41,20 +41,28 @@ Commands::Privmsg::Execute(void)
         Replies::ERR_NOTONCHANNEL(emitter, raw->Argument(0));
         continue;
       }
-      if (targetChannel && targetChannel->IsUser(emitter))
-        targetChannel->Broadcast( base + "#" + targetChannel->GetName() + " :" +
+      if (targetChannel && targetChannel->IsUser(emitter)){
+        targetChannel->Broadcast(base + "#" + targetChannel->GetName() + " :" +
                                 raw->Trailing(), emitter);
+        if (targets.size() > 1)
+          emitter->AppendToOutgoingBuffer(base + "#" + targetChannel->GetName() + " :" +
+                                  raw->Trailing());
+      }
     }
     else {
       if (!SetTargetUserFromContext(raw->Argument(0)) || targetUser == emitter) {
         Replies::ERR_NOSUCHNICK(emitter, raw->Argument(0));
         continue;
       }
-      if (targetUser)
+      if (targetUser) {
         targetUser->AppendToOutgoingBuffer(base + targetUser->GetNickname() + " :" + 
+                                            raw->Trailing());
+        if (targets.size() > 1)
+          emitter->AppendToOutgoingBuffer(base + targetUser->GetNickname() + " :" + 
                                             raw->Trailing());
       }
     }
+  }
   return 0;
 }
 

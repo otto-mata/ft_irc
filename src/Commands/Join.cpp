@@ -46,6 +46,10 @@ Commands::Join::Execute(void) {
             if (tChan == 0)
                 return 1; //! Error during creation
             tChan->SetOwner(emitter);
+            if (raw->Arguments().size() == 2 && index < passes.size()) {
+                tChan->SetPassword(passes.at(index));
+                tChan->SetPasswordProtected(true);
+            }
             SetTargetChannel(tChan);
         }
 
@@ -63,17 +67,22 @@ Commands::Join::Execute(void) {
         }
 
         if (targetChannel->IsPasswordProtected()) {
-            if (raw->Arguments().size() != 2 || index >= passes.size())
-                return Replies::ERR_BADCHANNELKEY(emitter, targetChannel->GetName());
+            if (raw->Arguments().size() != 2 || index >= passes.size()) {
+                Replies::ERR_BADCHANNELKEY(emitter, targetChannel->GetName());
+                index++;
+                continue;
+            }
             else if (!targetChannel->TryPassword(passes.at(index))) {
-                return Replies::ERR_BADCHANNELKEY(emitter, targetChannel->GetName());
+                Replies::ERR_BADCHANNELKEY(emitter, targetChannel->GetName());
+                index++;
+                continue;
             }
             index++;
         }
 
+        targetChannel->AddUser(emitter);
         targetChannel->Broadcast(":" + emitter->FullIdentityString() + " JOIN #" +
                                  targetChannel->GetName());
-        targetChannel->AddUser(emitter);
         std::string welcomeBuffer =
                 ":" + ctx->Hostname() + " 332 " + emitter->GetNickname() + " #" +
                 targetChannel->GetName() + " :" + targetChannel->GetTopic() + "\r\n";
@@ -82,11 +91,11 @@ Commands::Join::Execute(void) {
         const Users &tChanUsers = targetChannel->GetUsers();
         for (Users::iterator it = tChanUsers.begin(); it != tChanUsers.end();
              ++it) {
-            // welcomeBuffer += targetChannel->IsAdmin(*it) ? "@" : "";
+            welcomeBuffer += targetChannel->IsAdmin(*it) ? "@" : "";
             welcomeBuffer += (*it)->GetNickname() + " ";
         }
         welcomeBuffer += "\r\n:" + ctx->Hostname() + " 366 " + emitter->GetNickname() + " #" + targetChannel->GetName()
-                + " :End of /NAMES list.";
+                + " :End of /NAMES list.\r\n";
         emitter->AppendToOutgoingBuffer(welcomeBuffer);
     }
     return 0;
