@@ -138,7 +138,6 @@ Commands::Mode::Execute(void) {
          ++it) {
         int execRet = 0;
         if (it->Flag == 'i') {
-            std::cout << "setting invite only from mode cmd" << std::endl;
             targetChannel->SetInviteOnly(it->Mode == '+');
             targetChannel->Broadcast(":" + emitter->FullIdentityString() + " MODE #" +
                                      targetChannel->GetName() + " " + it->Mode +

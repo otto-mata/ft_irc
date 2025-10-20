@@ -22,7 +22,7 @@ Commands::Invite::ValidateInput() {
     if (!targetUser->FullyRegistered())
         return 3; //! Target user is not registered to the server
     if (raw->Argument(1).at(0) != '#' || !SetTargetChannelFromContext(raw->Argument(1)))
-        return Replies::ERR_NOSUCHCHANNEL(emitter, raw->Argument(1));
+        return Replies::ERR_NOSUCHCHANNEL(emitter, targetChannel->GetName());
     if (!targetChannel->IsAdmin(emitter))
         return 1; //Replies::ERR_CHANOPRIVSNEEDED(emitter, raw->Argument(1));
     if (targetChannel->IsUser(targetUser))

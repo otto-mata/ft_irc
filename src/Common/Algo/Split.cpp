@@ -3,7 +3,7 @@
 #include <string>
 
 std::vector<std::string>
-Algo::String::Split(std::string s, const std::string &delimiter) {
+Algo::String::Split(std::string s, const std::string &delimiter, bool keepEmpty) {
     std::vector<std::string> tokens;
     size_t pos = 0;
     std::string token;
@@ -12,8 +12,9 @@ Algo::String::Split(std::string s, const std::string &delimiter) {
         tokens.push_back(token);
         s.erase(0, pos + delimiter.length());
     }
-    if (s.size() > 0)
-        tokens.push_back(s);
+    if (!keepEmpty)
+        if (s.size() > 0)
+            tokens.push_back(s);
 
     return tokens;
 }

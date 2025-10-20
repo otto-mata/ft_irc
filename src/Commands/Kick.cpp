@@ -44,6 +44,7 @@ Commands::Kick::Execute(void) {
     targetChannel->Broadcast(broadcast);
     targetChannel->RemoveUser(targetUser);
     targetChannel->RemoveAdmin(targetUser);
+    targetChannel->RemoveUserFromWhitelist(targetUser);
     if (targetChannel->GetUsers().empty() && targetChannel->IsInviteOnly())
         ctx->RemoveChannel(targetChannel);
     return 0;
