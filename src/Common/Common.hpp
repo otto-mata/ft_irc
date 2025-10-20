@@ -2,7 +2,7 @@
 #define COMMON_HPP
 
 #ifndef PKT_SIZE
-#define PKT_SIZE 1024
+#define PKT_SIZE (1 << 9)
 #endif
 
 #include <netinet/in.h>

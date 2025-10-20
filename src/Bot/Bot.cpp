@@ -38,7 +38,6 @@ int main(int argc, char **argv)
 
     const char *host = argv[1];
     int port = std::atoi(argv[2]);
-    std::cout << port << std::endl;
 
     // Création de la socket
     sock = socket(AF_INET, SOCK_STREAM, 0);
